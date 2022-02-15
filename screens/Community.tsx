@@ -1,19 +1,113 @@
-import { StyleSheet, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
+import OrangeView from "../components/OrangeView";
+import PostCard from "../components/PostCard";
+import SearchBar from "../components/SearchBar";
+import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import { RootTabScreenProps } from "../types";
 
-export default function CommunityScreen({
-  navigation,
-}: RootTabScreenProps<"Community">) {
-  return <View style={styles.container}></View>;
-}
+const CommunityScreen: React.FC<RootTabScreenProps<"Community">> = () => {
+  const tabBarHeight = useBottomTabBarHeight();
+
+  const renderPostCard = () => <PostCard style={styles.postCard} />;
+
+  return (
+    <FlatList
+      style={[
+        styles.list,
+        {
+          marginBottom: -tabBarHeight,
+        },
+      ]}
+      contentContainerStyle={{
+        paddingBottom: (tabBarHeight + 20) * 2,
+      }}
+      data={[
+        { id: "1" },
+        { id: "2" },
+        { id: "3" },
+        { id: "4" },
+        { id: "5" },
+        { id: "6" },
+      ]}
+      ListHeaderComponent={
+        <View style={styles.listHeaderContainer}>
+          <Text style={styles.greeting}>Good Morning, Emily!</Text>
+          <View style={styles.affirmationShadow}>
+            <OrangeView>
+              <Text style={styles.affirmationText}>
+                Be the parent you needed when you were younger.
+              </Text>
+            </OrangeView>
+          </View>
+          <View style={styles.filterRow}>
+            <SearchBar style={styles.searchBar} />
+            <TouchableOpacity style={styles.filterButton} onPress={() => {}}>
+              <MaterialIcons
+                name="filter-list"
+                color={Colors.bluegreen}
+                size={32}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+      renderItem={renderPostCard}
+      keyExtractor={(item) => item.id}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
-  container: {
+  listHeaderContainer: {
     flex: 1,
+    marginBottom: 10,
+  },
+  greeting: {
+    fontFamily: "medium",
+    color: Colors.darkgreen,
+    fontSize: 24,
+  },
+  affirmationShadow: {
+    shadowColor: Colors.bluegreen,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 30,
+    marginTop: 10,
+  },
+  affirmationText: {
+    fontFamily: "semibold-italic",
+    fontSize: 18,
+    color: "white",
+  },
+  filterRow: {
+    marginTop: 20,
+    flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 15,
+  },
+  searchBar: {
+    marginRight: 10,
+    flex: 1,
+  },
+  filterButton: {
     justifyContent: "center",
+    alignItems: "center",
+  },
+  list: {
+    flex: 1,
     backgroundColor: Colors.lightblue,
+    padding: 20,
+  },
+  postCard: {
+    marginTop: 12,
   },
 });
+
+export default CommunityScreen;

@@ -3,5 +3,9 @@ export default {
   grey: "#5E5E5E",
   lightblue: "#F0F9FC",
   green: "#068F76",
-  black: "#063239",
+  darkgreen: "#063239",
+  bluegreen: "#00535f",
+  greengrey: "#687B7D",
+  lightred: "#FF6954",
+  red: "#EA421B",
 };

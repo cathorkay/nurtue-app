@@ -6,11 +6,7 @@ import Colors from "../constants/Colors";
 import CommunityScreen from "../screens/Community";
 import ConflictResolutionScreen from "../screens/ConflictResolution";
 import PracticeScreen from "../screens/Practice";
-import {
-  RootStackParamList,
-  RootTabParamList,
-  RootTabScreenProps,
-} from "../types";
+import { RootStackParamList, RootTabParamList } from "../types";
 
 export default function Navigation() {
   return (
@@ -46,17 +42,17 @@ function BottomTabNavigator() {
           borderTopRightRadius: 30,
           borderTopColor: "transparent",
           position: "absolute",
-          shadowColor: "rgba(130, 130, 130, 0.15)",
-          shadowRadius: 100,
-          shadowOffset: {
-            height: -8,
-            width: 0,
-          },
-          shadowOpacity: 1,
           height: 90,
+          shadowColor: "rgb(130, 130, 130)",
+          shadowOffset: {
+            width: 0,
+            height: 8,
+          },
+          shadowOpacity: 0.15,
+          shadowRadius: 100,
         },
         tabBarLabelStyle: {
-          fontFamily: "Poppins_600SemiBold",
+          fontFamily: "semibold",
           fontSize: 12,
         },
         headerStyle: {
@@ -64,9 +60,9 @@ function BottomTabNavigator() {
           shadowRadius: 20,
         },
         headerTitleStyle: {
-          fontFamily: "Poppins_400Regular",
+          fontFamily: "regular",
           fontSize: 18,
-          color: Colors.black,
+          color: Colors.darkgreen,
         },
       }}
     >

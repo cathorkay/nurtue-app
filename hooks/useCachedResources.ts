@@ -1,6 +1,9 @@
 import {
+  Poppins_300Light,
   Poppins_400Regular,
+  Poppins_500Medium,
   Poppins_600SemiBold,
+  Poppins_600SemiBold_Italic,
 } from "@expo-google-fonts/poppins";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -15,8 +18,11 @@ export default function useCachedResources() {
         SplashScreen.preventAutoHideAsync();
 
         await Font.loadAsync({
-          Poppins_400Regular,
-          Poppins_600SemiBold,
+          regular: Poppins_400Regular,
+          medium: Poppins_500Medium,
+          semibold: Poppins_600SemiBold,
+          light: Poppins_300Light,
+          "semibold-italic": Poppins_600SemiBold_Italic,
           "Hero Bold": require("../assets/fonts/Hero-Bold.ttf"),
         });
       } catch (e) {
