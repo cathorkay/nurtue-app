@@ -1,12 +1,14 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import IconButton from "../components/IconButton";
 import Colors from "../constants/Colors";
 import CommunityScreen from "../screens/Community";
+import CommunityThreadScreen from "../screens/CommunityThread";
 import ConflictResolutionScreen from "../screens/ConflictResolution";
 import PracticeScreen from "../screens/Practice";
-import { RootStackParamList, RootTabParamList } from "../types";
+import { RootStackParamList, TabParamList } from "../types";
 
 export default function Navigation() {
   return (
@@ -16,25 +18,48 @@ export default function Navigation() {
   );
 }
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const navigation = useNavigation();
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Root"
-        component={BottomTabNavigator}
+    <RootStack.Navigator>
+      <RootStack.Screen
+        name="Tabs"
+        component={Tabs}
         options={{ headerShown: false }}
       />
-    </Stack.Navigator>
+      <RootStack.Screen
+        name="CommunityThread"
+        component={CommunityThreadScreen}
+        options={{
+          title: "Thread",
+          headerLeft: () => (
+            <IconButton
+              onPress={navigation.goBack}
+              name="chevron-left"
+              size={30}
+              color={Colors.bluegreen}
+            />
+          ),
+          headerTintColor: Colors.bluegreen,
+          headerTitleStyle: {
+            fontFamily: "regular",
+            fontSize: 18,
+            color: Colors.darkgreen,
+          },
+        }}
+      />
+    </RootStack.Navigator>
   );
 }
 
-const BottomTab = createBottomTabNavigator<RootTabParamList>();
+const Tab = createBottomTabNavigator<TabParamList>();
 
-function BottomTabNavigator() {
+function Tabs() {
   return (
-    <BottomTab.Navigator
+    <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: Colors.orange,
         tabBarStyle: {
@@ -66,7 +91,7 @@ function BottomTabNavigator() {
         },
       }}
     >
-      <BottomTab.Screen
+      <Tab.Screen
         name="Community"
         component={CommunityScreen}
         options={{
@@ -79,7 +104,7 @@ function BottomTabNavigator() {
           },
         }}
       />
-      <BottomTab.Screen
+      <Tab.Screen
         name="ConflictResolution"
         component={ConflictResolutionScreen}
         options={{
@@ -87,13 +112,13 @@ function BottomTabNavigator() {
           headerTitle: "Resolution History",
         }}
       />
-      <BottomTab.Screen
+      <Tab.Screen
         name="Practice"
         component={PracticeScreen}
         options={{
           title: "Practice",
         }}
       />
-    </BottomTab.Navigator>
+    </Tab.Navigator>
   );
 }

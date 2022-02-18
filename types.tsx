@@ -12,20 +12,21 @@ declare global {
 }
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | undefined;
+  Tabs: NavigatorScreenParams<TabParamList> | undefined;
+  CommunityThread: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
-export type RootTabParamList = {
+export type TabParamList = {
   Community: undefined;
   ConflictResolution: undefined;
   Practice: undefined;
 };
 
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
+export type TabScreenProps<Screen extends keyof TabParamList> =
   CompositeScreenProps<
-    BottomTabScreenProps<RootTabParamList, Screen>,
+    BottomTabScreenProps<TabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;

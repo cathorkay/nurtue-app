@@ -1,11 +1,11 @@
 import { StyleSheet, View } from "react-native";
 
 import Colors from "../constants/Colors";
-import { RootTabScreenProps } from "../types";
+import { TabScreenProps } from "../types";
 
 export default function ConflictResolutionScreen({
   navigation,
-}: RootTabScreenProps<"ConflictResolution">) {
+}: TabScreenProps<"ConflictResolution">) {
   return <View style={styles.container}></View>;
 }
 

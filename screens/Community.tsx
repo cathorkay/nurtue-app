@@ -7,23 +7,28 @@ import PostCard from "../components/PostCard";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
-import { RootTabScreenProps } from "../types";
+import { TabScreenProps } from "../types";
 
-const CommunityScreen: React.FC<RootTabScreenProps<"Community">> = () => {
+const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
+  navigation,
+}) => {
   const tabBarHeight = useBottomTabBarHeight();
 
-  const renderPostCard = () => <PostCard style={styles.postCard} />;
+  const renderPostCard = () => (
+    <PostCard
+      style={styles.PostCard}
+      preview
+      onPress={() => navigation.push("CommunityThread")}
+    />
+  );
 
   return (
     <FlatList
-      style={[
-        styles.list,
-        {
-          marginBottom: -tabBarHeight,
-        },
-      ]}
+      style={styles.list}
       contentContainerStyle={{
-        paddingBottom: (tabBarHeight + 20) * 2,
+        paddingHorizontal: 20,
+        marginTop: 40,
+        paddingBottom: tabBarHeight + 60,
       }}
       data={[
         { id: "1" },
@@ -103,9 +108,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     backgroundColor: Colors.lightblue,
-    padding: 20,
+    marginTop: -20,
   },
-  postCard: {
+  PostCard: {
     marginTop: 12,
   },
 });

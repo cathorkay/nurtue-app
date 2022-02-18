@@ -8,4 +8,5 @@ export default {
   greengrey: "#687B7D",
   lightred: "#FF6954",
   red: "#EA421B",
+  blue: "#CDF1FF",
 };

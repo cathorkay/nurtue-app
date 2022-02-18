@@ -1,11 +1,11 @@
 import { StyleSheet, View } from "react-native";
 
 import Colors from "../constants/Colors";
-import { RootTabScreenProps } from "../types";
+import { TabScreenProps } from "../types";
 
 export default function PracticeScreen({
   navigation,
-}: RootTabScreenProps<"Practice">) {
+}: TabScreenProps<"Practice">) {
   return <View style={styles.container}></View>;
 }
 
