@@ -8,7 +8,8 @@ import {
 } from "react-native";
 
 import Colors from "../constants/Colors";
-import BlueView from "./BlueView";
+import BlueBorderView from "./BlueBorderView";
+import Chip from "./Chip";
 import Text from "./Text";
 
 export interface PostCardProps extends TouchableHighlightProps {
@@ -24,75 +25,78 @@ const PostCard: React.FC<PostCardProps> = ({
   topics,
   ...restProps
 }) => {
-  const Container = title ? BlueView : TouchableHighlight;
+  const view = (
+    <View>
+      {title && <Text style={styles.title}>{title}</Text>}
+      {topics && (
+        <View style={styles.topicContainer}>
+          {topics.map((topic) => (
+            <Chip key={topic}>#{topic}</Chip>
+          ))}
+        </View>
+      )}
+      <View style={styles.userRow}>
+        <View style={styles.avatar} />
+        <View style={styles.userInfo}>
+          <Text style={styles.username}>Robert</Text>
+          <Text style={styles.description}>
+            Father of 11 y/o boy, 13 y/o girl
+          </Text>
+        </View>
+        <Text style={styles.time}>10 min ago</Text>
+      </View>
+      <Text style={styles.content}>
+        My son is playing video games instead of completing his homework.
+      </Text>
+      <View style={styles.toolBar}>
+        <View style={styles.action}>
+          <ActionIconButton name="heart-outline" />
+          <Text style={styles.actionText}>47</Text>
+        </View>
+        <View style={styles.action}>
+          <ActionIconButton name="comment-outline" />
+          <Text style={styles.actionText}>47</Text>
+        </View>
+        <View style={styles.continueReading}>
+          {preview ? (
+            <>
+              <Text style={styles.actionText}>Continue Reading</Text>
+              <MaterialCommunityIcons
+                name="arrow-right"
+                color={Colors.greengrey}
+                size={15}
+              />
+            </>
+          ) : (
+            <MaterialCommunityIcons
+              name="dots-horizontal"
+              color={Colors.greengrey}
+              size={15}
+            />
+          )}
+        </View>
+      </View>
+    </View>
+  );
 
-  return (
-    <Container
+  return title ? (
+    <BlueBorderView
+      containerStyle={[styles.container, { padding: 0 }, style]}
+      {...restProps}
+    >
+      {view}
+    </BlueBorderView>
+  ) : (
+    <TouchableHighlight
       underlayColor="white"
       activeOpacity={0.5}
       style={[styles.container, style]}
       {...restProps}
     >
-      <View>
-        {title && <Text style={styles.title}>{title}</Text>}
-        {topics && (
-          <View style={styles.topicContainer}>
-            {topics.map((topic) => (
-              <TopicChip key={topic} topic={topic} />
-            ))}
-          </View>
-        )}
-        <View style={styles.userRow}>
-          <View style={styles.avatar} />
-          <View style={styles.userInfo}>
-            <Text style={styles.username}>Robert</Text>
-            <Text style={styles.description}>
-              Father of 11 y/o boy, 13 y/o girl
-            </Text>
-          </View>
-          <Text style={styles.time}>10 min ago</Text>
-        </View>
-        <Text style={styles.content}>
-          My son is playing video games instead of completing his homework.
-        </Text>
-        <View style={styles.toolBar}>
-          <View style={styles.action}>
-            <ActionIconButton name="heart-outline" />
-            <Text style={styles.actionText}>47</Text>
-          </View>
-          <View style={styles.action}>
-            <ActionIconButton name="comment-outline" />
-            <Text style={styles.actionText}>47</Text>
-          </View>
-          <View style={styles.continueReading}>
-            {preview ? (
-              <>
-                <Text style={styles.actionText}>Continue Reading</Text>
-                <MaterialCommunityIcons
-                  name="arrow-right"
-                  color={Colors.greengrey}
-                  size={15}
-                />
-              </>
-            ) : (
-              <MaterialCommunityIcons
-                name="dots-horizontal"
-                color={Colors.greengrey}
-                size={15}
-              />
-            )}
-          </View>
-        </View>
-      </View>
-    </Container>
+      {view}
+    </TouchableHighlight>
   );
 };
-
-const TopicChip = ({ topic }: { topic: string }) => (
-  <View style={styles.chipContainer}>
-    <Text style={styles.chipText}>#{topic}</Text>
-  </View>
-);
 
 const ActionIconButton = ({
   name,
@@ -172,18 +176,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginLeft: "auto",
-  },
-  chipContainer: {
-    borderRadius: 16,
-    backgroundColor: Colors.blue,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginRight: 8,
-    marginVertical: 4,
-  },
-  chipText: {
-    color: Colors.greengrey,
-    fontSize: 12,
   },
   iconButtonContainer: {
     backgroundColor: "rgba(255, 105, 84, 0.2)",

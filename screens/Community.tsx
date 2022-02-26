@@ -2,6 +2,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
+import FloatingActionButton from "../components/FloatingActionButton";
 import OrangeView from "../components/OrangeView";
 import PostCard from "../components/PostCard";
 import SearchBar from "../components/SearchBar";
@@ -14,6 +15,18 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
+  const handleSearchBarPress = () => {
+    navigation.navigate("Search");
+  };
+
+  const handleFilterPress = () => {
+    navigation.navigate("Filter");
+  };
+
+  const handleNewPostPress = () => {
+    navigation.navigate("NewPost");
+  };
+
   const renderPostCard = () => (
     <PostCard
       style={styles.PostCard}
@@ -23,46 +36,59 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   );
 
   return (
-    <FlatList
-      style={styles.list}
-      contentContainerStyle={{
-        paddingHorizontal: 20,
-        marginTop: 40,
-        paddingBottom: tabBarHeight + 60,
-      }}
-      data={[
-        { id: "1" },
-        { id: "2" },
-        { id: "3" },
-        { id: "4" },
-        { id: "5" },
-        { id: "6" },
-      ]}
-      ListHeaderComponent={
-        <View style={styles.listHeaderContainer}>
-          <Text style={styles.greeting}>Good Morning, Emily!</Text>
-          <View style={styles.affirmationShadow}>
-            <OrangeView>
-              <Text style={styles.affirmationText}>
-                Be the parent you needed when you were younger.
-              </Text>
-            </OrangeView>
-          </View>
-          <View style={styles.filterRow}>
-            <SearchBar style={styles.searchBar} />
-            <TouchableOpacity style={styles.filterButton} onPress={() => {}}>
-              <MaterialIcons
-                name="filter-list"
-                color={Colors.bluegreen}
-                size={32}
+    <>
+      <FlatList
+        style={styles.list}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          marginTop: 40,
+          paddingBottom: tabBarHeight + 60 + 70,
+        }}
+        data={[
+          { id: "1" },
+          { id: "2" },
+          { id: "3" },
+          { id: "4" },
+          { id: "5" },
+          { id: "6" },
+        ]}
+        ListHeaderComponent={
+          <View style={styles.listHeaderContainer}>
+            <Text style={styles.greeting}>Good Morning, Emily!</Text>
+            <View style={styles.affirmationShadow}>
+              <OrangeView>
+                <Text style={styles.affirmationText}>
+                  Be the parent you needed when you were younger.
+                </Text>
+              </OrangeView>
+            </View>
+            <View style={styles.filterRow}>
+              <SearchBar
+                style={styles.searchBar}
+                inputDisabled
+                onPress={handleSearchBarPress}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.filterButton}
+                onPress={handleFilterPress}
+              >
+                <MaterialIcons
+                  name="filter-list"
+                  color={Colors.bluegreen}
+                  size={32}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      }
-      renderItem={renderPostCard}
-      keyExtractor={(item) => item.id}
-    />
+        }
+        renderItem={renderPostCard}
+        keyExtractor={(item) => item.id}
+      />
+      <FloatingActionButton
+        style={{ position: "absolute", right: 15, bottom: 15 + tabBarHeight }}
+        onPress={handleNewPostPress}
+      />
+    </>
   );
 };
 

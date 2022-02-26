@@ -1,13 +1,17 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import IconButton from "../components/IconButton";
+import TextButton from "../components/TextButton";
 import Colors from "../constants/Colors";
 import CommunityScreen from "../screens/Community";
 import CommunityThreadScreen from "../screens/CommunityThread";
 import ConflictResolutionScreen from "../screens/ConflictResolution";
+import FilterScreen from "../screens/Filter";
+import NewPostScreen from "../screens/NewPost";
 import PracticeScreen from "../screens/Practice";
+import SearchScreen from "../screens/Search";
 import { RootStackParamList, TabParamList } from "../types";
 
 export default function Navigation() {
@@ -18,17 +22,93 @@ export default function Navigation() {
   );
 }
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
+const RootStack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const navigation = useNavigation();
 
   return (
-    <RootStack.Navigator>
+    <RootStack.Navigator
+      screenOptions={{
+        headerTintColor: Colors.bluegreen,
+        headerTitleStyle: {
+          fontFamily: "regular",
+          fontSize: 18,
+          color: Colors.darkgreen,
+        },
+        headerStyle: {
+          shadowColor: "rgba(190, 190, 190, 0.5)",
+          shadowRadius: 20,
+        },
+      }}
+    >
       <RootStack.Screen
         name="Tabs"
         component={Tabs}
         options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <RootStack.Screen
+        name="Filter"
+        component={FilterScreen}
+        options={{
+          title: "Filters",
+          presentation: "modal",
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 20,
+              }}
+              onPress={navigation.goBack}
+              name="close"
+              size={30}
+              color={Colors.bluegreen}
+            />
+          ),
+          headerRight: () => (
+            <TextButton
+              style={{
+                marginRight: 20,
+              }}
+              onPress={navigation.goBack}
+            >
+              Save
+            </TextButton>
+          ),
+        }}
+      />
+      <RootStack.Screen
+        name="NewPost"
+        component={NewPostScreen}
+        options={{
+          title: "New Post",
+          presentation: "modal",
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 20,
+              }}
+              onPress={navigation.goBack}
+              name="close"
+              size={30}
+              color={Colors.bluegreen}
+            />
+          ),
+          headerRight: () => (
+            <TextButton
+              style={{
+                marginRight: 20,
+              }}
+              onPress={navigation.goBack}
+            >
+              Post
+            </TextButton>
+          ),
+        }}
       />
       <RootStack.Screen
         name="CommunityThread"
@@ -37,18 +117,15 @@ function RootNavigator() {
           title: "Thread",
           headerLeft: () => (
             <IconButton
+              style={{
+                marginLeft: 10,
+              }}
               onPress={navigation.goBack}
               name="chevron-left"
               size={30}
               color={Colors.bluegreen}
             />
           ),
-          headerTintColor: Colors.bluegreen,
-          headerTitleStyle: {
-            fontFamily: "regular",
-            fontSize: 18,
-            color: Colors.darkgreen,
-          },
         }}
       />
     </RootStack.Navigator>
