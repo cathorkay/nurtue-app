@@ -14,9 +14,16 @@ declare global {
 export type RootStackParamList = {
   Tabs: NavigatorScreenParams<TabParamList> | undefined;
   CommunityThread: undefined;
-  Search: undefined;
+  Search: {
+    type: "posts" | "agreements";
+  };
   Filter: undefined;
   NewPost: undefined;
+  PracticePreview: {
+    topic: string;
+  };
+  PracticeQuestion: undefined;
+  AgreementDetail: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

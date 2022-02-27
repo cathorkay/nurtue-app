@@ -1,4 +1,5 @@
-import { StyleSheet, Switch, View } from "react-native";
+import { StyleSheet, Switch, View, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -23,12 +24,17 @@ const recommendedTopics = [
 const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
   navigation,
 }) => {
+  const insets = useSafeAreaInsets();
+
   const handleClose = () => {
     navigation.goBack();
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
+    >
       <Card>
         <Text>Title</Text>
         <TextInput style={styles.textInput} placeholder="Type here..." />
@@ -68,7 +74,7 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
         </Button>
         <Button style={styles.button}>Experts Only</Button>
       </Card>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -83,13 +89,12 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: "#e7f8ff",
-    padding: 10,
+    padding: 15,
     borderRadius: 10,
-    fontSize: 13,
     marginTop: 5,
   },
   multilineTextInput: {
-    height: 75,
+    height: 80,
   },
   chips: {
     marginTop: 10,

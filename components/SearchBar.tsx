@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   GestureResponderEvent,
   StyleSheet,
@@ -32,6 +32,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!inputDisabled) {
+      textInputRef.current?.focus();
+    }
+  }, [inputDisabled]);
+
   return (
     <TouchableOpacity
       style={style}
@@ -39,7 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       onPress={handlePress}
     >
       <View style={styles.container}>
-        <MaterialIcons name="search" color={Colors.bluegreen} size={16} />
+        <MaterialIcons name="search" color={Colors.bluegreen} size={20} />
         {inputDisabled ? (
           <Text style={styles.text}>Search</Text>
         ) : (
@@ -61,12 +67,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 83, 95, 0.1)",
     borderRadius: 100,
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   text: {
     fontFamily: "light",
-    fontSize: 14,
-    color: Colors.darkgreen,
+    color: Colors.bluegreen,
     marginLeft: 5,
   },
 });

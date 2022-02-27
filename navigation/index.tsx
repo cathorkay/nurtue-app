@@ -5,12 +5,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import IconButton from "../components/IconButton";
 import TextButton from "../components/TextButton";
 import Colors from "../constants/Colors";
+import FontSize from "../constants/FontSize";
+import AgreementDetailScreen from "../screens/AgreementDetail";
 import CommunityScreen from "../screens/Community";
 import CommunityThreadScreen from "../screens/CommunityThread";
 import ConflictResolutionScreen from "../screens/ConflictResolution";
 import FilterScreen from "../screens/Filter";
 import NewPostScreen from "../screens/NewPost";
 import PracticeScreen from "../screens/Practice";
+import PracticePreviewScreen from "../screens/PracticePreview";
+import PracticeQuestionScreen from "../screens/PracticeQuestion";
 import SearchScreen from "../screens/Search";
 import { RootStackParamList, TabParamList } from "../types";
 
@@ -24,6 +28,8 @@ export default function Navigation() {
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
+const iconSize = 30;
+
 function RootNavigator() {
   const navigation = useNavigation();
 
@@ -32,8 +38,8 @@ function RootNavigator() {
       screenOptions={{
         headerTintColor: Colors.bluegreen,
         headerTitleStyle: {
-          fontFamily: "regular",
-          fontSize: 18,
+          fontFamily: "medium",
+          fontSize: FontSize.emphasis,
           color: Colors.darkgreen,
         },
         headerStyle: {
@@ -65,7 +71,7 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="close"
-              size={30}
+              size={iconSize}
               color={Colors.bluegreen}
             />
           ),
@@ -94,7 +100,7 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="close"
-              size={30}
+              size={iconSize}
               color={Colors.bluegreen}
             />
           ),
@@ -122,7 +128,59 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="chevron-left"
-              size={30}
+              size={iconSize}
+              color={Colors.bluegreen}
+            />
+          ),
+        }}
+      />
+      <RootStack.Screen
+        name="PracticePreview"
+        component={PracticePreviewScreen}
+        options={({ route }) => ({
+          title: route.params.topic,
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 10,
+              }}
+              onPress={navigation.goBack}
+              name="chevron-left"
+              size={iconSize}
+              color={Colors.bluegreen}
+            />
+          ),
+        })}
+      />
+      <RootStack.Screen
+        name="PracticeQuestion"
+        component={PracticeQuestionScreen}
+        options={({ route }) => ({
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 10,
+              }}
+              name="close"
+              size={iconSize}
+              color={Colors.bluegreen}
+            />
+          ),
+        })}
+      />
+      <RootStack.Screen
+        name="AgreementDetail"
+        component={AgreementDetailScreen}
+        options={{
+          title: "Agreement",
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 10,
+              }}
+              onPress={navigation.goBack}
+              name="chevron-left"
+              size={iconSize}
               color={Colors.bluegreen}
             />
           ),
@@ -155,15 +213,15 @@ function Tabs() {
         },
         tabBarLabelStyle: {
           fontFamily: "semibold",
-          fontSize: 12,
+          fontSize: 13,
         },
         headerStyle: {
           shadowColor: "rgba(190, 190, 190, 0.5)",
           shadowRadius: 20,
         },
         headerTitleStyle: {
-          fontFamily: "regular",
-          fontSize: 18,
+          fontFamily: "medium",
+          fontSize: FontSize.emphasis,
           color: Colors.darkgreen,
         },
       }}
@@ -176,7 +234,7 @@ function Tabs() {
           headerTitle: "nurtue",
           headerTitleStyle: {
             fontFamily: "Hero Bold",
-            fontSize: 24,
+            fontSize: 28,
             color: Colors.green,
           },
         }}

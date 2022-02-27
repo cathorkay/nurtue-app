@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
 
 import Colors from "../constants/Colors";
+import FontSize from "../constants/FontSize";
 import BlueView from "./BlueView";
 import Text from "./Text";
 
@@ -33,8 +34,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     backgroundColor: Colors.blue,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     marginRight: 8,
     marginVertical: 4,
   },
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: Colors.greengrey,
-    fontSize: 12,
+    fontSize: FontSize.caption,
   },
 });
 

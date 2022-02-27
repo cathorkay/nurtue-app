@@ -1,6 +1,7 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 import Colors from "../constants/Colors";
+import FontSize from "../constants/FontSize";
 import Text from "./Text";
 
 export interface TextButtonProps extends React.ComponentProps<typeof Text> {
@@ -19,7 +20,8 @@ const TextButton: React.FC<TextButtonProps> = ({
 
 const styles = StyleSheet.create({
   text: {
-    color: Colors.darkgreen,
+    color: Colors.bluegreen,
+    fontSize: FontSize.emphasis,
   },
 });
 

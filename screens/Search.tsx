@@ -1,4 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import Chip from "../components/Chip";
 import SearchBar from "../components/SearchBar";
@@ -32,6 +37,7 @@ const trendingTopics = [
 
 const SearchScreen: React.FC<RootStackScreenProps<"Search">> = ({
   navigation,
+  route,
 }) => {
   const handleCancel = () => {
     navigation.goBack();
@@ -43,22 +49,28 @@ const SearchScreen: React.FC<RootStackScreenProps<"Search">> = ({
         <SearchBar style={styles.searchBar} />
         <TextButton onPress={handleCancel}>Cancel</TextButton>
       </View>
-      <View style={styles.sectionContainer}>
-        <Text>Recommended Topics</Text>
-        <View style={styles.chips}>
-          {recommendedTopics.map((topic) => (
-            <Chip key={topic}>#{topic}</Chip>
-          ))}
-        </View>
-      </View>
-      <View style={styles.sectionContainer}>
-        <Text>Trending Now</Text>
-        <View style={styles.chips}>
-          {trendingTopics.map((topic) => (
-            <Chip key={topic}>#{topic}</Chip>
-          ))}
-        </View>
-      </View>
+      {route.params.type === "posts" && (
+        <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={390}>
+          <ScrollView>
+            <View style={styles.sectionContainer}>
+              <Text>Recommended Topics</Text>
+              <View style={styles.chips}>
+                {recommendedTopics.map((topic) => (
+                  <Chip key={topic}>#{topic}</Chip>
+                ))}
+              </View>
+            </View>
+            <View style={styles.sectionContainer}>
+              <Text>Trending Now</Text>
+              <View style={styles.chips}>
+                {trendingTopics.map((topic) => (
+                  <Chip key={topic}>#{topic}</Chip>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      )}
     </View>
   );
 };
@@ -71,13 +83,14 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingBottom: 20,
   },
   searchBar: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 15,
   },
   sectionContainer: {
-    marginTop: 30,
+    marginTop: 10,
     padding: 10,
   },
   chips: {

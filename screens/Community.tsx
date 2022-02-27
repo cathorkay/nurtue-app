@@ -8,6 +8,7 @@ import PostCard from "../components/PostCard";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
+import FontSize from "../constants/FontSize";
 import { TabScreenProps } from "../types";
 
 const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
@@ -15,8 +16,17 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
+  const generateGreeting = () => {
+    const hour = new Date().getHours();
+    return hour < 11
+      ? "Good Morning"
+      : hour < 16
+      ? "Good Afternoon"
+      : "Good Evening";
+  };
+
   const handleSearchBarPress = () => {
-    navigation.navigate("Search");
+    navigation.navigate("Search", { type: "posts" });
   };
 
   const handleFilterPress = () => {
@@ -54,7 +64,9 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         ]}
         ListHeaderComponent={
           <View style={styles.listHeaderContainer}>
-            <Text style={styles.greeting}>Good Morning, Emily!</Text>
+            <Text
+              style={styles.greeting}
+            >{`${generateGreeting()}, Emily!`}</Text>
             <View style={styles.affirmationShadow}>
               <OrangeView>
                 <Text style={styles.affirmationText}>
@@ -100,7 +112,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: "medium",
     color: Colors.darkgreen,
-    fontSize: 24,
+    fontSize: FontSize.header,
   },
   affirmationShadow: {
     shadowColor: Colors.bluegreen,
@@ -114,7 +126,7 @@ const styles = StyleSheet.create({
   },
   affirmationText: {
     fontFamily: "semibold-italic",
-    fontSize: 18,
+    fontSize: FontSize.emphasis,
     color: "white",
   },
   filterRow: {

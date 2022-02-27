@@ -53,7 +53,7 @@ const CommunityThreadScreen: React.FC<
             multiline
             numberOfLines={5}
           />
-          <IconButton name="send" color={Colors.greengrey} size={20} />
+          <IconButton name="send" color={Colors.greengrey} size={24} />
         </View>
       </KeyboardAvoidingView>
     </>

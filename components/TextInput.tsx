@@ -5,6 +5,8 @@ import {
   StyleSheet,
 } from "react-native";
 
+import FontSize from "../constants/FontSize";
+
 const TextInput: React.FC<
   TextInputProps & { innerRef: React.ForwardedRef<RNTextInput> }
 > = ({ style, innerRef, ...restProps }) => {
@@ -16,6 +18,7 @@ const TextInput: React.FC<
 const styles = StyleSheet.create({
   text: {
     fontFamily: "regular",
+    fontSize: FontSize.normal,
   },
 });
 

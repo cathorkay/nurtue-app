@@ -1,11 +1,20 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View, ViewProps } from "react-native";
 
-const OrangeView: React.FC<ViewProps> = ({ children, ...restProps }) => {
+export interface OrangeViewProps extends ViewProps {
+  containerStyle?: ViewProps["style"];
+}
+
+const OrangeView: React.FC<OrangeViewProps> = ({
+  containerStyle,
+  style,
+  children,
+  ...restProps
+}) => {
   return (
-    <View {...restProps}>
+    <View style={containerStyle} {...restProps}>
       <LinearGradient
-        style={styles.container}
+        style={[styles.container, style]}
         start={[0, 0]}
         end={[1, 0]}
         colors={["#FF6954", "#F58D7F", "#FFA37B", "#FF6954"]}

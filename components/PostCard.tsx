@@ -8,6 +8,7 @@ import {
 } from "react-native";
 
 import Colors from "../constants/Colors";
+import FontSize from "../constants/FontSize";
 import BlueBorderView from "./BlueBorderView";
 import Chip from "./Chip";
 import Text from "./Text";
@@ -64,14 +65,14 @@ const PostCard: React.FC<PostCardProps> = ({
               <MaterialCommunityIcons
                 name="arrow-right"
                 color={Colors.greengrey}
-                size={15}
+                size={18}
               />
             </>
           ) : (
             <MaterialCommunityIcons
               name="dots-horizontal"
               color={Colors.greengrey}
-              size={15}
+              size={18}
             />
           )}
         </View>
@@ -106,7 +107,7 @@ const ActionIconButton = ({
     style={styles.iconButtonContainer}
     onPress={() => {}}
   >
-    <MaterialCommunityIcons name={name} color={Colors.red} size={15} />
+    <MaterialCommunityIcons name={name} color={Colors.red} size={18} />
   </TouchableOpacity>
 );
 
@@ -125,41 +126,37 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: "semibold",
-    fontSize: 14,
+    fontSize: FontSize.emphasis,
   },
   userRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   avatar: {
-    borderRadius: 20,
-    width: 40,
-    height: 40,
+    borderRadius: 25,
+    width: 50,
+    height: 50,
     backgroundColor: Colors.darkgreen,
   },
   userInfo: {
     marginHorizontal: 12,
   },
-  username: {
-    fontSize: 14,
-  },
+  username: {},
   description: {
-    marginTop: 5,
-    fontSize: 12,
+    marginTop: 2,
+    fontSize: FontSize.caption,
     color: Colors.greengrey,
   },
   time: {
     marginLeft: "auto",
-    fontSize: 12,
+    fontSize: FontSize.caption,
     color: Colors.greengrey,
     alignSelf: "flex-start",
   },
   content: {
-    fontSize: 13,
-    marginTop: 10,
+    marginVertical: 15,
   },
   toolBar: {
-    marginTop: 10,
     flexDirection: "row",
   },
   action: {
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     marginRight: 8,
-    fontSize: 12,
+    fontSize: FontSize.caption,
     color: Colors.greengrey,
   },
   continueReading: {
@@ -179,9 +176,9 @@ const styles = StyleSheet.create({
   },
   iconButtonContainer: {
     backgroundColor: "rgba(255, 105, 84, 0.2)",
-    width: 27,
-    height: 27,
-    borderRadius: 13.5,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,

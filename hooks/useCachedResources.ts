@@ -1,6 +1,7 @@
 import {
   Poppins_300Light,
   Poppins_400Regular,
+  Poppins_400Regular_Italic,
   Poppins_500Medium,
   Poppins_600SemiBold,
   Poppins_600SemiBold_Italic,
@@ -22,6 +23,7 @@ export default function useCachedResources() {
           medium: Poppins_500Medium,
           semibold: Poppins_600SemiBold,
           light: Poppins_300Light,
+          italic: Poppins_400Regular_Italic,
           "semibold-italic": Poppins_600SemiBold_Italic,
           "Hero Bold": require("../assets/fonts/Hero-Bold.ttf"),
         });
