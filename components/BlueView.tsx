@@ -1,30 +1,40 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { View, ViewProps } from "react-native";
+import { StyleSheet, View, ViewProps } from "react-native";
 
 export interface BlueViewProps extends ViewProps {
-  containerStyle?: ViewProps["style"];
-  orange?: boolean;
+  ringWidth?: number;
+  borderRadius?: number;
 }
 
 const BlueView: React.FC<BlueViewProps> = ({
-  containerStyle,
+  borderRadius,
   style,
   children,
-  orange,
+  ringWidth,
   ...restProps
 }) => {
   return (
-    <View style={containerStyle} {...restProps}>
+    <View style={[styles.container, { borderRadius }, style]} {...restProps}>
       <LinearGradient
-        style={[{ justifyContent: "center" }, style]}
+        style={{
+          paddingVertical: ringWidth ?? 3,
+          paddingHorizontal: (ringWidth ?? 3) / 4,
+        }}
         start={[0, 0]}
-        end={[1, 0]}
-        colors={orange ? ["#FF6954", "#FFA37B"] : ["#61D3D1", "#5EC1E8"]}
+        end={[1, 1]}
+        colors={["#61D3D1", "#5EC1E8"]}
       >
-        {children}
+        <View style={[{ borderRadius }]}>{children}</View>
       </LinearGradient>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white",
+    overflow: "hidden",
+  },
+});
 
 export default BlueView;

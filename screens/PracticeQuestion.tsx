@@ -9,7 +9,7 @@ import IconButton from "../components/IconButton";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import { RootStackScreenProps } from "../types";
+import { RootStackScreenProps } from "../types/navigation";
 
 export default function PracticeQuestionScreen({
   navigation,

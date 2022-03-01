@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native";
 
 import Chip from "../components/Chip";
 import Text from "../components/Text";
-import { RootStackScreenProps } from "../types";
+import { RootStackScreenProps } from "../types/navigation";
 
 const FilterScreen: React.FC<RootStackScreenProps<"Filter">> = ({
   navigation,

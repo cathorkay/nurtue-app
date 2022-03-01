@@ -4,6 +4,7 @@ import {
   GestureResponderEvent,
   StyleSheet,
   TextInput as RNTextInput,
+  TextInputProps,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
@@ -14,11 +15,15 @@ import Text from "./Text";
 import TextInput from "./TextInput";
 
 export interface SearchBarProps extends TouchableOpacityProps {
+  value?: string;
+  onChangeText?: TextInputProps["onChangeText"];
   inputDisabled?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   inputDisabled,
+  value,
+  onChangeText,
   style,
   onPress,
 }) => {
@@ -54,6 +59,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
             style={styles.text}
             placeholderTextColor={Colors.greengrey}
             placeholder="Search"
+            clearButtonMode="while-editing"
+            keyboardType="web-search"
+            value={value}
+            onChangeText={onChangeText}
           />
         )}
       </View>
@@ -67,13 +76,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 83, 95, 0.1)",
     borderRadius: 100,
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 15,
   },
   text: {
     fontFamily: "light",
     color: Colors.bluegreen,
     marginLeft: 5,
+    flex: 1,
   },
 });
 

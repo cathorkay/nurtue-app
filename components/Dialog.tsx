@@ -23,9 +23,9 @@ const Dialog: React.FC<DialogProps> = ({
       {...restProps}
       backdropColor="white"
       animationIn="zoomIn"
-      animationOut="zoomOut"
+      animationOut="fadeOut"
     >
-      <Card>
+      <Card shadow>
         <Text style={styles.title}>{title}</Text>
         <Divider
           style={[

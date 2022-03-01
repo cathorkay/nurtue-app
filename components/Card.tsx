@@ -2,10 +2,17 @@ import { StyleSheet, View, ViewProps } from "react-native";
 
 import Colors from "../constants/Colors";
 
-export interface CardProps extends ViewProps {}
+export interface CardProps extends ViewProps {
+  noShadow?: boolean;
+}
 
-const Card: React.FC<ViewProps> = ({ style, ...restProps }) => {
-  return <View style={[styles.container, style]} {...restProps} />;
+const Card: React.FC<CardProps> = ({ style, noShadow, ...restProps }) => {
+  return (
+    <View
+      style={[styles.container, !noShadow && styles.shadow, style]}
+      {...restProps}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -13,6 +20,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     padding: 15,
+  },
+  shadow: {
     shadowColor: Colors.bluegreen,
     shadowOpacity: 0.2,
     shadowOffset: {

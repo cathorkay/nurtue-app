@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
 import {
+  Image,
   StyleSheet,
-  TouchableHighlight,
   TouchableHighlightProps,
   TouchableOpacity,
   View,
@@ -9,105 +10,181 @@ import {
 
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import BlueBorderView from "./BlueBorderView";
+import { Post, Reply } from "../types/state";
+import BlueRingView from "./BlueRingView";
 import Chip from "./Chip";
+import MockPhoto from "./MockPhoto";
 import Text from "./Text";
+import Touchable from "./Touchable";
 
 export interface PostCardProps extends TouchableHighlightProps {
   preview?: boolean;
-  title?: string;
-  topics?: string[];
+  post: Post | Reply;
+  liked?: boolean;
+  onLike?: () => void;
+  onReply?: () => void;
+  onMore?: () => void;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
   style,
   preview,
-  title,
-  topics,
+  post,
+  liked,
+  onLike,
+  onReply,
+  onMore,
   ...restProps
 }) => {
   const view = (
     <View>
-      {title && <Text style={styles.title}>{title}</Text>}
-      {topics && (
-        <View style={styles.topicContainer}>
-          {topics.map((topic) => (
-            <Chip key={topic}>#{topic}</Chip>
-          ))}
-        </View>
+      {!preview && (post as Post).title && (
+        <>
+          {(post as Post).expertsOnly && (
+            <View style={styles.expertsOnlyContainer}>
+              <MaterialCommunityIcons
+                name="alert-decagram"
+                size={18}
+                color={Colors.green}
+              />
+              <Text style={styles.expertsOnlyText}>Expert Answers Only</Text>
+            </View>
+          )}
+          <Text style={styles.title}>{(post as Post).title}</Text>
+          {(post as Post).topics.length !== 0 && (
+            <View style={styles.topicContainer}>
+              {(post as Post).topics.map((topic) => (
+                <Chip style={styles.topic} key={topic} plain>
+                  #{topic}
+                </Chip>
+              ))}
+            </View>
+          )}
+        </>
       )}
       <View style={styles.userRow}>
-        <View style={styles.avatar} />
+        <MockPhoto
+          style={styles.avatar}
+          name={(post as Post).anonymous ? "default" : post.author.photo}
+        />
         <View style={styles.userInfo}>
-          <Text style={styles.username}>Robert</Text>
-          <Text style={styles.description}>
-            Father of 11 y/o boy, 13 y/o girl
-          </Text>
+          <View style={styles.username}>
+            <Text>
+              {(post as Post).anonymous ? "Anonymous" : post.author.name}
+            </Text>
+            {post.author.expert && (
+              <MaterialCommunityIcons
+                style={styles.expertBadge}
+                name="check-decagram"
+                size={18}
+                color={Colors.green}
+              />
+            )}
+          </View>
+          <Text style={styles.description}>{post.author.description}</Text>
         </View>
-        <Text style={styles.time}>10 min ago</Text>
+        <Text style={styles.time}>{dayjs(post.createdAt).fromNow()}</Text>
       </View>
       <Text style={styles.content}>
-        My son is playing video games instead of completing his homework.
+        {preview ? (post as Post).title : post.content}
       </Text>
+      {(post as Post).image &&
+        ((post as Post).image!.startsWith("file://") ? (
+          <Image
+            style={styles.image}
+            resizeMode="cover"
+            source={{ uri: (post as Post).image! }}
+          />
+        ) : (
+          <MockPhoto
+            style={styles.image}
+            resizeMode="cover"
+            name="sleeping-baby"
+          />
+        ))}
       <View style={styles.toolBar}>
         <View style={styles.action}>
-          <ActionIconButton name="heart-outline" />
-          <Text style={styles.actionText}>47</Text>
-        </View>
-        <View style={styles.action}>
-          <ActionIconButton name="comment-outline" />
-          <Text style={styles.actionText}>47</Text>
-        </View>
-        <View style={styles.continueReading}>
-          {preview ? (
-            <>
-              <Text style={styles.actionText}>Continue Reading</Text>
-              <MaterialCommunityIcons
-                name="arrow-right"
-                color={Colors.greengrey}
-                size={18}
-              />
-            </>
+          {onLike ? (
+            <ActionIconButton
+              selected={liked}
+              name="heart-outline"
+              onPress={onLike}
+            />
           ) : (
             <MaterialCommunityIcons
-              name="dots-horizontal"
+              name="heart-outline"
               color={Colors.greengrey}
               size={18}
             />
+          )}
+          <Text style={styles.actionText}>{post.likeCount}</Text>
+        </View>
+        {(post as Post).title !== undefined && (
+          <View style={styles.action}>
+            {onReply ? (
+              <ActionIconButton
+                selected={false}
+                name="comment-outline"
+                onPress={onReply}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="comment-outline"
+                color={Colors.greengrey}
+                size={18}
+              />
+            )}
+            <Text style={styles.actionText}>
+              {(post as Post).replies.length}
+            </Text>
+          </View>
+        )}
+        <View style={styles.moreContainer}>
+          {!preview && (
+            <TouchableOpacity activeOpacity={0.5} onPress={onMore}>
+              <MaterialCommunityIcons
+                name="dots-horizontal"
+                color={Colors.greengrey}
+                size={18}
+              />
+            </TouchableOpacity>
           )}
         </View>
       </View>
     </View>
   );
 
-  return title ? (
-    <BlueBorderView
-      containerStyle={[styles.container, { padding: 0 }, style]}
-      {...restProps}
-    >
-      {view}
-    </BlueBorderView>
+  return !preview && (post as Post).title ? (
+    <BlueRingView style={{ borderRadius: 20 }} borderRadius={16} ringWidth={5}>
+      <View style={styles.blueRingView}>{view}</View>
+    </BlueRingView>
   ) : (
-    <TouchableHighlight
-      underlayColor="white"
-      activeOpacity={0.5}
-      style={[styles.container, style]}
-      {...restProps}
-    >
+    <Touchable style={[styles.container, style]} {...restProps}>
       {view}
-    </TouchableHighlight>
+    </Touchable>
   );
 };
 
 const ActionIconButton = ({
+  selected,
   name,
-}: React.ComponentProps<typeof MaterialCommunityIcons>) => (
+  onPress,
+}: React.ComponentProps<typeof MaterialCommunityIcons> & {
+  selected?: boolean;
+}) => (
   <TouchableOpacity
     activeOpacity={0.5}
-    style={styles.iconButtonContainer}
-    onPress={() => {}}
+    style={[
+      styles.iconButtonContainer,
+      selected && { backgroundColor: Colors.red },
+    ]}
+    onPress={onPress}
   >
-    <MaterialCommunityIcons name={name} color={Colors.red} size={18} />
+    <MaterialCommunityIcons
+      name={name}
+      color={selected ? "white" : Colors.red}
+      size={18}
+    />
   </TouchableOpacity>
 );
 
@@ -124,9 +201,13 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 30,
   },
+  blueRingView: {
+    padding: 15,
+  },
   title: {
     fontFamily: "semibold",
     fontSize: FontSize.emphasis,
+    marginBottom: 6,
   },
   userRow: {
     flexDirection: "row",
@@ -140,8 +221,8 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     marginHorizontal: 12,
+    paddingRight: 40,
   },
-  username: {},
   description: {
     marginTop: 2,
     fontSize: FontSize.caption,
@@ -152,9 +233,11 @@ const styles = StyleSheet.create({
     fontSize: FontSize.caption,
     color: Colors.greengrey,
     alignSelf: "flex-start",
+    marginTop: 3,
   },
   content: {
-    marginVertical: 15,
+    marginVertical: 8,
+    lineHeight: 26,
   },
   toolBar: {
     flexDirection: "row",
@@ -165,11 +248,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   actionText: {
-    marginRight: 8,
+    marginLeft: 4,
+    marginRight: 10,
     fontSize: FontSize.caption,
     color: Colors.greengrey,
+    width: 20,
   },
-  continueReading: {
+  moreContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: "auto",
@@ -181,12 +266,40 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
+    marginRight: 2,
   },
   topicContainer: {
     flexDirection: "row",
-    marginTop: 6,
+    marginTop: 0,
+    marginBottom: 10,
+  },
+  topic: {
+    marginRight: 4,
+    marginBottom: 2,
+  },
+  username: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  expertBadge: {
+    marginLeft: 5,
+  },
+  image: {
+    width: "100%",
+    height: 100,
+    borderRadius: 10,
     marginBottom: 12,
+  },
+  expertsOnlyContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  expertsOnlyText: {
+    fontSize: FontSize.caption,
+    fontFamily: "italic",
+    marginLeft: 5,
+    color: Colors.greengrey,
   },
 });
 

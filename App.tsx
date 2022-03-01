@@ -1,9 +1,17 @@
+import "react-native-get-random-values";
 import "react-native-gesture-handler";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
+import { persistor, store } from "./data/store";
 import useCachedResources from "./hooks/useCachedResources";
 import Navigation from "./navigation";
+
+dayjs.extend(relativeTime);
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -12,10 +20,14 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <Navigation />
-        <StatusBar style="dark" />
-      </SafeAreaProvider>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <SafeAreaProvider>
+            <Navigation />
+            <StatusBar style="dark" />
+          </SafeAreaProvider>
+        </PersistGate>
+      </Provider>
     );
   }
 }

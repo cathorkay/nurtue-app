@@ -10,7 +10,7 @@ import PracticeDialog from "../components/PracticeDialog";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import { TabScreenProps } from "../types";
+import { TabScreenProps } from "../types/navigation";
 
 export default function PracticeScreen({
   navigation,

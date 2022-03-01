@@ -8,7 +8,7 @@ import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import { TabScreenProps } from "../types";
+import { TabScreenProps } from "../types/navigation";
 
 const agreements = [
   {
@@ -30,7 +30,9 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
     navigation.navigate("Search", { type: "agreements" });
   };
 
-  const handleNewAgreementPress = () => {};
+  const handleNewAgreementPress = () => {
+    navigation.navigate("AgreementStack");
+  };
 
   const handleAgreementPress = () => {
     navigation.navigate("AgreementDetail");
@@ -86,6 +88,7 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
         keyExtractor={(item) => item}
       />
       <FloatingActionButton
+        name="plus"
         style={{ position: "absolute", right: 15, bottom: 15 + tabBarHeight }}
         onPress={handleNewAgreementPress}
       />

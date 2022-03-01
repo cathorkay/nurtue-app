@@ -1,32 +1,50 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useLayoutEffect } from "react";
+import {
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
+import BlueRingView from "../components/BlueRingView";
 import FloatingActionButton from "../components/FloatingActionButton";
-import OrangeView from "../components/OrangeView";
+import MockPhoto from "../components/MockPhoto";
+import OrangeRingView from "../components/OrangeRingView";
 import PostCard from "../components/PostCard";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
+import Touchable from "../components/Touchable";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import { TabScreenProps } from "../types";
+import { useAppSelector } from "../data/store";
+import { TabScreenProps } from "../types/navigation";
+import { Post } from "../types/state";
+
+const generateGreeting = () => {
+  const hour = new Date().getHours();
+  return hour < 11
+    ? "Good Morning"
+    : hour < 16
+    ? "Good Afternoon"
+    : "Good Evening";
+};
 
 const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
-  const generateGreeting = () => {
-    const hour = new Date().getHours();
-    return hour < 11
-      ? "Good Morning"
-      : hour < 16
-      ? "Good Afternoon"
-      : "Good Evening";
-  };
+  const user = useAppSelector((state) => state.profileState.profile.user);
+  const posts = useAppSelector((state) => state.postState.posts);
 
   const handleSearchBarPress = () => {
-    navigation.navigate("Search", { type: "posts" });
+    navigation.navigate("SearchStack", {
+      screen: "Search",
+      params: { type: "posts" },
+    } as any);
   };
 
   const handleFilterPress = () => {
@@ -37,13 +55,39 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     navigation.navigate("NewPost");
   };
 
-  const renderPostCard = () => (
+  const handleProfilePress = () => {
+    navigation.navigate("ProfileStack");
+  };
+
+  const renderPostCard: ListRenderItem<Post> = ({ item }) => (
     <PostCard
-      style={styles.PostCard}
+      style={styles.postCard}
       preview
-      onPress={() => navigation.push("CommunityThread")}
+      post={item}
+      onPress={() => navigation.push("CommunityThread", { postId: item.id })}
     />
   );
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Touchable onPress={handleProfilePress}>
+          <BlueRingView
+            style={styles.avatarContainer}
+            borderRadius={20}
+            ringWidth={1.5}
+          >
+            <MockPhoto
+              name="dad"
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+              width={32}
+              height={32}
+            />
+          </BlueRingView>
+        </Touchable>
+      ),
+    });
+  }, []);
 
   return (
     <>
@@ -52,27 +96,20 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         contentContainerStyle={{
           paddingHorizontal: 20,
           marginTop: 40,
-          paddingBottom: tabBarHeight + 60 + 70,
+          paddingBottom: tabBarHeight + 60 + 60,
         }}
-        data={[
-          { id: "1" },
-          { id: "2" },
-          { id: "3" },
-          { id: "4" },
-          { id: "5" },
-          { id: "6" },
-        ]}
+        data={posts}
         ListHeaderComponent={
           <View style={styles.listHeaderContainer}>
-            <Text
-              style={styles.greeting}
-            >{`${generateGreeting()}, Emily!`}</Text>
+            <Text style={styles.greeting}>{`${generateGreeting()}, ${
+              user.name
+            }!`}</Text>
             <View style={styles.affirmationShadow}>
-              <OrangeView>
+              <OrangeRingView borderRadius={20}>
                 <Text style={styles.affirmationText}>
                   Be the parent you needed when you were younger.
                 </Text>
-              </OrangeView>
+              </OrangeRingView>
             </View>
             <View style={styles.filterRow}>
               <SearchBar
@@ -98,6 +135,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
       />
       <FloatingActionButton
         style={{ position: "absolute", right: 15, bottom: 15 + tabBarHeight }}
+        name="plus"
         onPress={handleNewPostPress}
       />
     </>
@@ -128,12 +166,14 @@ const styles = StyleSheet.create({
     fontFamily: "semibold-italic",
     fontSize: FontSize.emphasis,
     color: "white",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   filterRow: {
-    marginTop: 20,
+    marginTop: 15,
+    marginBottom: 6,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 15,
   },
   searchBar: {
     marginRight: 10,
@@ -148,8 +188,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightblue,
     marginTop: -20,
   },
-  PostCard: {
-    marginTop: 12,
+  postCard: {
+    marginBottom: 15,
+  },
+  avatarContainer: {
+    marginRight: 10,
   },
 });
 

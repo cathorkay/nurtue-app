@@ -1,38 +1,190 @@
-import { FlatList, KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useLayoutEffect, useRef, useState } from "react";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  ListRenderItem,
+  StyleSheet,
+  TextInput as RNTextInput,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { v4 as uuid } from "uuid";
 
+import BlueButton from "../components/BlueButton";
+import Dialog from "../components/Dialog";
 import IconButton from "../components/IconButton";
+import OrangeButton from "../components/OrangeButton";
 import PostCard from "../components/PostCard";
 import TextInput from "../components/TextInput";
 import Colors from "../constants/Colors";
-import { RootStackScreenProps } from "../types";
+import {
+  addReply,
+  deletePost,
+  deleteReply,
+  likePost,
+  likeReply,
+} from "../data/post";
+import { useAppDispatch, useAppSelector } from "../data/store";
+import { RootStackScreenProps } from "../types/navigation";
+import { Post, Reply } from "../types/state";
 
 const CommunityThreadScreen: React.FC<
   RootStackScreenProps<"CommunityThread">
-> = () => {
-  const insets = useSafeAreaInsets();
+> = ({ route }) => {
+  const postId = route.params.postId;
 
-  const renderPostCard = () => (
-    <PostCard style={styles.postCard} preview={false} />
+  const listViewRef = useRef<FlatList>(null);
+  const inputRef = useRef<RNTextInput>(null);
+
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
+  const post = useAppSelector((state) =>
+    state.postState.posts.find((p) => p.id === postId)
+  )!;
+  const user = useAppSelector((state) => state.profileState.profile.user);
+
+  const [currentActionPost, setCurrentActionPost] = useState<
+    Post | Reply | null
+  >(null);
+  const [actionMenuVisible, setActionMenuVisible] = useState(false);
+  const [postReported, setPostReported] = useState(false);
+  const [replyText, setReplyText] = useState("");
+
+  const handleMorePress = (post: Post | Reply) => {
+    setCurrentActionPost(post);
+    setActionMenuVisible(true);
+  };
+
+  const handleMoreClose = () => {
+    setActionMenuVisible(false);
+  };
+
+  const handleModalHide = () => {
+    setCurrentActionPost(null);
+    setPostReported(false);
+  };
+
+  const handleReport = () => {
+    if (!postReported) {
+      setPostReported(true);
+    }
+  };
+
+  const handleLikePost = () => {
+    dispatch(
+      likePost({
+        postId,
+        userId: user.id,
+      })
+    );
+  };
+
+  const handleDeletePost = (postId: string) => {
+    handleMoreClose();
+    setTimeout(() => {
+      navigation.goBack();
+      setTimeout(() => {
+        dispatch(
+          deletePost({
+            postId,
+          })
+        );
+      }, 1000);
+    }, 500);
+  };
+
+  const handleLikeReply = (replyId: string) => {
+    dispatch(
+      likeReply({
+        postId,
+        replyId,
+        userId: user.id,
+      })
+    );
+  };
+
+  const handleAddReply = () => {
+    dispatch(
+      addReply({
+        postId,
+        reply: {
+          id: uuid(),
+          author: {
+            ...user,
+          },
+          content: replyText,
+          likeCount: 0,
+          likers: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      })
+    );
+    setReplyText("");
+    setTimeout(() => listViewRef.current?.scrollToEnd(), 500);
+  };
+
+  const handleDeleteReply = (replyId: string) => {
+    dispatch(
+      deleteReply({
+        postId,
+        replyId,
+      })
+    );
+    handleMoreClose();
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton
+          style={{
+            marginLeft: 10,
+          }}
+          name="chevron-left"
+          size={30}
+          color={Colors.bluegreen}
+          onPress={navigation.goBack}
+        />
+      ),
+    });
+  }, []);
+
+  const renderPostCard: ListRenderItem<Reply> = ({ item }) => (
+    <PostCard
+      style={styles.postCard}
+      preview={false}
+      post={item}
+      liked={item.likers.includes(user.id)}
+      onLike={() => handleLikeReply(item.id)}
+      onMore={() => handleMorePress(item)}
+    />
   );
 
   return (
     <>
       <FlatList
+        ref={listViewRef}
         style={styles.list}
         contentContainerStyle={{
           marginTop: -20,
-          paddingBottom: 10 + insets.bottom * 2 + 40,
+          paddingBottom: 20 + insets.bottom * 2 + 40,
         }}
-        data={[{ id: "1" }, { id: "2" }, { id: "3" }]}
+        data={post.replies}
         ListHeaderComponent={
           <PostCard
-            title="My son is playing video games instead of completing his homework."
-            topics={["discipline", "screentime"]}
+            post={post}
+            liked={post.likers.includes(user.id)}
+            onLike={handleLikePost}
+            onReply={() => inputRef.current?.focus()}
+            onMore={() => handleMorePress(post)}
           />
         }
         renderItem={renderPostCard}
         keyExtractor={(item) => item.id}
+        onScrollBeginDrag={() => inputRef.current?.blur()}
       />
       <KeyboardAvoidingView
         behavior="position"
@@ -47,15 +199,54 @@ const CommunityThreadScreen: React.FC<
           ]}
         >
           <TextInput
+            ref={inputRef}
             style={styles.textInput}
             placeholder="Add a reply..."
             placeholderTextColor={Colors.greengrey}
             multiline
             numberOfLines={5}
+            value={replyText}
+            onChangeText={setReplyText}
           />
-          <IconButton name="send" color={Colors.greengrey} size={24} />
+          <OrangeButton
+            disabled={!replyText}
+            textStyle={styles.postButton}
+            onPress={handleAddReply}
+          >
+            Post
+          </OrangeButton>
         </View>
       </KeyboardAvoidingView>
+      <Dialog
+        isVisible={actionMenuVisible}
+        type="success"
+        title="Actions"
+        onBackdropPress={handleMoreClose}
+        onModalHide={handleModalHide}
+      >
+        {currentActionPost?.author.name === user.name ? (
+          <BlueButton
+            textStyle={styles.actionButtonText}
+            style={styles.actionButton}
+            onPress={() =>
+              (currentActionPost as Post).title
+                ? handleDeletePost(currentActionPost.id)
+                : handleDeleteReply(currentActionPost.id)
+            }
+          >
+            Delete
+          </BlueButton>
+        ) : (
+          <BlueButton
+            textStyle={styles.actionButtonText}
+            style={styles.actionButton}
+            selected={postReported}
+            onPress={handleReport}
+          >
+            {postReported ? "Reported!" : "Report"}
+          </BlueButton>
+        )}
+      </Dialog>
     </>
   );
 };
@@ -68,7 +259,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   postCard: {
-    marginTop: 12,
+    marginTop: 15,
   },
   inputArea: {
     flex: 1,
@@ -87,6 +278,14 @@ const styles = StyleSheet.create({
     marginRight: 20,
     maxHeight: 100,
   },
+  postButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+  },
+  actionButton: {
+    marginVertical: 5,
+  },
+  actionButtonText: {},
 });
 
 export default CommunityThreadScreen;

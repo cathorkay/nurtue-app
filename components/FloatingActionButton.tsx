@@ -1,26 +1,33 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, ViewProps, TouchableOpacity } from "react-native";
+import { ComponentProps } from "react";
+import { StyleSheet, View, ViewProps } from "react-native";
 
 import Colors from "../constants/Colors";
+import OrangeRadialBackground from "./OrangeRadialBackground";
+import Touchable from "./Touchable";
 
 export interface FloatingActionButtonProps extends ViewProps {
+  name: ComponentProps<typeof MaterialCommunityIcons>["name"];
   onPress?: () => void;
 }
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   style,
+  name,
   onPress,
   ...restProps
 }) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.6}
+    <Touchable
       style={[styles.container, style]}
       onPress={onPress}
       {...restProps}
     >
-      <MaterialCommunityIcons name="plus" color="white" size={54} />
-    </TouchableOpacity>
+      <View style={styles.view}>
+        <OrangeRadialBackground style={{ position: "absolute" }} size={66} />
+        <MaterialCommunityIcons name={name} color="white" size={54} />
+      </View>
+    </Touchable>
   );
 };
 
@@ -30,7 +37,6 @@ const styles = StyleSheet.create({
     width: 66,
     height: 66,
     borderRadius: 33,
-    backgroundColor: Colors.orange,
     shadowColor: Colors.bluegreen,
     shadowOpacity: 0.2,
     shadowOffset: {
@@ -38,6 +44,12 @@ const styles = StyleSheet.create({
       height: 4,
     },
     shadowRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  view: {
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },

@@ -1,76 +1,114 @@
+import Fuse from "fuse.js";
+import { useEffect, useState } from "react";
 import {
+  FlatList,
   KeyboardAvoidingView,
+  ListRenderItem,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
 
 import Chip from "../components/Chip";
+import IconButton from "../components/IconButton";
+import PostCard from "../components/PostCard";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
-import TextButton from "../components/TextButton";
-import { RootStackScreenProps } from "../types";
+import Colors from "../constants/Colors";
+import mock from "../data/mock";
+import { useAppSelector } from "../data/store";
+import { SearchStackScreenProps } from "../types/navigation";
+import { Post } from "../types/state";
 
-const recommendedTopics = [
-  "tantrum",
-  "pickeating",
-  "preschool",
-  "health",
-  "boundary",
-  "toy",
-  "discipline",
-  "bigfeeling",
-  "bedtime",
-];
+const postFuseOptions: Fuse.IFuseOptions<Post> = {
+  keys: ["title", "content", "topics", "replies.content"],
+};
 
-const trendingTopics = [
-  "learning",
-  "pandemic",
-  "screentime",
-  "anxiety",
-  "family",
-  "sleep",
-  "patience",
-  "sharing",
-  "divorce",
-];
-
-const SearchScreen: React.FC<RootStackScreenProps<"Search">> = ({
+const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
   navigation,
   route,
 }) => {
+  const posts = useAppSelector((state) => state.postState.posts);
+
+  const [query, setQuery] = useState("");
+  const [postResults, setPostResults] = useState<Post[]>([]);
+
   const handleCancel = () => {
     navigation.goBack();
   };
 
+  const handleChipPress = (query: string) => {
+    setQuery(query);
+  };
+
+  useEffect(() => {
+    if (query) {
+      const fuse = new Fuse(posts, postFuseOptions);
+      setPostResults(fuse.search(query).map((i) => i.item));
+    }
+  }, [posts, query]);
+
+  const renderPostCard: ListRenderItem<Post> = ({ item }) => (
+    <PostCard
+      style={styles.postCard}
+      preview
+      post={item}
+      onPress={() => navigation.push("CommunityThread", { postId: item.id })}
+    />
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.searchBarContainer}>
-        <SearchBar style={styles.searchBar} />
-        <TextButton onPress={handleCancel}>Cancel</TextButton>
+        <IconButton
+          name="close"
+          size={30}
+          color={Colors.bluegreen}
+          onPress={handleCancel}
+        />
+        <SearchBar
+          style={styles.searchBar}
+          value={query}
+          onChangeText={setQuery}
+        />
       </View>
-      {route.params.type === "posts" && (
+      {!query && route.params.type === "posts" && (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={390}>
           <ScrollView>
             <View style={styles.sectionContainer}>
               <Text>Recommended Topics</Text>
               <View style={styles.chips}>
-                {recommendedTopics.map((topic) => (
-                  <Chip key={topic}>#{topic}</Chip>
+                {mock.recommendedTopics.map((topic) => (
+                  <Chip key={topic} onPress={() => setQuery(topic)}>
+                    #{topic}
+                  </Chip>
                 ))}
               </View>
             </View>
             <View style={styles.sectionContainer}>
               <Text>Trending Now</Text>
               <View style={styles.chips}>
-                {trendingTopics.map((topic) => (
-                  <Chip key={topic}>#{topic}</Chip>
+                {mock.trendingTopics.map((topic) => (
+                  <Chip key={topic} onPress={() => setQuery(topic)}>
+                    #{topic}
+                  </Chip>
                 ))}
               </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
       )}
+      {query ? (
+        <FlatList
+          style={styles.list}
+          contentContainerStyle={{
+            marginTop: -20,
+          }}
+          data={postResults}
+          renderItem={renderPostCard}
+          keyExtractor={(item) => item.id}
+        />
+      ) : null}
     </View>
   );
 };
@@ -78,16 +116,17 @@ const SearchScreen: React.FC<RootStackScreenProps<"Search">> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    backgroundColor: Colors.lightblue,
   },
   searchBarContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingBottom: 20,
+    marginVertical: 15,
   },
   searchBar: {
     flex: 1,
-    marginRight: 15,
+    marginLeft: 15,
   },
   sectionContainer: {
     marginTop: 10,
@@ -97,6 +136,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  postCard: {
+    marginBottom: 15,
+  },
+  list: {
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    marginHorizontal: -20,
   },
 });
 
