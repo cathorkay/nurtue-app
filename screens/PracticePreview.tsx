@@ -1,9 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import BlueBorderView from "../components/BlueBorderView";
-import OrangeView from "../components/OrangeView";
+import BlueButton from "../components/BlueButton";
+import BlueRingView from "../components/BlueRingView";
+import CircularProgress from "../components/CircularProgress";
+import OrangeButton from "../components/OrangeButton";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
@@ -13,23 +15,35 @@ export default function PracticePreviewScreen({
   navigation,
   route,
 }: RootStackScreenProps<"PracticePreview">) {
+  const topic = route.params.topic;
+
   const insets = useSafeAreaInsets();
 
   const handleStartPress = () => {
-    navigation.navigate("PracticeQuestion");
+    navigation.navigate("PracticeQuestion", {
+      topic,
+    });
   };
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 60 }]}>
-      <BlueBorderView>
-        <Text style={styles.title}>Discipline</Text>
-        <Text style={styles.content}>
-          Discipline, rather than punishment, allows us to validate our kids'
-          feelings, set clear expectations, and teach them how to make healthy
-          decisions on their own.
-        </Text>
-        <Text style={styles.source}>Source: Verywell Family</Text>
-      </BlueBorderView>
+      <BlueRingView borderRadius={20} ringWidth={4}>
+        <View style={styles.innerContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Discipline</Text>
+            <CircularProgress
+              progress={90}
+              backgroundColor={Colors.greengrey}
+            />
+          </View>
+          <Text style={styles.content}>
+            Discipline, rather than punishment, allows us to validate our kids'
+            feelings, set clear expectations, and teach them how to make healthy
+            decisions on their own.
+          </Text>
+          <Text style={styles.source}>Source: Verywell Family</Text>
+        </View>
+      </BlueRingView>
       <View style={styles.info}>
         <View style={styles.infoRow}>
           <View style={styles.infoIcon}>
@@ -46,23 +60,24 @@ export default function PracticePreviewScreen({
           <Text style={{ flex: 1 }}>min estimate</Text>
         </View>
       </View>
-      <TouchableOpacity
-        style={{ marginTop: "auto" }}
-        activeOpacity={0.6}
-        onPress={handleStartPress}
-      >
-        <OrangeView>
-          <Text
-            style={{
-              fontFamily: "semibold",
-              color: "white",
-              textAlign: "center",
-            }}
-          >
-            Start Practice
-          </Text>
-        </OrangeView>
-      </TouchableOpacity>
+      <View style={styles.buttons}>
+        <OrangeButton
+          style={styles.button}
+          textContainerStyle={styles.buttonTextContainer}
+          ring
+          shadow
+          onPress={handleStartPress}
+        >
+          Resume Practice
+        </OrangeButton>
+        <BlueButton
+          shadow
+          style={styles.button}
+          textContainerStyle={styles.buttonTextContainer}
+        >
+          View Questions
+        </BlueButton>
+      </View>
     </View>
   );
 }
@@ -72,6 +87,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.lightblue,
     padding: 20,
+  },
+  innerContainer: {
+    padding: 20,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: {
     fontFamily: "semibold",
@@ -85,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.caption,
   },
   info: {
-    marginTop: 30,
+    marginTop: 20,
     paddingHorizontal: 20,
   },
   infoRow: {
@@ -104,7 +127,16 @@ const styles = StyleSheet.create({
   infoNumber: {
     color: Colors.orange,
     fontSize: FontSize.title,
-    marginLeft: 20,
-    width: 45,
+    marginLeft: 12,
+    width: 40,
+  },
+  buttons: {
+    marginTop: "auto",
+  },
+  button: {
+    marginTop: 15,
+  },
+  buttonTextContainer: {
+    height: 54,
   },
 });

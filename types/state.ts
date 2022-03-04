@@ -1,19 +1,42 @@
-export interface User {
+export interface Child {
   id: string;
   name: string;
-  description: string;
+  gender: "boy" | "girl" | "other";
   photo: string | null;
-  expert: boolean;
+  birthday: Date | string;
 }
+export interface Parent {
+  id: string;
+  name: string;
+  photo: string | null;
+  expert: false;
+  gender: "female" | "male" | "other";
+  children: Child[];
+}
+export interface Expert {
+  id: string;
+  name: string;
+  photo: string | null;
+  expert: true;
+  description: string;
+}
+export type User = Parent | Expert;
 export interface Profile {
-  user: User;
+  user: Parent;
   role: string;
+  spouse: {
+    id: string;
+    name: string;
+    photo: string | null;
+    role: string;
+  };
 }
 
 export interface Reply {
   id: string;
   author: User;
   content: string;
+  image: string | null;
   likeCount: number;
   likers: string[];
   createdAt: Date | string;

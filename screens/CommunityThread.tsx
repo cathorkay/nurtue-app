@@ -1,7 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 import { useLayoutEffect, useRef, useState } from "react";
 import {
   FlatList,
+  Image,
   KeyboardAvoidingView,
   ListRenderItem,
   StyleSheet,
@@ -51,6 +53,7 @@ const CommunityThreadScreen: React.FC<
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
   const [postReported, setPostReported] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
   const handleMorePress = (post: Post | Reply) => {
     setCurrentActionPost(post);
@@ -105,6 +108,25 @@ const CommunityThreadScreen: React.FC<
     );
   };
 
+  const handleImagePick = async () => {
+    if (image) {
+      setImage(null);
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setImage(null);
+  };
+
   const handleAddReply = () => {
     dispatch(
       addReply({
@@ -115,6 +137,7 @@ const CommunityThreadScreen: React.FC<
             ...user,
           },
           content: replyText,
+          image,
           likeCount: 0,
           likers: [],
           createdAt: new Date().toISOString(),
@@ -122,6 +145,7 @@ const CommunityThreadScreen: React.FC<
         },
       })
     );
+    setImage(null);
     setReplyText("");
     setTimeout(() => listViewRef.current?.scrollToEnd(), 500);
   };
@@ -150,7 +174,7 @@ const CommunityThreadScreen: React.FC<
         />
       ),
     });
-  }, []);
+  }, [navigation]);
 
   const renderPostCard: ListRenderItem<Reply> = ({ item }) => (
     <PostCard
@@ -198,6 +222,27 @@ const CommunityThreadScreen: React.FC<
             },
           ]}
         >
+          {image ? (
+            <View>
+              <Image source={{ uri: image }} style={styles.image} />
+              <View style={styles.imageDeleteButtonContainer}>
+                <IconButton
+                  style={styles.imageDeleteButton}
+                  name="close"
+                  size={12}
+                  color="white"
+                  onPress={handleImageDelete}
+                />
+              </View>
+            </View>
+          ) : (
+            <IconButton
+              name="image-plus"
+              size={28}
+              color={Colors.greengrey}
+              onPress={handleImagePick}
+            />
+          )}
           <TextInput
             ref={inputRef}
             style={styles.textInput}
@@ -210,7 +255,7 @@ const CommunityThreadScreen: React.FC<
           />
           <OrangeButton
             disabled={!replyText}
-            textStyle={styles.postButton}
+            textContainerStyle={styles.postButton}
             onPress={handleAddReply}
           >
             Post
@@ -275,17 +320,36 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginRight: 20,
+    marginHorizontal: 20,
     maxHeight: 100,
   },
   postButton: {
     paddingHorizontal: 16,
-    paddingVertical: 2,
+    minHeight: 32,
   },
   actionButton: {
-    marginVertical: 5,
+    marginVertical: 3,
   },
-  actionButtonText: {},
+  actionButtonText: {
+    paddingVertical: 8,
+  },
+  image: {
+    height: 28,
+    width: 28,
+    borderRadius: 6,
+  },
+  imageDeleteButton: {},
+  imageDeleteButtonContainer: {
+    position: "absolute",
+    right: -5,
+    top: -5,
+    backgroundColor: Colors.grey,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default CommunityThreadScreen;

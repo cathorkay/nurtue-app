@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useLayoutEffect } from "react";
+import dayjs from "dayjs";
+import { useCallback, useLayoutEffect, useMemo } from "react";
 import {
   FlatList,
   ListRenderItem,
@@ -19,6 +20,7 @@ import Text from "../components/Text";
 import Touchable from "../components/Touchable";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
+import { Filters } from "../data/post";
 import { useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Post } from "../types/state";
@@ -32,13 +34,75 @@ const generateGreeting = () => {
     : "Good Evening";
 };
 
+const emptyFilters = (filters: Filters) => {
+  return (
+    filters.minAge === 0 &&
+    filters.maxAge === 216 &&
+    filters.childGender === null &&
+    filters.authorRole === null &&
+    filters.familyDynamic === null
+  );
+};
+
 const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
   const user = useAppSelector((state) => state.profileState.profile.user);
-  const posts = useAppSelector((state) => state.postState.posts);
+  const originalPosts = useAppSelector((state) => state.postState.posts);
+  const filters = useAppSelector((state) => state.postState.filters);
+
+  const filteredPosts = useMemo(() => {
+    let posts = originalPosts;
+    posts = posts.filter((p) => {
+      if (p.author.expert) {
+        return false;
+      }
+      return p.author.children.some((c) => {
+        const months = dayjs().diff(c.birthday, "month");
+        return months >= filters.minAge && months <= filters.maxAge;
+      });
+    });
+    if (filters.childGender) {
+      posts = posts.filter((p) => {
+        if (p.author.expert) {
+          return false;
+        }
+        return p.author.children.some((c) => {
+          if (c.gender === "boy") {
+            return filters.childGender === "Male";
+          } else if (c.gender === "girl") {
+            return filters.childGender === "Female";
+          }
+          return false;
+        });
+      });
+    }
+    if (filters.authorRole) {
+      posts = posts.filter((p) => {
+        if (p.author.expert && filters.authorRole === "Certified Expert") {
+          return true;
+        } else if (p.author.expert) {
+          return false;
+        }
+        if (filters.authorRole === "Father" && p.author.gender === "male") {
+          return true;
+        }
+        if (filters.authorRole === "Mother" && p.author.gender === "female") {
+          return true;
+        }
+        return false;
+      });
+    }
+    return posts;
+  }, [
+    filters.authorRole,
+    filters.childGender,
+    filters.maxAge,
+    filters.minAge,
+    originalPosts,
+  ]);
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -55,9 +119,9 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     navigation.navigate("NewPost");
   };
 
-  const handleProfilePress = () => {
+  const handleProfilePress = useCallback(() => {
     navigation.navigate("ProfileStack");
-  };
+  }, [navigation]);
 
   const renderPostCard: ListRenderItem<Post> = ({ item }) => (
     <PostCard
@@ -87,7 +151,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         </Touchable>
       ),
     });
-  }, []);
+  }, [handleProfilePress, navigation]);
 
   return (
     <>
@@ -95,10 +159,15 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         style={styles.list}
         contentContainerStyle={{
           paddingHorizontal: 20,
-          marginTop: 40,
-          paddingBottom: tabBarHeight + 60 + 60,
+          marginTop: 35,
+          paddingBottom: tabBarHeight + 60 + 55,
         }}
-        data={posts}
+        data={filteredPosts}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            {emptyFilters(filters) ? "No post yet" : "No post found"}
+          </Text>
+        }
         ListHeaderComponent={
           <View style={styles.listHeaderContainer}>
             <Text style={styles.greeting}>{`${generateGreeting()}, ${
@@ -118,13 +187,20 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
                 onPress={handleSearchBarPress}
               />
               <TouchableOpacity
-                style={styles.filterButton}
+                style={[
+                  styles.filterButton,
+                  {
+                    backgroundColor: emptyFilters(filters)
+                      ? "transparent"
+                      : Colors.orange,
+                  },
+                ]}
                 onPress={handleFilterPress}
               >
                 <MaterialIcons
                   name="filter-list"
-                  color={Colors.bluegreen}
-                  size={32}
+                  color={emptyFilters(filters) ? Colors.bluegreen : "white"}
+                  size={emptyFilters(filters) ? 32 : 26}
                 />
               </TouchableOpacity>
             </View>
@@ -146,6 +222,11 @@ const styles = StyleSheet.create({
   listHeaderContainer: {
     flex: 1,
     marginBottom: 10,
+  },
+  emptyText: {
+    marginVertical: 40,
+    fontFamily: "italic",
+    textAlign: "center",
   },
   greeting: {
     fontFamily: "medium",
@@ -182,6 +263,9 @@ const styles = StyleSheet.create({
   filterButton: {
     justifyContent: "center",
     alignItems: "center",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   list: {
     flex: 1,

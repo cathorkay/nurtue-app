@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import BlueBorderView from "../components/BlueBorderView";
-import Button from "../components/Button";
+import BlueButton from "../components/BlueButton";
+import BlueRingView from "../components/BlueRingView";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import IconButton from "../components/IconButton";
 import Text from "../components/Text";
@@ -46,29 +46,51 @@ export default function PracticeQuestionScreen({
         />
       ),
     });
-  }, []);
+  }, [navigation]);
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 60 }]}>
-      <BlueBorderView>
-        <Text style={styles.question}>
-          Your kids are fighting over a toy. What should you say?
-        </Text>
-        <Text style={styles.source}>Source: Verywell Family</Text>
-      </BlueBorderView>
+      <BlueRingView borderRadius={20} ringWidth={4}>
+        <View style={styles.innerContainer}>
+          <Text style={styles.question}>
+            Your kids are fighting over a toy. What should you say?
+          </Text>
+          <Text style={styles.source}>Source: Verywell Family</Text>
+        </View>
+      </BlueRingView>
       <View style={styles.buttons}>
-        <Button style={styles.button}>
+        <BlueButton
+          shadow
+          style={styles.button}
+          textStyle={styles.buttonText}
+          textContainerStyle={styles.buttonTextContainer}
+        >
           “If you don't stop fighting right now, no one gets the toy!”
-        </Button>
-        <Button style={styles.button}>
+        </BlueButton>
+        <BlueButton
+          shadow
+          style={styles.button}
+          textStyle={styles.buttonText}
+          textContainerStyle={styles.buttonTextContainer}
+        >
           “If you don't stop fighting right now, no one gets the toy!”
-        </Button>
-        <Button style={styles.button}>
+        </BlueButton>
+        <BlueButton
+          shadow
+          style={styles.button}
+          textStyle={styles.buttonText}
+          textContainerStyle={styles.buttonTextContainer}
+        >
           “If you don't stop fighting right now, no one gets the toy!”
-        </Button>
-        <Button style={styles.button}>
+        </BlueButton>
+        <BlueButton
+          shadow
+          style={styles.button}
+          textStyle={styles.buttonText}
+          textContainerStyle={styles.buttonTextContainer}
+        >
           “If you don't stop fighting right now, no one gets the toy!”
-        </Button>
+        </BlueButton>
       </View>
       <ConfirmationDialog
         isVisible={confirmationVisible}
@@ -87,6 +109,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightblue,
     padding: 20,
   },
+  innerContainer: {
+    padding: 20,
+  },
   question: {
     fontFamily: "semibold",
     fontSize: FontSize.header,
@@ -102,6 +127,11 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 10,
-    shadowOpacity: 0,
+  },
+  buttonText: {
+    fontSize: FontSize.caption,
+  },
+  buttonTextContainer: {
+    minHeight: 56,
   },
 });

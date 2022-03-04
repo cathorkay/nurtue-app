@@ -4,6 +4,8 @@ import Colors from "../constants/Colors";
 
 const photos = {
   dad: require("../assets/images/dad.jpg"),
+  mom: require("../assets/images/mom.jpg"),
+  kid: require("../assets/images/kid.jpg"),
   "sleeping-baby": require("../assets/images/sleeping-baby.jpg"),
   monica: require("../assets/images/monica.jpg"),
   daniel: require("../assets/images/daniel.jpg"),
@@ -15,7 +17,7 @@ const photos = {
   default: require("../assets/images/default.png"),
 };
 
-const DadPhoto: React.FC<
+const MockPhoto: React.FC<
   Omit<ImageProps, "source"> & { name?: string | null }
 > = ({ style, name, ...props }) => {
   return (
@@ -27,4 +29,4 @@ const DadPhoto: React.FC<
   );
 };
 
-export default DadPhoto;
+export default MockPhoto;

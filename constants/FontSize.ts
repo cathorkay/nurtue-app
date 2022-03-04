@@ -1,7 +1,7 @@
 export default {
-  title: 30,
-  header: 24,
-  emphasis: 20,
-  normal: 17,
+  title: 27,
+  header: 21,
+  emphasis: 17,
+  normal: 16,
   caption: 14,
 };

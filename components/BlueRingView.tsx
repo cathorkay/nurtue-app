@@ -21,7 +21,14 @@ const BlueRingView: React.FC<BlueRingViewProps> = ({
         end={[1, 1]}
         colors={["#5EC1E8", "#9AEAEF", "#5EC1E8"]}
       >
-        <View style={[styles.innerContainer, { borderRadius }]}>
+        <View
+          style={[
+            styles.innerContainer,
+            borderRadius
+              ? { borderRadius: (borderRadius * 17) / 20 }
+              : undefined,
+          ]}
+        >
           {children}
         </View>
       </LinearGradient>

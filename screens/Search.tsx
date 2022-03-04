@@ -37,10 +37,6 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
     navigation.goBack();
   };
 
-  const handleChipPress = (query: string) => {
-    setQuery(query);
-  };
-
   useEffect(() => {
     if (query) {
       const fuse = new Fuse(posts, postFuseOptions);
@@ -58,7 +54,12 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
   );
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: query ? Colors.lightblue : "white" },
+      ]}
+    >
       <View style={styles.searchBarContainer}>
         <IconButton
           name="close"
@@ -76,20 +77,28 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={390}>
           <ScrollView>
             <View style={styles.sectionContainer}>
-              <Text>Recommended Topics</Text>
+              <Text style={styles.bold}>Recommended Topics</Text>
               <View style={styles.chips}>
                 {mock.recommendedTopics.map((topic) => (
-                  <Chip key={topic} onPress={() => setQuery(topic)}>
+                  <Chip
+                    style={styles.chip}
+                    key={topic}
+                    onPress={() => setQuery(topic)}
+                  >
                     #{topic}
                   </Chip>
                 ))}
               </View>
             </View>
             <View style={styles.sectionContainer}>
-              <Text>Trending Now</Text>
+              <Text style={styles.bold}>Trending Now</Text>
               <View style={styles.chips}>
                 {mock.trendingTopics.map((topic) => (
-                  <Chip key={topic} onPress={() => setQuery(topic)}>
+                  <Chip
+                    style={styles.chip}
+                    key={topic}
+                    onPress={() => setQuery(topic)}
+                  >
                     #{topic}
                   </Chip>
                 ))}
@@ -117,7 +126,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: Colors.lightblue,
+  },
+  bold: {
+    fontFamily: "semibold",
   },
   searchBarContainer: {
     flexDirection: "row",
@@ -136,6 +147,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  chip: {
+    marginBottom: 6,
+    marginRight: 4,
   },
   postCard: {
     marginBottom: 15,

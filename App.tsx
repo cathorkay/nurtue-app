@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { persistor, store } from "./data/store";
-import useCachedResources from "./hooks/useCachedResources";
+import useCachedResources from "./lib/useCachedResources";
 import Navigation from "./navigation";
 
 dayjs.extend(relativeTime);

@@ -2,11 +2,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { AnimatedCircularProgress } from "react-native-circular-progress";
 
-import BlueBorderView from "../components/BlueBorderView";
-import Button from "../components/Button";
+import BlueButton from "../components/BlueButton";
+import BlueRingView from "../components/BlueRingView";
+import CircularProgress from "../components/CircularProgress";
 import PracticeDialog from "../components/PracticeDialog";
+import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
@@ -16,6 +17,13 @@ export default function PracticeScreen({
   navigation,
 }: TabScreenProps<"Practice">) {
   const tabBarHeight = useBottomTabBarHeight();
+
+  const handleSearchBarPress = () => {
+    navigation.navigate("SearchStack", {
+      screen: "Search",
+      params: { type: "agreements" },
+    } as any);
+  };
 
   const handlePracticePress = () => {
     navigation.navigate("PracticePreview", { topic: "Discipline" });
@@ -29,28 +37,7 @@ export default function PracticeScreen({
         end={[1, 1]}
         colors={["#82E4FA", "#CDF1FF"]}
       >
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <AnimatedCircularProgress
-            size={65}
-            width={8}
-            backgroundWidth={4}
-            fill={30}
-            tintColor="#FFA37B"
-            tintColorSecondary="#FF6954"
-            backgroundColor="white"
-            rotation={180}
-            lineCap="round"
-          />
-          <View
-            style={{
-              position: "absolute",
-              flexDirection: "row",
-            }}
-          >
-            <Text style={{ fontFamily: "semibold" }}>30</Text>
-            <Text style={{ fontSize: FontSize.caption, marginTop: 2 }}>%</Text>
-          </View>
-        </View>
+        <CircularProgress progress={30} />
         <Text style={styles.listItemText}>Discipline</Text>
         <MaterialCommunityIcons
           name="arrow-right"
@@ -67,40 +54,55 @@ export default function PracticeScreen({
         style={styles.container}
         contentContainerStyle={{
           marginTop: 25,
-          paddingBottom: tabBarHeight + 70,
+          paddingBottom: tabBarHeight + 65,
         }}
         data={[{ id: "1" }, { id: "2" }]}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
-            <BlueBorderView>
-              <Text style={styles.questionTitle}>Question of the Day</Text>
-              <View style={styles.divider} />
-              <Text style={styles.questionText}>
-                Your child is crying after getting a shot at the doctor's
-                office. What should you say?
-              </Text>
-              <Button style={styles.questionButton}>
-                “This is nothing. When I was a kid, I had surgery!”
-              </Button>
-              <Button style={styles.questionButton}>
-                “This is nothing. When I was a kid, I had surgery!”
-              </Button>
-              <Button selected style={styles.questionButton}>
-                “This is nothing. When I was a kid, I had surgery!”
-              </Button>
-              <Button style={styles.questionButton}>
-                “This is nothing. When I was a kid, I had surgery!”
-              </Button>
-              <Text style={styles.questionSource}>
-                Source: Curious Parenting
-              </Text>
-            </BlueBorderView>
-            <View style={styles.segments}>
-              <Segment selected text="All" />
-              <Segment text="Practicing" />
-              <Segment text="Completed" />
-            </View>
+            <BlueRingView borderRadius={20} ringWidth={4}>
+              <View style={styles.innerContainer}>
+                <Text style={styles.questionTitle}>Question of the Day</Text>
+                <View style={styles.divider} />
+                <Text style={styles.questionText}>
+                  Your child is crying after getting a shot at the doctor's
+                  office. What should you say?
+                </Text>
+                <BlueButton
+                  style={styles.questionButton}
+                  textStyle={styles.questionButtonText}
+                >
+                  “This is nothing. When I was a kid, I had surgery!”
+                </BlueButton>
+                <BlueButton
+                  style={styles.questionButton}
+                  textStyle={styles.questionButtonText}
+                >
+                  “This is nothing”
+                </BlueButton>
+                <BlueButton
+                  selected
+                  style={styles.questionButton}
+                  textStyle={styles.questionButtonText}
+                >
+                  “This is nothing”
+                </BlueButton>
+                <BlueButton
+                  style={styles.questionButton}
+                  textStyle={styles.questionButtonText}
+                >
+                  “This is nothing”
+                </BlueButton>
+                <Text style={styles.questionSource}>
+                  Source: Curious Parenting
+                </Text>
+              </View>
+            </BlueRingView>
+            <SearchBar
+              style={styles.searchBar}
+              inputDisabled
+              onPress={handleSearchBarPress}
+            />
           </>
         }
         renderItem={renderPracticeListItem}
@@ -157,6 +159,9 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: -25,
   },
+  innerContainer: {
+    padding: 15,
+  },
   questionTitle: {
     fontFamily: "semibold",
     fontSize: FontSize.header,
@@ -169,20 +174,23 @@ const styles = StyleSheet.create({
     borderRadius: 1.5,
     backgroundColor: Colors.lightgreen,
     alignSelf: "center",
-    marginVertical: 15,
+    marginVertical: 10,
   },
   questionText: {
     fontFamily: "semibold",
     fontSize: FontSize.emphasis,
+    marginVertical: 5,
   },
   questionButton: {
-    marginTop: 20,
-    shadowOpacity: 0,
+    marginTop: 10,
+  },
+  questionButtonText: {
+    fontSize: FontSize.caption,
   },
   questionSource: {
     fontFamily: "italic",
     fontSize: FontSize.caption,
-    marginTop: 20,
+    marginTop: 15,
   },
   segmentText: {
     fontFamily: "semibold",
@@ -199,6 +207,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 25,
     marginBottom: 5,
+  },
+  searchBar: {
+    marginTop: 15,
+    marginBottom: 0,
   },
   listItem: {
     flexDirection: "row",

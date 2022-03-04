@@ -1,24 +1,19 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+import BlueButton from "../components/BlueButton";
 import BlueRadiusBackground from "../components/BlueRadiusBackground";
-import Button from "../components/Button";
-import Card from "../components/Card";
 import FloatingActionButton from "../components/FloatingActionButton";
-import IconButton from "../components/IconButton";
 import ProgressBar from "../components/ProgressBar";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import TimerBackground from "../components/TimerBackground";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import {
-  AgreementStackScreenProps,
-  RootStackScreenProps,
-} from "../types/navigation";
+import { AgreementStackScreenProps } from "../types/navigation";
 
 const steps = [
   {
@@ -182,9 +177,7 @@ const NewAgreementScreen: React.FC<
             <View>
               <Text>Congratulations!</Text>
               {/* <Image /> */}
-              <Text></Text>
-              <Button>asd</Button>
-              <Button>Finish</Button>
+              <BlueButton>Finish</BlueButton>
             </View>
           )}
           {currentStep >= 1 && currentStep <= 4 && (
@@ -234,9 +227,9 @@ const NewAgreementScreen: React.FC<
         <View style={styles.lowerContainer}>
           {currentStep === 0 && (
             <>
-              <Button style={styles.personButton}>Brandon</Button>
-              <Button style={styles.personButton}>James</Button>
-              <Button style={styles.personButton}>Christina</Button>
+              <BlueButton style={styles.personButton}>Brandon</BlueButton>
+              <BlueButton style={styles.personButton}>James</BlueButton>
+              <BlueButton style={styles.personButton}>Christina</BlueButton>
             </>
           )}
           {currentStep === 6 && (

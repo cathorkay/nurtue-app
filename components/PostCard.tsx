@@ -10,6 +10,7 @@ import {
 
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
+import { getChildrenDescription } from "../lib/format";
 import { Post, Reply } from "../types/state";
 import BlueRingView from "./BlueRingView";
 import Chip from "./Chip";
@@ -81,7 +82,11 @@ const PostCard: React.FC<PostCardProps> = ({
               />
             )}
           </View>
-          <Text style={styles.description}>{post.author.description}</Text>
+          <Text style={styles.description}>
+            {post.author.expert
+              ? post.author.description
+              : getChildrenDescription(post.author)}
+          </Text>
         </View>
         <Text style={styles.time}>{dayjs(post.createdAt).fromNow()}</Text>
       </View>
@@ -155,7 +160,7 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 
   return !preview && (post as Post).title ? (
-    <BlueRingView style={{ borderRadius: 20 }} borderRadius={16} ringWidth={5}>
+    <BlueRingView borderRadius={20} ringWidth={4}>
       <View style={styles.blueRingView}>{view}</View>
     </BlueRingView>
   ) : (
@@ -233,11 +238,11 @@ const styles = StyleSheet.create({
     fontSize: FontSize.caption,
     color: Colors.greengrey,
     alignSelf: "flex-start",
-    marginTop: 3,
+    marginTop: 3.5,
   },
   content: {
     marginVertical: 8,
-    lineHeight: 26,
+    lineHeight: 23,
   },
   toolBar: {
     flexDirection: "row",

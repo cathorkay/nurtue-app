@@ -1,11 +1,12 @@
 import {
   StyleSheet,
   TextProps,
-  TouchableHighlight,
   TouchableHighlightProps,
+  View,
+  ViewProps,
 } from "react-native";
 
-import FontSize from "../constants/FontSize";
+import Colors from "../constants/Colors";
 import OrangeRingView from "./OrangeRingView";
 import OrangeView from "./OrangeView";
 import Text from "./Text";
@@ -13,18 +14,22 @@ import Touchable from "./Touchable";
 
 export interface OrangeButtonProps extends TouchableHighlightProps {
   ring?: boolean;
+  textContainerStyle?: ViewProps["style"];
   textStyle?: TextProps["style"];
   borderRadius?: number;
   disabled?: boolean;
+  shadow?: boolean;
 }
 
 const OrangeButton: React.FC<OrangeButtonProps> = ({
   style,
+  textContainerStyle,
   textStyle,
   children,
   ring,
   borderRadius,
   disabled,
+  shadow,
   onPress,
 }) => {
   const radius = borderRadius ?? 40;
@@ -35,6 +40,7 @@ const OrangeButton: React.FC<OrangeButtonProps> = ({
         {
           borderRadius: radius,
         },
+        shadow && styles.shadow,
         style,
         disabled && {
           opacity: 0.4,
@@ -45,13 +51,15 @@ const OrangeButton: React.FC<OrangeButtonProps> = ({
     >
       {ring ? (
         <OrangeRingView borderRadius={radius}>
-          <Text style={[styles.text, textStyle]}>{children}</Text>
+          <View style={[styles.textContainer, textContainerStyle]}>
+            <Text style={[styles.text, textStyle]}>{children}</Text>
+          </View>
         </OrangeRingView>
       ) : (
         <OrangeView borderRadius={radius}>
-          <Text style={[styles.text, { padding: 14 + 4 }, textStyle]}>
-            {children}
-          </Text>
+          <View style={[styles.textContainer, textContainerStyle]}>
+            <Text style={[styles.text, textStyle]}>{children}</Text>
+          </View>
         </OrangeView>
       )}
     </Touchable>
@@ -59,12 +67,25 @@ const OrangeButton: React.FC<OrangeButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
+  textContainer: {
+    justifyContent: "center",
+    minHeight: 54,
+    paddingHorizontal: 20,
+    paddingVertical: 4,
+  },
   text: {
-    padding: 15,
-    fontFamily: "medium",
     textAlign: "center",
-    fontSize: FontSize.emphasis,
     color: "white",
+    fontFamily: "semibold",
+  },
+  shadow: {
+    shadowColor: Colors.bluegreen,
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 15,
   },
 });
 

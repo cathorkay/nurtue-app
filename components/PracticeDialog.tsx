@@ -1,7 +1,8 @@
 import { StyleSheet } from "react-native";
 
-import Button from "./Button";
+import BlueButton from "./BlueButton";
 import Dialog, { DialogProps } from "./Dialog";
+import OrangeButton from "./OrangeButton";
 import Text from "./Text";
 
 export type PracticeDialogProps = Omit<
@@ -28,9 +29,13 @@ const PracticeDialog: React.FC<PracticeDialogProps> = ({
     >
       <Text style={styles.primary}>{primaryText}</Text>
       <Text style={styles.secondary}>{secondaryText}</Text>
-      <Button alert={type === "failure"} selected style={styles.button}>
-        {finish ? "Finish" : type === "failure" ? "Try Again" : "Continue"}
-      </Button>
+      {type === "failure" ? (
+        <OrangeButton style={styles.button}>Try Again</OrangeButton>
+      ) : (
+        <BlueButton style={styles.button} selected>
+          {finish ? "Finish" : "Continue"}
+        </BlueButton>
+      )}
     </Dialog>
   );
 };

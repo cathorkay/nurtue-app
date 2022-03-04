@@ -1,27 +1,153 @@
-import { Agreement, Post, Practice, Question, Profile } from "../types/state";
+import {
+  Agreement,
+  Post,
+  Practice,
+  Question,
+  Profile,
+  User,
+} from "../types/state";
+
+const userSteven: User = {
+  id: "1",
+  name: "Steven",
+  photo: "dad",
+  expert: false,
+  gender: "male",
+  children: [
+    {
+      id: "1",
+      name: "Jayden",
+      gender: "boy",
+      photo: "kid",
+      birthday: "2015-01-01",
+    },
+  ],
+};
+
+const userMonica: User = {
+  id: "2",
+  name: "Monica",
+  photo: "monica",
+  expert: false,
+  gender: "female",
+  children: [
+    {
+      id: "2",
+      name: "",
+      gender: "girl",
+      photo: null,
+      birthday: "2021-12-01",
+    },
+  ],
+};
+
+const userSmith: User = {
+  id: "3",
+  name: "Dr. Smith",
+  description: "Pediatrician",
+  photo: "smith",
+  expert: true,
+};
+
+const userSelina: User = {
+  id: "4",
+  name: "Selina",
+  photo: "selina",
+  expert: false,
+  gender: "female",
+  children: [
+    {
+      id: "3",
+      name: "",
+      gender: "boy",
+      photo: null,
+      birthday: "2021-08-01",
+    },
+  ],
+};
+
+const userDaniel: User = {
+  id: "5",
+  name: "Daniel",
+  photo: "daniel",
+  expert: false,
+  gender: "male",
+  children: [
+    {
+      id: "4",
+      name: "",
+      gender: "boy",
+      photo: null,
+      birthday: "2012-03-01",
+    },
+    {
+      id: "5",
+      name: "",
+      gender: "girl",
+      photo: null,
+      birthday: "2007-03-01",
+    },
+  ],
+};
+
+const userKathy: User = {
+  id: "6",
+  name: "Kathy",
+  description: "Social worker, mom of 15 y/o boy",
+  photo: "kathy",
+  expert: true,
+};
 
 const profile: Profile = {
-  user: {
-    id: "1",
-    name: "James",
-    description: "Dad of 8 y/o boy",
-    photo: "dad",
-    expert: false,
-  },
+  user: userSteven,
   role: "Dad",
+  spouse: {
+    id: "9",
+    name: "Renee",
+    photo: "mom",
+    role: "Mom",
+  },
+};
+
+const userEmily: User = {
+  id: "7",
+  name: "Emily",
+  photo: "emily",
+  expert: false,
+  gender: "female",
+  children: [
+    {
+      id: "6",
+      name: "",
+      gender: "girl",
+      photo: null,
+      birthday: "2007-03-01",
+    },
+  ],
+};
+
+const userTed: User = {
+  id: "8",
+  name: "Ted",
+  photo: "ted",
+  expert: false,
+  gender: "male",
+  children: [
+    {
+      id: "7",
+      name: "",
+      gender: "boy",
+      photo: null,
+      birthday: "2014-03-01",
+    },
+  ],
 };
 
 const posts: Post[] = [
   {
     id: "1",
     title: "How do I get my infant to sleep?",
-    author: {
-      id: "2",
-      name: "Monica",
-      description: "Mother of 3 mo girl",
-      photo: "monica",
-      expert: false,
-    },
+    author: userMonica,
     content:
       "My baby is crying at 4 am every day. This is crazy. Can anyone share any advice on forming a good sleeping schedule for babies? \nBonus: pic of my baby when she's sleeping!",
     image: "sleeping-baby",
@@ -35,15 +161,10 @@ const posts: Post[] = [
     replies: [
       {
         id: "1",
-        author: {
-          id: "3",
-          name: "Dr. Smith",
-          description: "Pediatrician",
-          photo: "smith",
-          expert: true,
-        },
+        author: userSmith,
         content:
           "This is one of those parenting questions for new parents that are often perplexing because there is no precise answer. All babies have unique sleep patterns and reasons why they sleep how they do or why they have troubles. In fact, some babies even need a full year to develop a proper sleep cycle at night. To help them associate bed with sleep, put them in the crib when they are sleepy and not fully asleep. This helps build an association that is covered with a blanket means sleep time. You can begin their sleep training by the time they are 6 months old.",
+        image: null,
         likeCount: 50,
         likers: [],
         createdAt: "2022-03-02T03:42:34.871Z",
@@ -51,15 +172,10 @@ const posts: Post[] = [
       },
       {
         id: "2",
-        author: {
-          id: "4",
-          name: "Selina",
-          description: "Mother of 7 mo boy",
-          photo: "selina",
-          expert: false,
-        },
+        author: userSelina,
         content:
           "I had the same problem during the first couple of months. It'll get better when you know the baby's schedule. Try documenting her cycle using a notebook or apps. It helped a lot cuz babies tended to keep the same schedule.",
+        image: null,
         likeCount: 12,
         likers: [],
         createdAt: "2022-03-02T04:42:34.871Z",
@@ -70,13 +186,7 @@ const posts: Post[] = [
   {
     id: "2",
     title: "What's the right age to allow my kids to date?",
-    author: {
-      id: "5",
-      name: "Daniel",
-      description: "Father of 10 y/o boy & 15 y/o girl",
-      photo: "daniel",
-      expert: false,
-    },
+    author: userDaniel,
     content:
       "Hi, my boy said she had a crush on a classmate, which is definitely normal. But he's only 10, so I'm a bit concerned if he's too young to start dating? 😂😂😂",
     image: null,
@@ -90,15 +200,10 @@ const posts: Post[] = [
     replies: [
       {
         id: "3",
-        author: {
-          id: "6",
-          name: "Kathy",
-          description: "Middle school teacher, mother of 15 y/o boy",
-          photo: "kathy",
-          expert: true,
-        },
+        author: userKathy,
         content:
           "The term dating has evolved quite a bit from what it used to be due to technology that allows instant contact through messengers and video calls. Sometimes even kids as young as fifth grade believe they're dating someone when all they're really doing is text a lot. It's hard to assign an age as the right start for dating as different kids mature emotionally at different ages, and it is up to you to explain to them the differences between close friendships and romance. With an open dialogue, you can both arrive organically when your kid is ready to go out with someone.",
+        image: null,
         likeCount: 23,
         likers: [],
         createdAt: "2022-03-01T03:42:34.871Z",
@@ -106,15 +211,10 @@ const posts: Post[] = [
       },
       {
         id: "4",
-        author: {
-          id: "7",
-          name: "Emily",
-          description: "Mother of 15 y/o girl",
-          photo: "emily",
-          expert: false,
-        },
+        author: userEmily,
         content:
           "I know my girl is dating now. Not sure if she dated someone else before. I think most kids would start dating in their teenage years. I would suggest you keep an eye on their mental health and have an open chat about sex education so that they would know how to protect themselves, especially for girls. As long as they are happy and healthy, I wouldn't be too concerned.",
+        image: null,
         likeCount: 15,
         likers: [],
         createdAt: "2022-03-01T04:42:34.871Z",
@@ -125,13 +225,7 @@ const posts: Post[] = [
   {
     id: "3",
     title: "My child is being bullied by his peers. What can I do?",
-    author: {
-      id: "8",
-      name: "Ted",
-      description: "Father of 8 y/o boy",
-      photo: "ted",
-      expert: false,
-    },
+    author: userTed,
     content:
       "Teacher just sent my little boy home. He is bullied at school because of his race. He's the only minority in his class. How should I fight back? We've brought it up to the school principal multiple times but it's getting even worse. I feel sad for him. Is there a way to report this racist school?",
     image: null,

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { StyleSheet, Switch, View, ScrollView, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
-import * as ImagePicker from "expo-image-picker";
 
+import BlueButton from "../components/BlueButton";
 import Card from "../components/Card";
 import Chip from "../components/Chip";
 import ConfirmationDialog from "../components/ConfirmationDialog";
@@ -16,7 +17,6 @@ import FontSize from "../constants/FontSize";
 import { addPost } from "../data/post";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
-import BlueButton from "../components/BlueButton";
 
 const recommendedTopics = [
   "tantrum",
@@ -45,13 +45,13 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
   const [expertsOnly, setExpertsOnly] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
-  const handleDiscard = () => {
+  const handleDiscard = useCallback(() => {
     if (title || description) {
       setConfirmationVisible(true);
     } else {
       navigation.goBack();
     }
-  };
+  }, [description, navigation, title]);
 
   const handleCancel = () => {
     setConfirmationVisible(false);
@@ -153,14 +153,14 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
     });
   }, [handleDiscard, navigation]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <OrangeButton
           style={{
             marginRight: 20,
           }}
-          textStyle={{ paddingHorizontal: 16, paddingVertical: 2 }}
+          textContainerStyle={styles.postButton}
           onPress={handlePostAdd}
           disabled={!title || !description}
         >
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   chipInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 6,
   },
   chipAddIcon: {
     position: "absolute",
@@ -350,6 +350,10 @@ const styles = StyleSheet.create({
     width: 48,
     borderRadius: 24,
     marginRight: 10,
+  },
+  postButton: {
+    paddingHorizontal: 16,
+    minHeight: 32,
   },
 });
 

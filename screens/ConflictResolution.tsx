@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -27,7 +26,10 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
   const tabBarHeight = useBottomTabBarHeight();
 
   const handleSearchBarPress = () => {
-    navigation.navigate("Search", { type: "agreements" });
+    navigation.navigate("SearchStack", {
+      screen: "Search",
+      params: { type: "agreements" },
+    } as any);
   };
 
   const handleNewAgreementPress = () => {
@@ -47,16 +49,12 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
         colors={["#82E4FA", "#CDF1FF"]}
       >
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <MaterialCommunityIcons
-            name="controller-classic"
-            size={54}
-            color={Colors.darkgreen}
-          />
+          <Text style={styles.emoji}>🍱</Text>
         </View>
         <View style={styles.content}>
           <Text style={styles.title}>No video games on school nights</Text>
           <View style={styles.caption}>
-            <Text style={styles.people}>{"Mom & Braedon"}</Text>
+            <Text style={styles.people}>Mom & Braedon</Text>
             <Text style={styles.date}> • Yesterday</Text>
           </View>
         </View>
@@ -69,8 +67,7 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
       <SectionList
         style={styles.container}
         contentContainerStyle={{
-          marginTop: 25,
-          paddingBottom: tabBarHeight + 60 + 70,
+          paddingBottom: tabBarHeight + 60 + 75,
         }}
         stickySectionHeadersEnabled={false}
         sections={agreements}
@@ -100,24 +97,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.lightblue,
-    padding: 20,
-    marginTop: -25,
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    marginTop: -20,
   },
   searchBar: {
     flex: 1,
-    paddingHorizontal: 10,
   },
   header: {
     fontSize: FontSize.header,
+    color: Colors.greengrey,
     marginTop: 30,
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 12,
     borderRadius: 25,
     marginTop: 15,
+  },
+  emoji: {
+    fontSize: 42,
   },
   content: {
     marginLeft: 15,
@@ -129,11 +130,11 @@ const styles = StyleSheet.create({
   },
   caption: {
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 5,
   },
   people: {},
   date: {
-    color: Colors.grey,
+    color: Colors.greengrey,
   },
 });
 

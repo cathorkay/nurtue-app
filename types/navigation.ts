@@ -5,8 +5,6 @@ import {
 } from "@react-navigation/native";
 import { StackScreenProps } from "@react-navigation/stack";
 
-import { Post } from "./state";
-
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
@@ -26,7 +24,9 @@ export type RootStackParamList = {
   PracticePreview: {
     topic: string;
   };
-  PracticeQuestion: undefined;
+  PracticeQuestion: {
+    topic: string;
+  };
   AgreementDetail: undefined;
   AgreementStack: undefined;
   ProfileStack: undefined;

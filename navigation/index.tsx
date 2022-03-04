@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Image } from "react-native";
 
 import IconButton from "../components/IconButton";
-import OrangeButton from "../components/OrangeButton";
 import TextButton from "../components/TextButton";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
@@ -114,16 +113,6 @@ function RootNavigator() {
               color={Colors.bluegreen}
             />
           ),
-          headerRight: () => (
-            <OrangeButton
-              style={{
-                marginRight: 20,
-              }}
-              textStyle={{ paddingHorizontal: 16, paddingVertical: 2 }}
-            >
-              Post
-            </OrangeButton>
-          ),
         }}
       />
       <RootStack.Screen
@@ -166,6 +155,7 @@ function RootNavigator() {
         name="PracticeQuestion"
         component={PracticeQuestionScreen}
         options={({ route }) => ({
+          title: route.params.topic,
           headerLeft: () => (
             <IconButton
               style={{
@@ -182,7 +172,7 @@ function RootNavigator() {
         name="AgreementDetail"
         component={AgreementDetailScreen}
         options={{
-          title: "Agreement",
+          title: "Our Agreement",
           headerLeft: () => (
             <IconButton
               style={{
@@ -250,7 +240,7 @@ const Agreements = () => {
         name="NewAgreement"
         component={NewAgreementScreen}
         initialParams={{
-          step: 6,
+          step: 0,
         }}
         options={{
           headerShown: false,
@@ -367,7 +357,7 @@ function Tabs() {
           headerTitle: "nurtue",
           headerTitleStyle: {
             fontFamily: "Hero Bold",
-            fontSize: 28,
+            fontSize: 27,
             color: Colors.green,
           },
           tabBarIcon: ({ focused }) => (
@@ -387,7 +377,7 @@ function Tabs() {
         component={ConflictResolutionScreen}
         options={{
           title: "Conflict Resolution",
-          headerTitle: "Resolution History",
+          headerTitle: "Agreement History",
           tabBarIcon: ({ focused }) => (
             <Image
               style={{ width: FontSize.title, height: FontSize.title }}

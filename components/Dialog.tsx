@@ -25,7 +25,7 @@ const Dialog: React.FC<DialogProps> = ({
       animationIn="zoomIn"
       animationOut="fadeOut"
     >
-      <Card shadow>
+      <Card>
         <Text style={styles.title}>{title}</Text>
         <Divider
           style={[
@@ -45,7 +45,7 @@ const Dialog: React.FC<DialogProps> = ({
 const styles = StyleSheet.create({
   title: {
     fontFamily: "semibold",
-    fontSize: FontSize.emphasis,
+    fontSize: FontSize.header,
   },
   divider: {
     marginVertical: 10,

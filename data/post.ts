@@ -1,20 +1,45 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { authorRoles, childGenders, familyDynamics } from "../screens/Filter";
 import { Post, Reply } from "../types/state";
 import mock from "./mock";
 
+export interface Filters {
+  minAge: number;
+  maxAge: number;
+  childGender: typeof childGenders[number] | null;
+  authorRole: typeof authorRoles[number] | null;
+  familyDynamic: typeof familyDynamics[number] | null;
+}
+
 export interface PostState {
   posts: Post[];
+  filters: Filters;
 }
 
 const initialState: PostState = {
   posts: mock.posts,
+  filters: {
+    minAge: 0,
+    maxAge: 216,
+    childGender: null,
+    authorRole: null,
+    familyDynamic: null,
+  },
 };
 
 export const postSlice = createSlice({
   name: "postState",
   initialState,
   reducers: {
+    setFilters: (
+      state,
+      action: PayloadAction<{
+        filters: Filters;
+      }>
+    ) => {
+      state.filters = action.payload.filters;
+    },
     addPost: (
       state,
       action: PayloadAction<{
@@ -95,6 +120,7 @@ export const postSlice = createSlice({
 });
 
 export const {
+  setFilters,
   addPost,
   deletePost,
   likePost,
