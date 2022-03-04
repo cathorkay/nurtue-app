@@ -49,7 +49,7 @@ export default function PracticeQuestionScreen({
   }, [navigation]);
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + 60 }]}>
+    <View style={[styles.container, { paddingBottom: insets.bottom + 20 }]}>
       <BlueRingView borderRadius={20} ringWidth={4}>
         <View style={styles.innerContainer}>
           <Text style={styles.question}>

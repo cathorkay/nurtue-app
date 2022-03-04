@@ -12,6 +12,7 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
 import postReducer from "./post";
 import profileReducer from "./profile";
@@ -21,10 +22,11 @@ const rootReducer = combineReducers({
   postState: postReducer,
 });
 
-const persistConfig = {
+const persistConfig: any = {
   key: "root",
-  version: 1,
+  version: 2,
   storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

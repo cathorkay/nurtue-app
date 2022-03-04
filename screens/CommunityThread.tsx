@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   ListRenderItem,
   StyleSheet,
@@ -35,6 +36,7 @@ const CommunityThreadScreen: React.FC<
   RootStackScreenProps<"CommunityThread">
 > = ({ route }) => {
   const postId = route.params.postId;
+  const fromSearch = (route.params as any).fromSearch;
 
   const listViewRef = useRef<FlatList>(null);
   const inputRef = useRef<RNTextInput>(null);
@@ -147,6 +149,7 @@ const CommunityThreadScreen: React.FC<
     );
     setImage(null);
     setReplyText("");
+    Keyboard.dismiss();
     setTimeout(() => listViewRef.current?.scrollToEnd(), 500);
   };
 
@@ -168,7 +171,7 @@ const CommunityThreadScreen: React.FC<
             marginLeft: 10,
           }}
           name="chevron-left"
-          size={30}
+          size={36}
           color={Colors.bluegreen}
           onPress={navigation.goBack}
         />
@@ -194,7 +197,7 @@ const CommunityThreadScreen: React.FC<
         style={styles.list}
         contentContainerStyle={{
           marginTop: -20,
-          paddingBottom: 20 + insets.bottom * 2 + 40,
+          paddingBottom: insets.bottom + 90,
         }}
         data={post.replies}
         ListHeaderComponent={
@@ -212,7 +215,7 @@ const CommunityThreadScreen: React.FC<
       />
       <KeyboardAvoidingView
         behavior="position"
-        keyboardVerticalOffset={27 + insets.bottom}
+        keyboardVerticalOffset={fromSearch ? 82 : 60}
       >
         <View
           style={[

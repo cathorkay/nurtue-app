@@ -23,7 +23,7 @@ const Dialog: React.FC<DialogProps> = ({
       {...restProps}
       backdropColor="white"
       animationIn="zoomIn"
-      animationOut="fadeOut"
+      animationOut="zoomOut"
     >
       <Card>
         <Text style={styles.title}>{title}</Text>

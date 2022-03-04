@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Chip from "../components/Chip";
 import IconButton from "../components/IconButton";
@@ -28,6 +29,8 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
   navigation,
   route,
 }) => {
+  const insets = useSafeAreaInsets();
+
   const posts = useAppSelector((state) => state.postState.posts);
 
   const [query, setQuery] = useState("");
@@ -49,7 +52,12 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
       style={styles.postCard}
       preview
       post={item}
-      onPress={() => navigation.push("CommunityThread", { postId: item.id })}
+      onPress={() =>
+        navigation.push("CommunityThread", {
+          postId: item.id,
+          fromSearch: true,
+        })
+      }
     />
   );
 
@@ -74,7 +82,11 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
         />
       </View>
       {!query && route.params.type === "posts" && (
-        <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={390}>
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={30}
+        >
           <ScrollView>
             <View style={styles.sectionContainer}>
               <Text style={styles.bold}>Recommended Topics</Text>
@@ -112,6 +124,7 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
           style={styles.list}
           contentContainerStyle={{
             marginTop: -20,
+            paddingBottom: insets.bottom + 20,
           }}
           data={postResults}
           renderItem={renderPostCard}

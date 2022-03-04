@@ -1,8 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View, TouchableOpacity } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 import BlueButton from "../components/BlueButton";
 import BlueRadiusBackground from "../components/BlueRadiusBackground";
@@ -224,7 +223,12 @@ const NewAgreementScreen: React.FC<
             </TouchableOpacity>
           )}
         </View>
-        <View style={styles.lowerContainer}>
+        <ScrollView
+          style={styles.lowerContainer}
+          contentContainerStyle={{
+            paddingBottom: 100,
+          }}
+        >
           {currentStep === 0 && (
             <>
               <BlueButton style={styles.personButton}>Brandon</BlueButton>
@@ -312,7 +316,7 @@ const NewAgreementScreen: React.FC<
               )}
             </>
           )}
-        </View>
+        </ScrollView>
       </View>
       {currentStep !== 7 && (
         <FloatingActionButton
@@ -356,7 +360,8 @@ const styles = StyleSheet.create({
   },
   lowerContainer: {
     flex: 1,
-    paddingTop: 30,
+    marginTop: 10,
+    paddingTop: 20,
     paddingBottom: 60,
     paddingHorizontal: 20,
   },

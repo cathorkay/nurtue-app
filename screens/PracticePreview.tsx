@@ -26,7 +26,7 @@ export default function PracticePreviewScreen({
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + 60 }]}>
+    <View style={[styles.container, { paddingBottom: insets.bottom + 20 }]}>
       <BlueRingView borderRadius={20} ringWidth={4}>
         <View style={styles.innerContainer}>
           <View style={styles.titleContainer}>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.caption,
   },
   info: {
-    marginTop: 20,
+    marginTop: 10,
     paddingHorizontal: 20,
   },
   infoRow: {

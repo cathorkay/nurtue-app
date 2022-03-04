@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Image } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import IconButton from "../components/IconButton";
 import TextButton from "../components/TextButton";
@@ -127,7 +128,7 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="chevron-left"
-              size={iconSize}
+              size={iconSize + 6}
               color={Colors.bluegreen}
             />
           ),
@@ -145,7 +146,7 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="chevron-left"
-              size={iconSize}
+              size={iconSize + 6}
               color={Colors.bluegreen}
             />
           ),
@@ -180,7 +181,7 @@ function RootNavigator() {
               }}
               onPress={navigation.goBack}
               name="chevron-left"
-              size={iconSize}
+              size={iconSize + 6}
               color={Colors.bluegreen}
             />
           ),
@@ -302,7 +303,7 @@ const Searches = () => {
                 marginLeft: 10,
               }}
               name="chevron-left"
-              size={iconSize}
+              size={iconSize + 6}
               color={Colors.bluegreen}
             />
           ),
@@ -315,6 +316,8 @@ const Searches = () => {
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -325,7 +328,7 @@ function Tabs() {
           borderTopRightRadius: 30,
           borderTopColor: "transparent",
           position: "absolute",
-          height: 90,
+          height: insets.bottom === 0 ? 50 : 84,
           shadowColor: "rgb(130, 130, 130)",
           shadowOffset: {
             width: 0,

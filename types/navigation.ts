@@ -59,6 +59,7 @@ export type SearchStackParamList = {
   };
   CommunityThread: {
     postId: string;
+    fromSearch: boolean;
   };
 };
 

@@ -1,6 +1,13 @@
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useLayoutEffect, useState } from "react";
-import { StyleSheet, Switch, View, ScrollView, Image } from "react-native";
+import {
+  StyleSheet,
+  Switch,
+  View,
+  ScrollView,
+  Image,
+  Keyboard,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
 
@@ -46,6 +53,7 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
   const handleDiscard = useCallback(() => {
+    Keyboard.dismiss();
     if (title || description) {
       setConfirmationVisible(true);
     } else {

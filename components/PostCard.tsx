@@ -150,7 +150,7 @@ const PostCard: React.FC<PostCardProps> = ({
               <MaterialCommunityIcons
                 name="dots-horizontal"
                 color={Colors.greengrey}
-                size={18}
+                size={22}
               />
             </TouchableOpacity>
           )}
