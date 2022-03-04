@@ -150,7 +150,10 @@ const CommunityThreadScreen: React.FC<
     setImage(null);
     setReplyText("");
     Keyboard.dismiss();
-    setTimeout(() => listViewRef.current?.scrollToEnd(), 500);
+    setTimeout(() => {
+      listViewRef.current?.scrollToEnd();
+      listViewRef.current?.scrollToOffset({ offset: 10000 });
+    }, 500);
   };
 
   const handleDeleteReply = (replyId: string) => {
