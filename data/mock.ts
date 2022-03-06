@@ -5,6 +5,7 @@ import {
   Question,
   Profile,
   User,
+  Child,
 } from "../types/state";
 
 const userSteven: User = {
@@ -98,17 +99,6 @@ const userKathy: User = {
   expert: true,
 };
 
-const profile: Profile = {
-  user: userSteven,
-  role: "Dad",
-  spouse: {
-    id: "9",
-    name: "Renee",
-    photo: "mom",
-    role: "Mom",
-  },
-};
-
 const userEmily: User = {
   id: "7",
   name: "Emily",
@@ -141,6 +131,40 @@ const userTed: User = {
       birthday: "2014-03-01",
     },
   ],
+};
+
+const userRenee: User = {
+  id: "9",
+  name: "Renee",
+  photo: "mom",
+  expert: false,
+  gender: "female",
+  children: [],
+};
+
+const userJayden: Child = {
+  id: "20",
+  name: "Jayden",
+  gender: "boy",
+  photo: "kid",
+  birthday: "2015-02-01",
+};
+
+const jaydenProfile: Profile = {
+  user: userJayden,
+  role: "Child",
+};
+
+const reneeProfile: Profile = {
+  user: userRenee,
+  role: "Mom",
+};
+
+const stevenProfile: Profile = {
+  user: userSteven,
+  role: "Dad",
+  spouse: reneeProfile,
+  children: [jaydenProfile],
 };
 
 const posts: Post[] = [
@@ -313,9 +337,9 @@ const agreements: Agreement[] = [
     emoji: "🍱",
     summary:
       "Dad will give Braedon options to choose what veggies he wants to eat.\nDad and Braedon will cook delicious vegetables together that everyone in the family can enjoy.",
-    people: ["dad", "braedon"],
-    createdAt: "2022-03-01T02:42:34.871Z",
-    updatedAt: "2022-03-01T02:42:34.871Z",
+    people: [stevenProfile, jaydenProfile],
+    createdAt: "2022-03-06T02:42:34.871Z",
+    updatedAt: "2022-03-06T02:42:34.871Z",
   },
   {
     id: "2",
@@ -323,9 +347,9 @@ const agreements: Agreement[] = [
     emoji: "🎮",
     summary:
       "Braedon will not play video games on school nights and will instead use that time to complete his homework. If all homework for the week is completed, then he may play video games.",
-    people: ["dad", "braedon"],
-    createdAt: "2022-03-01T01:42:34.871Z",
-    updatedAt: "2022-03-01T01:42:34.871Z",
+    people: [stevenProfile, jaydenProfile],
+    createdAt: "2022-03-04T01:42:34.871Z",
+    updatedAt: "2022-03-04T01:42:34.871Z",
   },
   {
     id: "3",
@@ -333,7 +357,7 @@ const agreements: Agreement[] = [
     emoji: "🚪",
     summary:
       "Mom and Dad will respect Braedon’s privacy by knocking on the door and waiting for confirmation before entering his room.",
-    people: ["mom", "braedon"],
+    people: [reneeProfile, jaydenProfile],
     createdAt: "2022-02-26T02:42:34.871Z",
     updatedAt: "2022-02-26T02:42:34.871Z",
   },
@@ -343,7 +367,7 @@ const agreements: Agreement[] = [
     emoji: "🏠",
     summary:
       "When we are finished with a dish and/or silverware, we will bring it to the kitchen and wash it immediately. We will not let dishes stack up in our rooms.",
-    people: ["mom", "dad"],
+    people: [stevenProfile, reneeProfile],
     createdAt: "2022-02-25T02:42:34.871Z",
     updatedAt: "2022-02-25T02:42:34.871Z",
   },
@@ -353,7 +377,7 @@ const agreements: Agreement[] = [
     emoji: "🎨",
     summary:
       "Braedon will not draw on any walls or furniture, both in our home and in other places. Instead, he will keep a sketchbook to freely express his creativity.",
-    people: ["dad", "braedon"],
+    people: [stevenProfile, jaydenProfile],
     createdAt: "2022-02-24T02:42:34.871Z",
     updatedAt: "2022-02-24T02:42:34.871Z",
   },
@@ -363,7 +387,7 @@ const agreements: Agreement[] = [
     emoji: "😍",
     summary:
       "Every Friday, Mom and Dad will take a break from working and have a date night. We will only not have a date night if there is an urgent need and this is communicated to the other person.",
-    people: ["mom", "dad"],
+    people: [stevenProfile, reneeProfile],
     createdAt: "2022-02-20T02:42:34.871Z",
     updatedAt: "2022-02-20T02:42:34.871Z",
   },
@@ -373,7 +397,7 @@ const agreements: Agreement[] = [
     emoji: "🛏",
     summary:
       "Every day when Braedon gets out of bed, he will make the bed nicely. If he does not make his bed consistently, he must vacuum the house.",
-    people: ["dad", "braedon"],
+    people: [stevenProfile, jaydenProfile],
     createdAt: "2022-01-20T02:42:34.871Z",
     updatedAt: "2022-01-20T02:42:34.871Z",
   },
@@ -404,7 +428,7 @@ const trendingTopics = [
 ];
 
 export default {
-  profile,
+  stevenProfile,
   posts,
   questionOfTheDay,
   practices,

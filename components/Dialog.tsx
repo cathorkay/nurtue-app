@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.header,
   },
   divider: {
-    marginVertical: 10,
+    marginVertical: 4,
   },
 });
 

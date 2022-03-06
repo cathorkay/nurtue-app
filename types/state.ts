@@ -22,14 +22,10 @@ export interface Expert {
 }
 export type User = Parent | Expert;
 export interface Profile {
-  user: Parent;
+  user: Parent | Child;
   role: string;
-  spouse: {
-    id: string;
-    name: string;
-    photo: string | null;
-    role: string;
-  };
+  spouse?: Profile | null;
+  children?: Profile[];
 }
 
 export interface Reply {
@@ -80,7 +76,7 @@ export interface Agreement {
   title: string;
   emoji: string;
   summary: string;
-  people: [string, string];
+  people: [Profile, Profile];
   createdAt: Date | string;
   updatedAt: Date | string;
 }

@@ -8,19 +8,28 @@ import Touchable from "./Touchable";
 
 export interface FloatingActionButtonProps extends ViewProps {
   name: ComponentProps<typeof MaterialCommunityIcons>["name"];
+  disabled?: boolean;
   onPress?: () => void;
 }
 
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   style,
   name,
+  disabled,
   onPress,
   ...restProps
 }) => {
   return (
     <Touchable
-      style={[styles.container, style]}
+      style={[
+        styles.container,
+        style,
+        disabled && {
+          opacity: 0.4,
+        },
+      ]}
       onPress={onPress}
+      disabled={disabled}
       {...restProps}
     >
       <View style={styles.view}>

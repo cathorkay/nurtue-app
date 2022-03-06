@@ -161,7 +161,7 @@ const FilterScreen: React.FC<RootStackScreenProps<"Filter">> = ({
 
   return (
     <ScrollView
-      style={[styles.container]}
+      style={styles.container}
       contentContainerStyle={{ paddingBottom: insets.bottom + 60 }}
     >
       <View>

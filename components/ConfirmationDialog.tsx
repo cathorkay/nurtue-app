@@ -43,7 +43,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 };
 
 const styles = StyleSheet.create({
-  text: {},
+  text: {
+    marginTop: 10,
+  },
   buttons: {
     flexDirection: "row",
     justifyContent: "flex-end",

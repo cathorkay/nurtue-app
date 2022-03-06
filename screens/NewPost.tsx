@@ -117,7 +117,7 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
           id: uuid(),
           title,
           author: {
-            ...user,
+            ...(user as any),
           },
           content: description,
           image,

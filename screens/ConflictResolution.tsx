@@ -1,29 +1,40 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { LinearGradient } from "expo-linear-gradient";
-import { SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
+import dayjs from "dayjs";
+import groupBy from "lodash.groupby";
+import { useCallback, useLayoutEffect, useMemo } from "react";
+import { ListRenderItem, SectionList, StyleSheet } from "react-native";
 
+import AgreementCard from "../components/AgreementCard";
 import FloatingActionButton from "../components/FloatingActionButton";
+import IconButton from "../components/IconButton";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
+import { useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
-
-const agreements = [
-  {
-    title: "",
-    data: ["Pizza", "Burger", "Risotto"],
-  },
-  {
-    title: "Last Month",
-    data: ["French Fries", "Onion Rings", "1", "2", "3", "4"],
-  },
-];
+import { Agreement } from "../types/state";
 
 const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
+
+  const originalAgreements = useAppSelector(
+    (state) => state.agreementState.agreements
+  );
+  const agreements = useMemo(() => {
+    const agreementsByMonth = Object.values(
+      groupBy(originalAgreements, (a) => dayjs(a.createdAt).format("YYYY-MM"))
+    );
+    return agreementsByMonth.map((i) => ({
+      title:
+        dayjs(i[0].createdAt).month() === dayjs().month()
+          ? ""
+          : dayjs(i[0].createdAt).date(1).fromNow(),
+      data: i,
+    }));
+  }, [originalAgreements]);
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -32,34 +43,40 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
     } as any);
   };
 
+  const handleSettingsPress = useCallback(() => {
+    navigation.navigate("AgreementSettings");
+  }, [navigation]);
+
   const handleNewAgreementPress = () => {
     navigation.navigate("AgreementStack");
   };
 
-  const handleAgreementPress = () => {
-    navigation.navigate("AgreementDetail");
+  const handleAgreementPress = (agreementId: string) => {
+    navigation.navigate("AgreementDetail", { agreementId });
   };
 
-  const renderListItem = () => (
-    <TouchableOpacity activeOpacity={0.6} onPress={handleAgreementPress}>
-      <LinearGradient
-        style={styles.listItem}
-        start={[0, 0]}
-        end={[1, 1]}
-        colors={["#82E4FA", "#CDF1FF"]}
-      >
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Text style={styles.emoji}>🍱</Text>
-        </View>
-        <View style={styles.content}>
-          <Text style={styles.title}>No video games on school nights</Text>
-          <View style={styles.caption}>
-            <Text style={styles.people}>Mom & Braedon</Text>
-            <Text style={styles.date}> • Yesterday</Text>
-          </View>
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <IconButton
+          name="cog"
+          style={{
+            marginRight: 10,
+          }}
+          size={24}
+          color={Colors.bluegreen}
+          onPress={handleSettingsPress}
+        />
+      ),
+    });
+  }, [handleSettingsPress, navigation]);
+
+  const renderAgreementCard: ListRenderItem<Agreement> = ({ item }) => (
+    <AgreementCard
+      style={{ marginTop: 15 }}
+      agreement={item}
+      onPress={() => handleAgreementPress(item.id)}
+    />
   );
 
   return (
@@ -78,11 +95,11 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
             onPress={handleSearchBarPress}
           />
         }
-        renderItem={renderListItem}
+        renderItem={renderAgreementCard}
         renderSectionHeader={({ section: { title } }) =>
           title ? <Text style={styles.header}>{title}</Text> : null
         }
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
       />
       <FloatingActionButton
         name="plus"
@@ -108,33 +125,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.header,
     color: Colors.greengrey,
     marginTop: 30,
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderRadius: 25,
-    marginTop: 15,
-  },
-  emoji: {
-    fontSize: 42,
-  },
-  content: {
-    marginLeft: 15,
-    flex: 1,
-  },
-  title: {
-    fontFamily: "semibold",
-    fontSize: FontSize.emphasis,
-  },
-  caption: {
-    flexDirection: "row",
-    marginTop: 5,
-  },
-  people: {},
-  date: {
-    color: Colors.greengrey,
   },
 });
 

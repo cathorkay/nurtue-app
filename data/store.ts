@@ -14,12 +14,14 @@ import {
 } from "redux-persist";
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
+import agreementReducer from "./agreement";
 import postReducer from "./post";
 import profileReducer from "./profile";
 
 const rootReducer = combineReducers({
   profileState: profileReducer,
   postState: postReducer,
+  agreementState: agreementReducer,
 });
 
 const persistConfig: any = {

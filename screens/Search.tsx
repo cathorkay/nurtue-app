@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import AgreementCard from "../components/AgreementCard";
 import Chip from "../components/Chip";
 import IconButton from "../components/IconButton";
 import PostCard from "../components/PostCard";
@@ -19,22 +20,29 @@ import Colors from "../constants/Colors";
 import mock from "../data/mock";
 import { useAppSelector } from "../data/store";
 import { SearchStackScreenProps } from "../types/navigation";
-import { Post } from "../types/state";
+import { Agreement, Post } from "../types/state";
 
 const postFuseOptions: Fuse.IFuseOptions<Post> = {
   keys: ["title", "content", "topics", "replies.content"],
+};
+
+const agreementFuseOptions: Fuse.IFuseOptions<Agreement> = {
+  keys: ["title", "summary", "emoji"],
 };
 
 const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
   navigation,
   route,
 }) => {
+  const type = route.params.type;
   const insets = useSafeAreaInsets();
 
   const posts = useAppSelector((state) => state.postState.posts);
+  const agreements = useAppSelector((state) => state.agreementState.agreements);
 
   const [query, setQuery] = useState("");
   const [postResults, setPostResults] = useState<Post[]>([]);
+  const [agreementResults, setAgreementResults] = useState<Agreement[]>([]);
 
   const handleCancel = () => {
     navigation.goBack();
@@ -42,20 +50,38 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
 
   useEffect(() => {
     if (query) {
-      const fuse = new Fuse(posts, postFuseOptions);
-      setPostResults(fuse.search(query).map((i) => i.item));
+      if (type === "posts") {
+        const fuse = new Fuse(posts, postFuseOptions);
+        setPostResults(fuse.search(query).map((i) => i.item));
+      }
+      if (type === "agreements") {
+        const fuse = new Fuse(agreements, agreementFuseOptions);
+        setAgreementResults(fuse.search(query).map((i) => i.item));
+      }
     }
-  }, [posts, query]);
+  }, [agreements, posts, query, type]);
 
   const renderPostCard: ListRenderItem<Post> = ({ item }) => (
     <PostCard
-      style={styles.postCard}
+      style={styles.card}
       preview
       post={item}
       onPress={() =>
         navigation.push("CommunityThread", {
           postId: item.id,
           fromSearch: true,
+        })
+      }
+    />
+  );
+
+  const renderAgreementCard: ListRenderItem<Agreement> = ({ item }) => (
+    <AgreementCard
+      style={styles.card}
+      agreement={item}
+      onPress={() =>
+        navigation.push("AgreementDetail", {
+          agreementId: item.id,
         })
       }
     />
@@ -120,16 +146,29 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
         </KeyboardAvoidingView>
       )}
       {query ? (
-        <FlatList
-          style={styles.list}
-          contentContainerStyle={{
-            marginTop: -20,
-            paddingBottom: insets.bottom + 20,
-          }}
-          data={postResults}
-          renderItem={renderPostCard}
-          keyExtractor={(item) => item.id}
-        />
+        type === "posts" ? (
+          <FlatList
+            style={styles.list}
+            contentContainerStyle={{
+              marginTop: -20,
+              paddingBottom: insets.bottom + 20,
+            }}
+            data={postResults}
+            renderItem={renderPostCard}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <FlatList
+            style={styles.list}
+            contentContainerStyle={{
+              marginTop: -20,
+              paddingBottom: insets.bottom + 20,
+            }}
+            data={agreementResults}
+            renderItem={renderAgreementCard}
+            keyExtractor={(item) => item.id}
+          />
+        )
       ) : null}
     </View>
   );
@@ -165,7 +204,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginRight: 4,
   },
-  postCard: {
+  card: {
     marginBottom: 15,
   },
   list: {

@@ -8,7 +8,7 @@ export interface ProfileState {
 }
 
 const initialState: ProfileState = {
-  profile: mock.profile,
+  profile: mock.stevenProfile,
 };
 
 export const profileSlice = createSlice({

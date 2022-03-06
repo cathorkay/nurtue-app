@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 15,
+    padding: 20,
   },
   shadow: {
     shadowColor: Colors.bluegreen,

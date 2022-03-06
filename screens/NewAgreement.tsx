@@ -1,18 +1,35 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, View, TouchableOpacity } from "react-native";
+import dayjs from "dayjs";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { v4 as uuid } from "uuid";
 
-import BlueButton from "../components/BlueButton";
 import BlueRadiusBackground from "../components/BlueRadiusBackground";
+import BlueRingView from "../components/BlueRingView";
+import BlueView from "../components/BlueView";
+import ConfirmationDialog from "../components/ConfirmationDialog";
 import FloatingActionButton from "../components/FloatingActionButton";
+import IconButton from "../components/IconButton";
+import MockPhoto from "../components/MockPhoto";
+import OrangeButton from "../components/OrangeButton";
 import ProgressBar from "../components/ProgressBar";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import TimerBackground from "../components/TimerBackground";
+import Touchable from "../components/Touchable";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
+import { addAgreement } from "../data/agreement";
+import { useAppDispatch, useAppSelector } from "../data/store";
 import { AgreementStackScreenProps } from "../types/navigation";
+import { Profile } from "../types/state";
 
 const steps = [
   {
@@ -60,14 +77,14 @@ const emojis = [
   "📱",
   "🛏",
   "🐶",
-  "🥾",
+  "🧽",
   "🎧",
   "🚪",
   "🛁",
   "🎒",
   "🎮",
   "🚨",
-  "🛏",
+  "🏠",
   "💅",
   "😍",
   "🎨",
@@ -82,19 +99,115 @@ const NewAgreementScreen: React.FC<
   AgreementStackScreenProps<"NewAgreement">
 > = ({ navigation, route }) => {
   const currentStep = route.params.step;
-  const timerLength = 2 * 60;
+
+  const dispatch = useAppDispatch();
+  const timerLength = useAppSelector(
+    (state) => state.agreementState.settings.timer
+  );
+  const user = useAppSelector((state) => state.profileState.profile);
+  const spouse = useAppSelector((state) => state.profileState.profile.spouse);
+  const children = useAppSelector(
+    (state) => state.profileState.profile.children
+  );
 
   const timerRef = useRef<NodeJS.Timer>();
-
+  const [exitDialogOpen, setExitDialogOpen] = useState(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [second, setSecond] = useState(timerLength);
+  const [selectedPeople, setSelectedPeople] = useState<
+    [string | null, string | null]
+  >(route.params.selectedPeople);
+  const person1 = [user, spouse, ...(children ? children : [])].find(
+    (i) => i?.user.id === selectedPeople[0]
+  );
+  const person2 = [user, spouse, ...(children ? children : [])].find(
+    (i) => i?.user.id === selectedPeople[1]
+  );
+  const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
+
+  const handleExitDialogOpen = () => {
+    setExitDialogOpen(true);
+  };
+
+  const handleExitDialogClose = () => {
+    setExitDialogOpen(false);
+  };
+
+  const handleExitOk = () => {
+    handleExitDialogClose();
+    navigation.navigate("Tabs" as any);
+  };
+
+  const handleExitCancel = () => {
+    handleExitDialogClose();
+  };
+
+  const handleDiscardDialogOpen = () => {
+    setDiscardDialogOpen(true);
+  };
+
+  const handleDiscardDialogClose = () => {
+    setDiscardDialogOpen(false);
+  };
+
+  const handleDiscardOk = () => {
+    handleDiscardDialogClose();
+    setTimeout(() => navigation.pop(), 500);
+  };
+
+  const handleDiscardCancel = () => {
+    handleDiscardDialogClose();
+  };
+
+  const handleSave = () => {
+    const person1 =
+      user.user.id === selectedPeople[0]
+        ? user
+        : spouse?.user.id === selectedPeople[0]
+        ? spouse
+        : children?.find((c) => c.user.id === selectedPeople[0]);
+    const person2 =
+      user.user.id === selectedPeople[1]
+        ? user
+        : spouse?.user.id === selectedPeople[1]
+        ? spouse
+        : children?.find((c) => c.user.id === selectedPeople[1]);
+
+    dispatch(
+      addAgreement({
+        agreement: {
+          id: uuid(),
+          title,
+          emoji: selectedEmoji!,
+          summary,
+          people: [person1!, person2!],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      })
+    );
+  };
 
   const handleNextPress = () => {
     handleTimerStop();
-    navigation.push("NewAgreement", { step: currentStep + 1 });
+    navigation.push("NewAgreement", { step: currentStep + 1, selectedPeople });
+    if (currentStep === 6) {
+      handleSave();
+    }
   };
 
   const handlePrevPress = () => {
-    navigation.pop();
+    if (title || summary) {
+      handleDiscardDialogOpen();
+    } else {
+      navigation.pop();
+    }
+  };
+
+  const handleFinishPress = () => {
+    navigation.navigate("Tabs" as any);
   };
 
   const handleTimerStart = () => {
@@ -109,6 +222,38 @@ const NewAgreementScreen: React.FC<
     timerRef.current && clearInterval(timerRef.current);
   };
 
+  const handlePeopleSelect = (id: string) => {
+    const people = [...selectedPeople] as typeof selectedPeople;
+    if (selectedPeople.indexOf(id) !== -1) {
+      people[selectedPeople.indexOf(id)] = null;
+    } else {
+      people[selectedPeople.indexOf(null)] = id;
+    }
+    setSelectedPeople(people);
+  };
+
+  useLayoutEffect(() => {
+    if (currentStep === 7) {
+      navigation.setOptions({
+        headerLeft: () => null,
+      });
+    } else {
+      navigation.setOptions({
+        headerLeft: () => (
+          <IconButton
+            style={{
+              marginLeft: 20,
+            }}
+            onPress={handleExitDialogOpen}
+            name="close"
+            size={30}
+            color={Colors.bluegreen}
+          />
+        ),
+      });
+    }
+  }, [currentStep, navigation]);
+
   useEffect(() => {
     if (second <= 0) {
       handleTimerStop();
@@ -121,16 +266,25 @@ const NewAgreementScreen: React.FC<
     };
   }, []);
 
+  useEffect(() => {
+    const unsub = navigation.addListener("blur", () => {
+      setSecond(timerLength);
+    });
+    return unsub;
+  }, [timerLength, navigation]);
+
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <BlueRadiusBackground
         style={styles.gradient}
         height={
           currentStep === 0 || currentStep === 5
             ? gradientHeight - 60
+            : currentStep === 6
+            ? gradientHeight + 40
             : currentStep === 7
             ? gradientHeight - 220
-            : gradientHeight
+            : gradientHeight - 30
         }
       />
       <View style={styles.container}>
@@ -142,9 +296,11 @@ const NewAgreementScreen: React.FC<
               height:
                 currentStep === 0 || currentStep === 5
                   ? gradientHeight - 60 - 70 - 80
+                  : currentStep === 6
+                  ? gradientHeight - 130
                   : currentStep === 7
-                  ? gradientHeight - 220
-                  : gradientHeight - 70 - 80,
+                  ? 0
+                  : gradientHeight - 70 - 80 - 30,
             },
           ]}
         >
@@ -159,24 +315,48 @@ const NewAgreementScreen: React.FC<
             </Text>
           )}
           {currentStep === 6 && (
-            <View>
-              <View>
-                <View>
-                  <Text>6</Text>
+            <View style={{ width: "100%", paddingHorizontal: 10 }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View
+                  style={[
+                    styles.roundBackground,
+                    { backgroundColor: "white", marginRight: 20 },
+                  ]}
+                >
+                  <Text style={[styles.stepText, { color: "black" }]}>6</Text>
                 </View>
-                <Text>Log Your Agreement</Text>
+                <Text
+                  style={[styles.conflictTitle, { fontSize: FontSize.header }]}
+                >
+                  Log Your Agreement
+                </Text>
               </View>
-              <Text>Title</Text>
-              <TextInput />
-              <Text>Summary</Text>
-              <TextInput placeholder="Summarize your agreement" />
-            </View>
-          )}
-          {currentStep === 7 && (
-            <View>
-              <Text>Congratulations!</Text>
-              {/* <Image /> */}
-              <BlueButton>Finish</BlueButton>
+              <Text style={[styles.bold, { marginTop: 20 }]}>Title</Text>
+              <TextInput
+                style={{
+                  borderRadius: 20,
+                  backgroundColor: "white",
+                  marginTop: 5,
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                }}
+                value={title}
+                onChangeText={setTitle}
+              />
+              <Text style={[styles.bold, { marginTop: 15 }]}>Summary</Text>
+              <TextInput
+                multiline
+                style={{
+                  borderRadius: 20,
+                  backgroundColor: "white",
+                  marginTop: 5,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  height: 90,
+                }}
+                value={summary}
+                onChangeText={setSummary}
+              />
             </View>
           )}
           {currentStep >= 1 && currentStep <= 4 && (
@@ -191,8 +371,8 @@ const NewAgreementScreen: React.FC<
                 <AnimatedCircularProgress
                   style={styles.circularProgress}
                   size={177}
-                  width={15}
-                  backgroundWidth={7}
+                  width={12}
+                  backgroundWidth={6}
                   fill={(second / timerLength) * 100}
                   tintColor="#FFA37B"
                   tintColorSecondary="#FF6954"
@@ -231,47 +411,107 @@ const NewAgreementScreen: React.FC<
         >
           {currentStep === 0 && (
             <>
-              <BlueButton style={styles.personButton}>Brandon</BlueButton>
-              <BlueButton style={styles.personButton}>James</BlueButton>
-              <BlueButton style={styles.personButton}>Christina</BlueButton>
+              <UserSelection
+                user={user}
+                selected={selectedPeople.includes(user.user.id)}
+                onSelect={handlePeopleSelect}
+              />
+              {spouse && (
+                <UserSelection
+                  user={spouse}
+                  selected={selectedPeople.includes(spouse.user.id)}
+                  onSelect={handlePeopleSelect}
+                />
+              )}
+              {children?.map((c) => (
+                <UserSelection
+                  key={c.user.id}
+                  user={c}
+                  selected={selectedPeople.includes(c.user.id)}
+                  onSelect={handlePeopleSelect}
+                />
+              ))}
             </>
           )}
           {currentStep === 6 && (
             <>
-              <Text style={styles.emojiText}>
+              <Text style={[styles.emojiText, { marginHorizontal: -10 }]}>
                 Select an emoji for the agreement
               </Text>
               <View style={styles.emojis}>
                 <View style={styles.emojiRow}>
-                  {emojis.slice(0, 4).map((emoji) => (
-                    <View key={emoji} style={styles.emojiContainer}>
-                      <Text style={styles.emoji}>{emoji}</Text>
-                    </View>
+                  {emojis.slice(0, 5).map((emoji) => (
+                    <EmojiButton
+                      key={emoji}
+                      selected={selectedEmoji === emoji}
+                      onPress={() => setSelectedEmoji(emoji)}
+                      emoji={emoji}
+                    />
                   ))}
                 </View>
                 <View style={styles.emojiRow}>
-                  {emojis.slice(4, 8).map((emoji) => (
-                    <View key={emoji} style={styles.emojiContainer}>
-                      <Text style={styles.emoji}>{emoji}</Text>
-                    </View>
+                  {emojis.slice(5, 10).map((emoji) => (
+                    <EmojiButton
+                      key={emoji}
+                      selected={selectedEmoji === emoji}
+                      onPress={() => setSelectedEmoji(emoji)}
+                      emoji={emoji}
+                    />
                   ))}
                 </View>
                 <View style={styles.emojiRow}>
-                  {emojis.slice(8, 12).map((emoji) => (
-                    <View key={emoji} style={styles.emojiContainer}>
-                      <Text style={styles.emoji}>{emoji}</Text>
-                    </View>
+                  {emojis.slice(10, 15).map((emoji) => (
+                    <EmojiButton
+                      key={emoji}
+                      selected={selectedEmoji === emoji}
+                      onPress={() => setSelectedEmoji(emoji)}
+                      emoji={emoji}
+                    />
                   ))}
                 </View>
                 <View style={styles.emojiRow}>
-                  {emojis.slice(12, 16).map((emoji) => (
-                    <View key={emoji} style={styles.emojiContainer}>
-                      <Text style={styles.emoji}>{emoji}</Text>
-                    </View>
+                  {emojis.slice(15, 20).map((emoji) => (
+                    <EmojiButton
+                      key={emoji}
+                      selected={selectedEmoji === emoji}
+                      onPress={() => setSelectedEmoji(emoji)}
+                      emoji={emoji}
+                    />
                   ))}
                 </View>
               </View>
             </>
+          )}
+          {currentStep === 7 && (
+            <View style={{ justifyContent: "space-between", marginTop: 20 }}>
+              <Text style={styles.conflictTitle}>Congratulations!</Text>
+              <Image
+                style={{ width: 200, height: 200, alignSelf: "center" }}
+                source={require("../assets/images/icon.png")}
+              />
+              <Text style={{ textAlign: "center", fontFamily: "italic" }}>
+                Conflict allows us to learn and grow. Together, you worked
+                toward a healthier relationship!
+              </Text>
+              <BlueRingView
+                style={{ marginTop: 20 }}
+                borderRadius={20}
+                ringWidth={4}
+              >
+                <View style={{ padding: 16, alignItems: "center" }}>
+                  <Text style={styles.bold}>Agreement Saved</Text>
+                  <Text style={{ marginTop: 8 }}>{dayjs().format("lll")}</Text>
+                </View>
+              </BlueRingView>
+              <OrangeButton
+                shadow
+                style={{ marginTop: 20 }}
+                ring
+                onPress={handleFinishPress}
+              >
+                Finish
+              </OrangeButton>
+            </View>
           )}
           {currentStep > 0 && currentStep <= 5 && (
             <>
@@ -280,8 +520,18 @@ const NewAgreementScreen: React.FC<
               </View>
               <Text style={styles.stepPrompt}>
                 {steps[currentStep - 1].prompt
-                  .replaceAll("{person1}", "Dad")
-                  .replaceAll("{person2}", "Braedon")}
+                  .replaceAll(
+                    "{person1}",
+                    (person1?.role !== "Child"
+                      ? person1?.role
+                      : person1?.user.name)!
+                  )
+                  .replaceAll(
+                    "{person2}",
+                    (person2?.role !== "Child"
+                      ? person2?.role
+                      : person2?.user.name)!
+                  )}
               </Text>
               <View style={styles.tipLabelContainer}>
                 <View style={styles.roundBackground}>
@@ -293,8 +543,18 @@ const NewAgreementScreen: React.FC<
                 {steps[currentStep - 1].tips.map((tip) => (
                   <Text key={tip} style={styles.tipText}>
                     {tip
-                      .replaceAll("{person1}", "Dad")
-                      .replaceAll("{person2}", "Braedon")}
+                      .replaceAll(
+                        "{person1}",
+                        (person1?.role !== "Child"
+                          ? person1?.role
+                          : person1?.user.name)!
+                      )
+                      .replaceAll(
+                        "{person2}",
+                        (person2?.role !== "Child"
+                          ? person2?.role
+                          : person2?.user.name)!
+                      )}
                   </Text>
                 ))}
               </View>
@@ -323,6 +583,10 @@ const NewAgreementScreen: React.FC<
           style={styles.nextButton}
           name="arrow-right"
           onPress={handleNextPress}
+          disabled={
+            selectedPeople.some((p) => p === null) ||
+            (currentStep === 6 && !selectedEmoji)
+          }
         />
       )}
       {currentStep !== 0 && currentStep !== 7 && (
@@ -332,7 +596,99 @@ const NewAgreementScreen: React.FC<
           onPress={handlePrevPress}
         />
       )}
-    </>
+      <ConfirmationDialog
+        isVisible={exitDialogOpen}
+        title="Exit"
+        text="Are you sure you want to exit? Your progress will be lost."
+        onOk={handleExitOk}
+        onCancel={handleExitCancel}
+      />
+      <ConfirmationDialog
+        isVisible={discardDialogOpen}
+        title="Go Back"
+        text="Are you sure you want to go back? Your draft will be discarded."
+        onOk={handleDiscardOk}
+        onCancel={handleDiscardCancel}
+      />
+    </View>
+  );
+};
+
+const EmojiButton = ({
+  emoji,
+  selected,
+  onPress,
+}: {
+  emoji: string;
+  onPress: () => void;
+  selected: boolean;
+}) => (
+  <Touchable
+    style={[
+      styles.emojiContainer,
+      selected && { backgroundColor: "rgba(97, 211, 209, 0.75)" },
+    ]}
+    onPress={onPress}
+  >
+    <Text style={styles.emoji}>{emoji}</Text>
+  </Touchable>
+);
+
+const UserSelection = ({
+  user,
+  selected,
+  onSelect,
+}: {
+  user: Profile;
+  selected: boolean;
+  onSelect: (id: string) => void;
+}) => {
+  const view = (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: selected ? 10 : 8,
+        paddingVertical: 6,
+      }}
+    >
+      <MockPhoto
+        style={{ width: 54, height: 54, borderRadius: 27 }}
+        name={user.user.photo}
+      />
+      <View style={{ marginLeft: 15 }}>
+        <Text
+          style={{
+            color: selected ? "white" : "black",
+            fontFamily: selected ? "semibold" : "regular",
+          }}
+        >
+          {user.user.name}
+        </Text>
+        <Text
+          style={{
+            fontSize: FontSize.caption,
+            color: selected ? "white" : Colors.greengrey,
+            marginTop: 2,
+          }}
+        >
+          {user.role}
+        </Text>
+      </View>
+    </View>
+  );
+
+  return (
+    <Touchable
+      style={[styles.personButton, { borderRadius: 40 }]}
+      onPress={() => onSelect(user.user.id)}
+    >
+      {selected ? (
+        <BlueView borderRadius={40}>{view}</BlueView>
+      ) : (
+        <BlueRingView borderRadius={40}>{view}</BlueRingView>
+      )}
+    </Touchable>
   );
 };
 
@@ -342,6 +698,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
+  },
+  bold: {
+    fontFamily: "semibold",
   },
   container: {
     flex: 1,
@@ -360,13 +719,13 @@ const styles = StyleSheet.create({
   },
   lowerContainer: {
     flex: 1,
-    marginTop: 10,
-    paddingTop: 20,
-    paddingBottom: 60,
+    marginTop: 20,
+    paddingTop: 0,
+    paddingBottom: 40,
     paddingHorizontal: 20,
   },
   personButton: {
-    marginVertical: 10,
+    marginVertical: 8,
   },
   nextButton: {
     right: 20,
@@ -408,7 +767,7 @@ const styles = StyleSheet.create({
   },
   countdown: {
     fontFamily: "semibold",
-    fontSize: FontSize.title,
+    fontSize: 36,
   },
   roundBackground: {
     backgroundColor: "#9aeaef",
@@ -450,7 +809,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   emojis: {
-    marginTop: 20,
+    marginTop: 10,
     paddingHorizontal: 10,
   },
   emojiRow: {
@@ -459,8 +818,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   emojiContainer: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     backgroundColor: "white",
     borderRadius: 12,
     shadowColor: Colors.bluegreen,
@@ -469,10 +828,10 @@ const styles = StyleSheet.create({
       width: 0,
       height: 4,
     },
-    shadowRadius: 10,
+    shadowRadius: 5,
     alignItems: "center",
     justifyContent: "center",
-    margin: 5,
+    margin: 4,
   },
   emoji: {
     fontSize: 30,

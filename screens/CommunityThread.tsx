@@ -30,7 +30,7 @@ import {
 } from "../data/post";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
-import { Post, Reply } from "../types/state";
+import { Parent, Post, Reply } from "../types/state";
 
 const CommunityThreadScreen: React.FC<
   RootStackScreenProps<"CommunityThread">
@@ -136,7 +136,7 @@ const CommunityThreadScreen: React.FC<
         reply: {
           id: uuid(),
           author: {
-            ...user,
+            ...(user as Parent),
           },
           content: replyText,
           image,

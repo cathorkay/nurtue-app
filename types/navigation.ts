@@ -27,8 +27,11 @@ export type RootStackParamList = {
   PracticeQuestion: {
     topic: string;
   };
-  AgreementDetail: undefined;
+  AgreementDetail: {
+    agreementId: string;
+  };
   AgreementStack: undefined;
+  AgreementSettings: undefined;
   ProfileStack: undefined;
 };
 
@@ -38,6 +41,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 export type AgreementStackParamList = {
   NewAgreement: {
     step: number;
+    selectedPeople: [string | null, string | null];
   };
 };
 
@@ -60,6 +64,9 @@ export type SearchStackParamList = {
   CommunityThread: {
     postId: string;
     fromSearch: boolean;
+  };
+  AgreementDetail: {
+    agreementId: string;
   };
 };
 
