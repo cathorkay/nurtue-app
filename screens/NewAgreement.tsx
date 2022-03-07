@@ -7,6 +7,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  TouchableHighlightProps,
 } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { v4 as uuid } from "uuid";
@@ -28,8 +29,9 @@ import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
 import { addAgreement } from "../data/agreement";
 import { useAppDispatch, useAppSelector } from "../data/store";
+import { getAgeFromBirthday } from "../lib/format";
 import { AgreementStackScreenProps } from "../types/navigation";
-import { Profile } from "../types/state";
+import { Child, Profile } from "../types/state";
 
 const steps = [
   {
@@ -412,12 +414,14 @@ const NewAgreementScreen: React.FC<
           {currentStep === 0 && (
             <>
               <UserSelection
+                style={styles.personButton}
                 user={user}
                 selected={selectedPeople.includes(user.user.id)}
                 onSelect={handlePeopleSelect}
               />
               {spouse && (
                 <UserSelection
+                  style={styles.personButton}
                   user={spouse}
                   selected={selectedPeople.includes(spouse.user.id)}
                   onSelect={handlePeopleSelect}
@@ -425,6 +429,7 @@ const NewAgreementScreen: React.FC<
               )}
               {children?.map((c) => (
                 <UserSelection
+                  style={styles.personButton}
                   key={c.user.id}
                   user={c}
                   selected={selectedPeople.includes(c.user.id)}
@@ -634,14 +639,16 @@ const EmojiButton = ({
   </Touchable>
 );
 
-const UserSelection = ({
+export const UserSelection = ({
   user,
   selected,
   onSelect,
+  style,
 }: {
   user: Profile;
-  selected: boolean;
-  onSelect: (id: string) => void;
+  selected?: boolean;
+  onSelect?: (id: string) => void;
+  style?: TouchableHighlightProps["style"];
 }) => {
   const view = (
     <View
@@ -672,7 +679,11 @@ const UserSelection = ({
             marginTop: 2,
           }}
         >
-          {user.role}
+          {user.role === "Child"
+            ? `${getAgeFromBirthday((user.user as Child).birthday)} ${
+                user.user.gender
+              }`
+            : user.role}
         </Text>
       </View>
     </View>
@@ -680,8 +691,8 @@ const UserSelection = ({
 
   return (
     <Touchable
-      style={[styles.personButton, { borderRadius: 40 }]}
-      onPress={() => onSelect(user.user.id)}
+      style={[{ borderRadius: 40 }, style]}
+      onPress={onSelect ? () => onSelect(user.user.id) : undefined}
     >
       {selected ? (
         <BlueView borderRadius={40}>{view}</BlueView>
