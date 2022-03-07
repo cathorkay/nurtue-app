@@ -112,7 +112,7 @@ const NewAgreementScreen: React.FC<
     (state) => state.profileState.profile.children
   );
 
-  const timerRef = useRef<NodeJS.Timer>();
+  const timerRef = useRef<NodeJS.Timer | null>();
   const [exitDialogOpen, setExitDialogOpen] = useState(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [second, setSecond] = useState(timerLength);
@@ -222,6 +222,15 @@ const NewAgreementScreen: React.FC<
 
   const handleTimerStop = () => {
     timerRef.current && clearInterval(timerRef.current);
+    timerRef.current = null;
+  };
+
+  const handleTimerPress = () => {
+    if (timerRef.current) {
+      handleTimerStop();
+    } else {
+      handleTimerStart();
+    }
   };
 
   const handlePeopleSelect = (id: string) => {
@@ -364,7 +373,7 @@ const NewAgreementScreen: React.FC<
           {currentStep >= 1 && currentStep <= 4 && (
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={handleTimerStart}
+              onPress={handleTimerPress}
               style={styles.timerContainer}
             >
               {second === timerLength ? (
