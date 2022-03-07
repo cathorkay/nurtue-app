@@ -12,6 +12,7 @@ import FilterScreen from "../screens/Filter";
 import NewPostScreen from "../screens/NewPost";
 import PracticePreviewScreen from "../screens/PracticePreview";
 import PracticeQuestionScreen from "../screens/PracticeQuestion";
+import PracticeReviewScreen from "../screens/PracticeReview";
 import { RootStackParamList } from "../types/navigation";
 import { Agreements } from "./Agreement";
 import { Profiles } from "./Profile";
@@ -145,6 +146,24 @@ function Root() {
               }}
               name="close"
               size={iconSize}
+              color={Colors.bluegreen}
+            />
+          ),
+        })}
+      />
+      <RootStack.Screen
+        name="PracticeReview"
+        component={PracticeReviewScreen}
+        options={({ route }) => ({
+          title: route.params.topic,
+          headerLeft: () => (
+            <IconButton
+              style={{
+                marginLeft: 10,
+              }}
+              onPress={navigation.goBack}
+              name="chevron-left"
+              size={iconSize + 6}
               color={Colors.bluegreen}
             />
           ),

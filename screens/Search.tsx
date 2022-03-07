@@ -14,13 +14,14 @@ import AgreementCard from "../components/AgreementCard";
 import Chip from "../components/Chip";
 import IconButton from "../components/IconButton";
 import PostCard from "../components/PostCard";
+import PracticeCard from "../components/PracticeCard";
 import SearchBar from "../components/SearchBar";
 import Text from "../components/Text";
 import Colors from "../constants/Colors";
 import mock from "../data/mock";
 import { useAppSelector } from "../data/store";
 import { SearchStackScreenProps } from "../types/navigation";
-import { Agreement, Post } from "../types/state";
+import { Agreement, Post, Practice } from "../types/state";
 
 const postFuseOptions: Fuse.IFuseOptions<Post> = {
   keys: ["title", "content", "topics", "replies.content"],
@@ -28,6 +29,10 @@ const postFuseOptions: Fuse.IFuseOptions<Post> = {
 
 const agreementFuseOptions: Fuse.IFuseOptions<Agreement> = {
   keys: ["title", "summary", "emoji"],
+};
+
+const practiceFuseOptions: Fuse.IFuseOptions<Practice> = {
+  keys: ["topic", "description"],
 };
 
 const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
@@ -39,10 +44,13 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
 
   const posts = useAppSelector((state) => state.postState.posts);
   const agreements = useAppSelector((state) => state.agreementState.agreements);
+  const practices = useAppSelector((state) => state.practiceState.practices);
+  const progress = useAppSelector((state) => state.practiceState.progress);
 
   const [query, setQuery] = useState("");
   const [postResults, setPostResults] = useState<Post[]>([]);
   const [agreementResults, setAgreementResults] = useState<Agreement[]>([]);
+  const [practiceResults, setPracticeResults] = useState<Practice[]>([]);
 
   const handleCancel = () => {
     navigation.goBack();
@@ -58,8 +66,12 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
         const fuse = new Fuse(agreements, agreementFuseOptions);
         setAgreementResults(fuse.search(query).map((i) => i.item));
       }
+      if (type === "practices") {
+        const fuse = new Fuse(practices, practiceFuseOptions);
+        setPracticeResults(fuse.search(query).map((i) => i.item));
+      }
     }
-  }, [agreements, posts, query, type]);
+  }, [agreements, posts, practices, query, type]);
 
   const renderPostCard: ListRenderItem<Post> = ({ item }) => (
     <PostCard
@@ -82,6 +94,20 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
       onPress={() =>
         navigation.push("AgreementDetail", {
           agreementId: item.id,
+        })
+      }
+    />
+  );
+
+  const renderPracticeCard: ListRenderItem<Practice> = ({ item }) => (
+    <PracticeCard
+      style={styles.card}
+      practice={item}
+      progress={progress[item.id]}
+      onPress={() =>
+        navigation.push("PracticePreview", {
+          practiceId: item.id,
+          topic: item.topic,
         })
       }
     />
@@ -157,7 +183,7 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
             renderItem={renderPostCard}
             keyExtractor={(item) => item.id}
           />
-        ) : (
+        ) : type === "agreements" ? (
           <FlatList
             style={styles.list}
             contentContainerStyle={{
@@ -166,6 +192,17 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
             }}
             data={agreementResults}
             renderItem={renderAgreementCard}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <FlatList
+            style={styles.list}
+            contentContainerStyle={{
+              marginTop: -20,
+              paddingBottom: insets.bottom + 20,
+            }}
+            data={practiceResults}
+            renderItem={renderPracticeCard}
             keyExtractor={(item) => item.id}
           />
         )

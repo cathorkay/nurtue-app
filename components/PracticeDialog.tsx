@@ -10,6 +10,7 @@ export type PracticeDialogProps = Omit<
     primaryText: string;
     secondaryText: string;
     finish?: boolean;
+    onOk?: () => void;
   },
   "title"
 >;
@@ -19,6 +20,7 @@ const PracticeDialog: React.FC<PracticeDialogProps> = ({
   primaryText,
   secondaryText,
   finish,
+  onOk,
   ...restProps
 }) => {
   return (
@@ -30,9 +32,11 @@ const PracticeDialog: React.FC<PracticeDialogProps> = ({
       <Text style={styles.primary}>{primaryText}</Text>
       <Text style={styles.secondary}>{secondaryText}</Text>
       {type === "failure" ? (
-        <OrangeButton style={styles.button}>Try Again</OrangeButton>
+        <OrangeButton style={styles.button} onPress={onOk}>
+          Try Again
+        </OrangeButton>
       ) : (
-        <BlueButton style={styles.button} selected>
+        <BlueButton style={styles.button} selected onPress={onOk}>
           {finish ? "Finish" : "Continue"}
         </BlueButton>
       )}
@@ -43,6 +47,7 @@ const PracticeDialog: React.FC<PracticeDialogProps> = ({
 const styles = StyleSheet.create({
   primary: {
     fontFamily: "semibold",
+    marginTop: 10,
   },
   secondary: {
     marginTop: 8,

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { NativeModules, StyleSheet, View } from "react-native";
 
 import TextButton from "../components/TextButton";
 import { persistor } from "../data/store";
@@ -8,6 +8,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   const handleReset = async () => {
     await persistor.purge();
     persistor.persist();
+    NativeModules.DevSettings.reload();
   };
 
   return (

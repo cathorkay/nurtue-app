@@ -10,16 +10,18 @@ import Text from "./Text";
 export interface CircularProgressProps
   extends Partial<AnimatedCircularProgressProps> {
   progress: number;
+  big?: boolean;
 }
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
   progress,
+  big,
   ...restProps
 }) => {
   return (
     <View style={styles.container}>
       <AnimatedCircularProgress
-        size={60}
+        size={big ? 80 : 60}
         width={7}
         backgroundWidth={3}
         fill={progress}
@@ -36,8 +38,17 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           flexDirection: "row",
         }}
       >
-        <Text style={{ fontFamily: "semibold" }}>{progress}</Text>
-        <Text style={{ fontSize: FontSize.caption, marginTop: 1 }}>%</Text>
+        <Text
+          style={{
+            fontFamily: "semibold",
+            fontSize: big ? FontSize.header : FontSize.normal,
+          }}
+        >
+          {progress}
+        </Text>
+        <Text style={{ fontSize: FontSize.caption, marginTop: big ? 6 : 1 }}>
+          %
+        </Text>
       </View>
     </View>
   );

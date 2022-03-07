@@ -266,7 +266,7 @@ const posts: Post[] = [
 
 const questionOfTheDay: Question = {
   question:
-    "Your child is crying after getting a shot at the doctor’s office. What should you say?",
+    "Your child is crying after getting a shot at the doctor's office. What should you say?",
   source: "Curious Parenting",
   choices: [
     {
@@ -275,17 +275,17 @@ const questionOfTheDay: Question = {
         "When we say this, kids learn that their feelings only matter in severe circumstances.",
     },
     {
-      content: "“Don’t cry, give me a big kid smile!”",
+      content: "“Don't cry, give me a big kid smile!”",
       explanation: "When we say this, kids learn to fake their feelings.",
     },
     {
-      content: "“C’mon, shake it off buddy!”",
+      content: "“C'mon, shake it off buddy!”",
       explanation: "When we say this, kids learn to push away their pain.",
     },
     {
-      content: "“I know it hurts. I’m here with you. You are safe.”",
+      content: "“I know it hurts. I'm here with you. You are safe.”",
       explanation:
-        "When we say this, kids learn they don’t have to hide their true feelings.",
+        "When we say this, kids learn they don't have to hide their true feelings.",
     },
   ],
   answerIndex: 3,
@@ -296,7 +296,7 @@ const practices: Practice[] = [
     id: "1",
     topic: "Discipline",
     description:
-      "Discipline, rather than punishment, allows us to validate our kids’ feelings, set clear expectations, and teach them how to make healthy decisions on their own.",
+      "Discipline, rather than punishment, allows us to validate our kids' feelings, set clear expectations, and teach them how to make healthy decisions on their own.",
     source: "Verywell Family",
     questions: [
       {
@@ -310,8 +310,9 @@ const practices: Practice[] = [
           },
           {
             content:
-              "“If you don’t stop fighting right now, no one gets the toy!”",
-            explanation: "Disagreeing with someone is dangerous.",
+              "“If you don't stop fighting right now, no one gets the toy!”",
+            explanation:
+              "When we say this, kids learn that disagreeing with someone is dangerous.",
           },
           {
             content: "“Be nice. Let them have a turn.”",
@@ -325,6 +326,117 @@ const practices: Practice[] = [
           },
         ],
         answerIndex: 0,
+      },
+      {
+        question: "Your kids are running in the halls. What should you say?",
+        source: "Curious Parenting",
+        choices: [
+          {
+            content: "“You're going to trip and fall if you keep doing that.”",
+            explanation:
+              "When we rely on fear tactics, kids lose trust in us and themselves.",
+          },
+          {
+            content: "“Stop it. You have too much energy.”",
+            explanation:
+              "When we say this, kids learn that having energy is a bad thing.",
+          },
+          {
+            content: "“Don't run!”",
+            explanation:
+              "When we say this and don't provide an outlet for their impulses, we make it hard for them to cooperate with us.",
+          },
+          {
+            content: "“If you want to run, let's head outside.”",
+            explanation:
+              "When we say this, we give kids an outlet to release their energy.",
+          },
+        ],
+        answerIndex: 3,
+      },
+      {
+        question: "Your kid pushes their friend. What should you say?",
+        source: "Curious Parenting",
+        choices: [
+          {
+            content: "“Don't be rude.”",
+            explanation:
+              "When we say this, kids tend to overlook the underlying reason the behavior is happening in the first place.",
+          },
+          {
+            content: "“If you need more space, you can say 'back up.'”",
+            explanation:
+              "When we say this, we give kids alternative ways to communicate.",
+          },
+          {
+            content: "“Look what you did. Your friend is mad because of you.”",
+            explanation:
+              "When we say this, kids learn that other people's feelings are their responsibility.",
+          },
+          {
+            content: "“I didn't raise you to act this way.”",
+            explanation:
+              "When we say this, kids learn that they are the problem, rather than their behavior.",
+          },
+        ],
+        answerIndex: 1,
+      },
+      {
+        question: "Your kid yells “Give me the iPad!” What should you say?",
+        source: "Curious Parenting",
+        choices: [
+          {
+            content: "“Please ask me in a nicer way.”",
+            explanation:
+              "When we say this, we give kids the tools to set boundaries and express their needs.",
+          },
+          {
+            content:
+              "“You are being annoying. Do you want to be an annoying kid?”",
+            explanation:
+              "When we say this, kids tend to feel defensive rather than connect with what we're saying.",
+          },
+          {
+            content: "“If you keep asking you'll never get it!”",
+            explanation:
+              "When we say this, kids miss the chance to learn how to negotiate and compromise.",
+          },
+          {
+            content: "“Be quiet.”",
+            explanation:
+              "When we say this, kids learn it is unsafe to communicate their feelings.",
+          },
+        ],
+        answerIndex: 0,
+      },
+      {
+        question:
+          "It's time to go home, but your kid refuses to leave the playground. What should you say?",
+        source: "Curious Parenting",
+        choices: [
+          {
+            content: "I will be sad if I have to go home alone.",
+            explanation:
+              "When we say this, kids learn that we need them to please us in order to earn love.",
+          },
+          {
+            content: "“You're being so bad today. I just want to go home!”",
+            explanation:
+              "When we say this, we pull attention away from how kids feel about what they've done, and make it about how we feel instead.",
+          },
+          {
+            content:
+              "“It's important to me that you can trust what I say. Our plan was five more minutes, now it's time to go”",
+            explanation:
+              "When we say this, trust is built between parents and kids. Kids learn the importance of following through.",
+          },
+          {
+            content: "“I should have never let you play on the playground.”",
+            explanation:
+              "When we say this, we create a “me vs. you” dynamic that makes it harder to problem solve.",
+          },
+        ],
+        answerIndex: 2,
       },
     ],
   },
@@ -356,7 +468,7 @@ const agreements: Agreement[] = [
     title: "Parents will knock before entering",
     emoji: "🚪",
     summary:
-      "Mom and Dad will respect Braedon’s privacy by knocking on the door and waiting for confirmation before entering his room.",
+      "Mom and Dad will respect Braedon's privacy by knocking on the door and waiting for confirmation before entering his room.",
     people: [reneeProfile, jaydenProfile],
     createdAt: "2022-02-26T02:42:34.871Z",
     updatedAt: "2022-02-26T02:42:34.871Z",

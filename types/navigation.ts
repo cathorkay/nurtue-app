@@ -22,9 +22,16 @@ export type RootStackParamList = {
   Filter: undefined;
   NewPost: undefined;
   PracticePreview: {
+    practiceId: string;
     topic: string;
   };
   PracticeQuestion: {
+    questionIndex: number;
+    practiceId: string;
+    topic: string;
+  };
+  PracticeReview: {
+    practiceId: string;
     topic: string;
   };
   AgreementDetail: {
@@ -59,7 +66,7 @@ export type ProfileStackScreenProps<
 
 export type SearchStackParamList = {
   Search: {
-    type: "posts" | "agreements";
+    type: "posts" | "agreements" | "practices";
   };
   CommunityThread: {
     postId: string;
@@ -67,6 +74,19 @@ export type SearchStackParamList = {
   };
   AgreementDetail: {
     agreementId: string;
+  };
+  PracticePreview: {
+    practiceId: string;
+    topic: string;
+  };
+  PracticeQuestion: {
+    questionIndex: number;
+    practiceId: string;
+    topic: string;
+  };
+  PracticeReview: {
+    practiceId: string;
+    topic: string;
   };
 };
 
