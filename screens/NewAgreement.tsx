@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Image,
   TouchableHighlightProps,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { v4 as uuid } from "uuid";
@@ -284,6 +286,301 @@ const NewAgreementScreen: React.FC<
     return unsub;
   }, [timerLength, navigation]);
 
+  const container = (
+    <View style={styles.container}>
+      <ProgressBar progress={currentStep / 7} />
+      <View
+        style={[
+          styles.upperContainer,
+          {
+            height:
+              currentStep === 0 || currentStep === 5
+                ? gradientHeight - 60 - 70 - 80
+                : currentStep === 6
+                ? gradientHeight - 130
+                : currentStep === 7
+                ? 0
+                : gradientHeight - 70 - 80 - 30,
+          },
+        ]}
+      >
+        {currentStep === 0 && (
+          <Text style={styles.conflictTitle}>
+            Who is this conflict between?
+          </Text>
+        )}
+        {currentStep === 5 && (
+          <Text style={styles.conflictTitle}>
+            How can we work together to solve the problem?
+          </Text>
+        )}
+        {currentStep === 6 && (
+          <View style={{ width: "100%", paddingHorizontal: 10 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={[
+                  styles.roundBackground,
+                  { backgroundColor: "white", marginRight: 20 },
+                ]}
+              >
+                <Text style={[styles.stepText, { color: "black" }]}>6</Text>
+              </View>
+              <Text
+                style={[styles.conflictTitle, { fontSize: FontSize.header }]}
+              >
+                Log Your Agreement
+              </Text>
+            </View>
+            <Text style={[styles.bold, { marginTop: 20 }]}>Title</Text>
+            <TextInput
+              style={{
+                borderRadius: 20,
+                backgroundColor: "white",
+                marginTop: 5,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+              }}
+              value={title}
+              onChangeText={setTitle}
+            />
+            <Text style={[styles.bold, { marginTop: 15 }]}>Summary</Text>
+            <TextInput
+              multiline
+              style={{
+                borderRadius: 20,
+                backgroundColor: "white",
+                marginTop: 5,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                height: 90,
+              }}
+              value={summary}
+              onChangeText={setSummary}
+            />
+          </View>
+        )}
+        {currentStep >= 1 && currentStep <= 4 && (
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={handleTimerPress}
+            style={styles.timerContainer}
+          >
+            {second === timerLength ? (
+              <TimerBackground />
+            ) : (
+              <AnimatedCircularProgress
+                style={styles.circularProgress}
+                size={177}
+                width={12}
+                backgroundWidth={6}
+                fill={(second / timerLength) * 100}
+                tintColor="#FFA37B"
+                tintColorSecondary="#FF6954"
+                backgroundColor="white"
+                rotation={0}
+                lineCap="round"
+              />
+            )}
+            <View style={styles.timer}>
+              {second === timerLength ? (
+                <>
+                  <View style={styles.timeContainer}>
+                    <Text style={styles.timeText}>
+                      {new Date(timerLength * 1000).toISOString().substr(15, 4)}
+                    </Text>
+                    <Text style={styles.timeUnit}>min</Text>
+                  </View>
+                  <Text style={styles.timerHint}>Start Timer</Text>
+                </>
+              ) : (
+                <Text style={styles.countdown}>
+                  {new Date(second * 1000).toISOString().substr(14, 5)}
+                </Text>
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
+      <ScrollView
+        style={styles.lowerContainer}
+        contentContainerStyle={{
+          paddingBottom: 100,
+        }}
+      >
+        {currentStep === 0 && (
+          <>
+            <UserSelection
+              style={styles.personButton}
+              user={user}
+              selected={selectedPeople.includes(user.user.id)}
+              onSelect={handlePeopleSelect}
+            />
+            {spouse && (
+              <UserSelection
+                style={styles.personButton}
+                user={spouse}
+                selected={selectedPeople.includes(spouse.user.id)}
+                onSelect={handlePeopleSelect}
+              />
+            )}
+            {children?.map((c) => (
+              <UserSelection
+                style={styles.personButton}
+                key={c.user.id}
+                user={c}
+                selected={selectedPeople.includes(c.user.id)}
+                onSelect={handlePeopleSelect}
+              />
+            ))}
+          </>
+        )}
+        {currentStep === 6 && (
+          <>
+            <Text style={[styles.emojiText, { marginHorizontal: -10 }]}>
+              Select an emoji for the agreement
+            </Text>
+            <View style={styles.emojis}>
+              <View style={styles.emojiRow}>
+                {emojis.slice(0, 5).map((emoji) => (
+                  <EmojiButton
+                    key={emoji}
+                    selected={selectedEmoji === emoji}
+                    onPress={() => setSelectedEmoji(emoji)}
+                    emoji={emoji}
+                  />
+                ))}
+              </View>
+              <View style={styles.emojiRow}>
+                {emojis.slice(5, 10).map((emoji) => (
+                  <EmojiButton
+                    key={emoji}
+                    selected={selectedEmoji === emoji}
+                    onPress={() => setSelectedEmoji(emoji)}
+                    emoji={emoji}
+                  />
+                ))}
+              </View>
+              <View style={styles.emojiRow}>
+                {emojis.slice(10, 15).map((emoji) => (
+                  <EmojiButton
+                    key={emoji}
+                    selected={selectedEmoji === emoji}
+                    onPress={() => setSelectedEmoji(emoji)}
+                    emoji={emoji}
+                  />
+                ))}
+              </View>
+              <View style={styles.emojiRow}>
+                {emojis.slice(15, 20).map((emoji) => (
+                  <EmojiButton
+                    key={emoji}
+                    selected={selectedEmoji === emoji}
+                    onPress={() => setSelectedEmoji(emoji)}
+                    emoji={emoji}
+                  />
+                ))}
+              </View>
+            </View>
+          </>
+        )}
+        {currentStep === 7 && (
+          <View style={{ justifyContent: "space-between", marginTop: 20 }}>
+            <Text style={styles.conflictTitle}>Congratulations!</Text>
+            <Image
+              style={{ width: 200, height: 200, alignSelf: "center" }}
+              source={require("../assets/images/icon.png")}
+            />
+            <Text style={{ textAlign: "center", fontFamily: "italic" }}>
+              Conflict allows us to learn and grow. Together, you worked toward
+              a healthier relationship!
+            </Text>
+            <BlueRingView
+              style={{ marginTop: 20 }}
+              borderRadius={20}
+              ringWidth={4}
+            >
+              <View style={{ padding: 16, alignItems: "center" }}>
+                <Text style={styles.bold}>Agreement Saved</Text>
+                <Text style={{ marginTop: 8 }}>{dayjs().format("lll")}</Text>
+              </View>
+            </BlueRingView>
+            <OrangeButton
+              shadow
+              style={{ marginTop: 20 }}
+              ring
+              onPress={handleFinishPress}
+            >
+              Finish
+            </OrangeButton>
+          </View>
+        )}
+        {currentStep > 0 && currentStep <= 5 && (
+          <>
+            <View style={styles.roundBackground}>
+              <Text style={styles.stepText}>{currentStep}</Text>
+            </View>
+            <Text style={styles.stepPrompt}>
+              {steps[currentStep - 1].prompt
+                .replaceAll(
+                  "{person1}",
+                  (person1?.role !== "Child"
+                    ? person1?.role
+                    : person1?.user.name)!
+                )
+                .replaceAll(
+                  "{person2}",
+                  (person2?.role !== "Child"
+                    ? person2?.role
+                    : person2?.user.name)!
+                )}
+            </Text>
+            <View style={styles.tipLabelContainer}>
+              <View style={styles.roundBackground}>
+                <MaterialCommunityIcons name="lightbulb" size={28} />
+              </View>
+              <Text style={styles.tipLabel}>Tips</Text>
+            </View>
+            <View style={styles.tips}>
+              {steps[currentStep - 1].tips.map((tip) => (
+                <Text key={tip} style={styles.tipText}>
+                  {tip
+                    .replaceAll(
+                      "{person1}",
+                      (person1?.role !== "Child"
+                        ? person1?.role
+                        : person1?.user.name)!
+                    )
+                    .replaceAll(
+                      "{person2}",
+                      (person2?.role !== "Child"
+                        ? person2?.role
+                        : person2?.user.name)!
+                    )}
+                </Text>
+              ))}
+            </View>
+            {currentStep === 5 && (
+              <>
+                <View style={styles.tipLabelContainer}>
+                  <View style={styles.roundBackground}>
+                    <MaterialCommunityIcons name="lightbulb" size={28} />
+                  </View>
+                  <Text style={styles.tipLabel}>Examples of Needs</Text>
+                </View>
+                <View style={styles.tips}>
+                  <Text style={styles.tipText}>
+                    Love, boundaries, communication, sleep, play time, food,
+                    assistance, connection, autonomy.
+                  </Text>
+                </View>
+              </>
+            )}
+          </>
+        )}
+      </ScrollView>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <BlueRadiusBackground
@@ -298,300 +595,13 @@ const NewAgreementScreen: React.FC<
             : gradientHeight - 30
         }
       />
-      <View style={styles.container}>
-        <ProgressBar progress={currentStep / 7} />
-        <View
-          style={[
-            styles.upperContainer,
-            {
-              height:
-                currentStep === 0 || currentStep === 5
-                  ? gradientHeight - 60 - 70 - 80
-                  : currentStep === 6
-                  ? gradientHeight - 130
-                  : currentStep === 7
-                  ? 0
-                  : gradientHeight - 70 - 80 - 30,
-            },
-          ]}
-        >
-          {currentStep === 0 && (
-            <Text style={styles.conflictTitle}>
-              Who is this conflict between?
-            </Text>
-          )}
-          {currentStep === 5 && (
-            <Text style={styles.conflictTitle}>
-              How can we work together to solve the problem?
-            </Text>
-          )}
-          {currentStep === 6 && (
-            <View style={{ width: "100%", paddingHorizontal: 10 }}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View
-                  style={[
-                    styles.roundBackground,
-                    { backgroundColor: "white", marginRight: 20 },
-                  ]}
-                >
-                  <Text style={[styles.stepText, { color: "black" }]}>6</Text>
-                </View>
-                <Text
-                  style={[styles.conflictTitle, { fontSize: FontSize.header }]}
-                >
-                  Log Your Agreement
-                </Text>
-              </View>
-              <Text style={[styles.bold, { marginTop: 20 }]}>Title</Text>
-              <TextInput
-                style={{
-                  borderRadius: 20,
-                  backgroundColor: "white",
-                  marginTop: 5,
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                }}
-                value={title}
-                onChangeText={setTitle}
-              />
-              <Text style={[styles.bold, { marginTop: 15 }]}>Summary</Text>
-              <TextInput
-                multiline
-                style={{
-                  borderRadius: 20,
-                  backgroundColor: "white",
-                  marginTop: 5,
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  height: 90,
-                }}
-                value={summary}
-                onChangeText={setSummary}
-              />
-            </View>
-          )}
-          {currentStep >= 1 && currentStep <= 4 && (
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={handleTimerPress}
-              style={styles.timerContainer}
-            >
-              {second === timerLength ? (
-                <TimerBackground />
-              ) : (
-                <AnimatedCircularProgress
-                  style={styles.circularProgress}
-                  size={177}
-                  width={12}
-                  backgroundWidth={6}
-                  fill={(second / timerLength) * 100}
-                  tintColor="#FFA37B"
-                  tintColorSecondary="#FF6954"
-                  backgroundColor="white"
-                  rotation={0}
-                  lineCap="round"
-                />
-              )}
-              <View style={styles.timer}>
-                {second === timerLength ? (
-                  <>
-                    <View style={styles.timeContainer}>
-                      <Text style={styles.timeText}>
-                        {new Date(timerLength * 1000)
-                          .toISOString()
-                          .substr(15, 4)}
-                      </Text>
-                      <Text style={styles.timeUnit}>min</Text>
-                    </View>
-                    <Text style={styles.timerHint}>Start Timer</Text>
-                  </>
-                ) : (
-                  <Text style={styles.countdown}>
-                    {new Date(second * 1000).toISOString().substr(14, 5)}
-                  </Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          )}
-        </View>
-        <ScrollView
-          style={styles.lowerContainer}
-          contentContainerStyle={{
-            paddingBottom: 100,
-          }}
-        >
-          {currentStep === 0 && (
-            <>
-              <UserSelection
-                style={styles.personButton}
-                user={user}
-                selected={selectedPeople.includes(user.user.id)}
-                onSelect={handlePeopleSelect}
-              />
-              {spouse && (
-                <UserSelection
-                  style={styles.personButton}
-                  user={spouse}
-                  selected={selectedPeople.includes(spouse.user.id)}
-                  onSelect={handlePeopleSelect}
-                />
-              )}
-              {children?.map((c) => (
-                <UserSelection
-                  style={styles.personButton}
-                  key={c.user.id}
-                  user={c}
-                  selected={selectedPeople.includes(c.user.id)}
-                  onSelect={handlePeopleSelect}
-                />
-              ))}
-            </>
-          )}
-          {currentStep === 6 && (
-            <>
-              <Text style={[styles.emojiText, { marginHorizontal: -10 }]}>
-                Select an emoji for the agreement
-              </Text>
-              <View style={styles.emojis}>
-                <View style={styles.emojiRow}>
-                  {emojis.slice(0, 5).map((emoji) => (
-                    <EmojiButton
-                      key={emoji}
-                      selected={selectedEmoji === emoji}
-                      onPress={() => setSelectedEmoji(emoji)}
-                      emoji={emoji}
-                    />
-                  ))}
-                </View>
-                <View style={styles.emojiRow}>
-                  {emojis.slice(5, 10).map((emoji) => (
-                    <EmojiButton
-                      key={emoji}
-                      selected={selectedEmoji === emoji}
-                      onPress={() => setSelectedEmoji(emoji)}
-                      emoji={emoji}
-                    />
-                  ))}
-                </View>
-                <View style={styles.emojiRow}>
-                  {emojis.slice(10, 15).map((emoji) => (
-                    <EmojiButton
-                      key={emoji}
-                      selected={selectedEmoji === emoji}
-                      onPress={() => setSelectedEmoji(emoji)}
-                      emoji={emoji}
-                    />
-                  ))}
-                </View>
-                <View style={styles.emojiRow}>
-                  {emojis.slice(15, 20).map((emoji) => (
-                    <EmojiButton
-                      key={emoji}
-                      selected={selectedEmoji === emoji}
-                      onPress={() => setSelectedEmoji(emoji)}
-                      emoji={emoji}
-                    />
-                  ))}
-                </View>
-              </View>
-            </>
-          )}
-          {currentStep === 7 && (
-            <View style={{ justifyContent: "space-between", marginTop: 20 }}>
-              <Text style={styles.conflictTitle}>Congratulations!</Text>
-              <Image
-                style={{ width: 200, height: 200, alignSelf: "center" }}
-                source={require("../assets/images/icon.png")}
-              />
-              <Text style={{ textAlign: "center", fontFamily: "italic" }}>
-                Conflict allows us to learn and grow. Together, you worked
-                toward a healthier relationship!
-              </Text>
-              <BlueRingView
-                style={{ marginTop: 20 }}
-                borderRadius={20}
-                ringWidth={4}
-              >
-                <View style={{ padding: 16, alignItems: "center" }}>
-                  <Text style={styles.bold}>Agreement Saved</Text>
-                  <Text style={{ marginTop: 8 }}>{dayjs().format("lll")}</Text>
-                </View>
-              </BlueRingView>
-              <OrangeButton
-                shadow
-                style={{ marginTop: 20 }}
-                ring
-                onPress={handleFinishPress}
-              >
-                Finish
-              </OrangeButton>
-            </View>
-          )}
-          {currentStep > 0 && currentStep <= 5 && (
-            <>
-              <View style={styles.roundBackground}>
-                <Text style={styles.stepText}>{currentStep}</Text>
-              </View>
-              <Text style={styles.stepPrompt}>
-                {steps[currentStep - 1].prompt
-                  .replaceAll(
-                    "{person1}",
-                    (person1?.role !== "Child"
-                      ? person1?.role
-                      : person1?.user.name)!
-                  )
-                  .replaceAll(
-                    "{person2}",
-                    (person2?.role !== "Child"
-                      ? person2?.role
-                      : person2?.user.name)!
-                  )}
-              </Text>
-              <View style={styles.tipLabelContainer}>
-                <View style={styles.roundBackground}>
-                  <MaterialCommunityIcons name="lightbulb" size={28} />
-                </View>
-                <Text style={styles.tipLabel}>Tips</Text>
-              </View>
-              <View style={styles.tips}>
-                {steps[currentStep - 1].tips.map((tip) => (
-                  <Text key={tip} style={styles.tipText}>
-                    {tip
-                      .replaceAll(
-                        "{person1}",
-                        (person1?.role !== "Child"
-                          ? person1?.role
-                          : person1?.user.name)!
-                      )
-                      .replaceAll(
-                        "{person2}",
-                        (person2?.role !== "Child"
-                          ? person2?.role
-                          : person2?.user.name)!
-                      )}
-                  </Text>
-                ))}
-              </View>
-              {currentStep === 5 && (
-                <>
-                  <View style={styles.tipLabelContainer}>
-                    <View style={styles.roundBackground}>
-                      <MaterialCommunityIcons name="lightbulb" size={28} />
-                    </View>
-                    <Text style={styles.tipLabel}>Examples of Needs</Text>
-                  </View>
-                  <View style={styles.tips}>
-                    <Text style={styles.tipText}>
-                      Love, boundaries, communication, sleep, play time, food,
-                      assistance, connection, autonomy.
-                    </Text>
-                  </View>
-                </>
-              )}
-            </>
-          )}
-        </ScrollView>
-      </View>
+      {currentStep === 6 ? (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {container}
+        </TouchableWithoutFeedback>
+      ) : (
+        container
+      )}
       {currentStep !== 7 && (
         <FloatingActionButton
           style={styles.nextButton}
@@ -599,7 +609,7 @@ const NewAgreementScreen: React.FC<
           onPress={handleNextPress}
           disabled={
             selectedPeople.some((p) => p === null) ||
-            (currentStep === 6 && !selectedEmoji)
+            (currentStep === 6 && (!selectedEmoji || !title || !summary))
           }
         />
       )}

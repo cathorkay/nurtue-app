@@ -83,20 +83,26 @@ export default function PracticeQuestionScreen({
   };
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <IconButton
-          style={{
-            marginLeft: 10,
-          }}
-          name="close"
-          size={30}
-          color={Colors.bluegreen}
-          onPress={handleExit}
-        />
-      ),
-    });
-  }, [navigation]);
+    if (finished) {
+      navigation.setOptions({
+        headerLeft: () => null,
+      });
+    } else {
+      navigation.setOptions({
+        headerLeft: () => (
+          <IconButton
+            style={{
+              marginLeft: 10,
+            }}
+            name="close"
+            size={30}
+            color={Colors.bluegreen}
+            onPress={handleExit}
+          />
+        ),
+      });
+    }
+  }, [finished, navigation]);
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 20 }]}>

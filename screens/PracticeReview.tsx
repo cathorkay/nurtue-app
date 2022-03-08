@@ -75,7 +75,7 @@ const PracticeReviewScreen: React.FC<
     <FlatList
       style={styles.list}
       contentContainerStyle={{
-        paddingBottom: insets.bottom + 20,
+        paddingBottom: insets.bottom + 40,
       }}
       ListHeaderComponent={
         <View style={styles.segments}>

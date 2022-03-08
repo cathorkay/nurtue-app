@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NativeModules, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import BlueButton from "../components/BlueButton";
 import BlueRingView from "../components/BlueRingView";
@@ -16,6 +17,8 @@ import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
 
 const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
+  const insets = useSafeAreaInsets();
+
   const user = useAppSelector((state) => state.profileState.profile);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -39,7 +42,10 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+    >
       <BlueRingView
         style={styles.photoContainer}
         borderRadius={100}
@@ -60,7 +66,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
       {user.children?.map((c) => (
         <UserSelection style={styles.userBox} key={c.user.id} user={c} />
       ))}
-      <BlueButton style={styles.editButton} onPress={handleEditPress}>
+      <BlueButton shadow style={styles.editButton} onPress={handleEditPress}>
         Edit
       </BlueButton>
       <TextButton style={styles.resetButton} onPress={handleReset}>
