@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 4,
     },
-    shadowRadius: 15,
+    shadowRadius: 5,
   },
 });
 

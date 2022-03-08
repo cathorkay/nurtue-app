@@ -251,7 +251,7 @@ const FilterScreen: React.FC<RootStackScreenProps<"Filter">> = ({
           ))}
         </View>
       </View>
-      <BlueButton style={styles.sectionContainer} onPress={handleClear}>
+      <BlueButton shadow style={styles.sectionContainer} onPress={handleClear}>
         Clear Filters
       </BlueButton>
     </ScrollView>
