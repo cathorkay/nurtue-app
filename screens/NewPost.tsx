@@ -27,7 +27,7 @@ import { RootStackScreenProps } from "../types/navigation";
 
 const recommendedTopics = [
   "tantrum",
-  "pickeating",
+  "pickyeating",
   "school",
   "health",
   "discipline",
