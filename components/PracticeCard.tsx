@@ -12,11 +12,13 @@ import Touchable from "./Touchable";
 export interface PracticeCardProps extends TouchableHighlightProps {
   practice: Practice;
   progress: number;
+  progressPercent?: number;
 }
 
 const PracticeCard: React.FC<PracticeCardProps> = ({
   practice,
   progress,
+  progressPercent,
   style,
   ...restProps
 }) => {
@@ -29,7 +31,9 @@ const PracticeCard: React.FC<PracticeCardProps> = ({
         colors={["#82E4FA", "#CDF1FF"]}
       >
         <CircularProgress
-          progress={(progress / practice.questions.length) * 100}
+          progress={
+            progressPercent ?? (progress / practice.questions.length) * 100
+          }
         />
         <Text style={styles.listItemText}>{practice.topic}</Text>
         <MaterialCommunityIcons

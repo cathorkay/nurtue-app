@@ -1,9 +1,10 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
 
 import BlueButton from "../components/BlueButton";
 import BlueRingView from "../components/BlueRingView";
+import Dialog from "../components/Dialog";
 import PracticeCard from "../components/PracticeCard";
 import PracticeDialog from "../components/PracticeDialog";
 import SearchBar from "../components/SearchBar";
@@ -14,6 +15,16 @@ import { setQotdFinished } from "../data/practice";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Practice } from "../types/state";
+
+const extraTopics = [
+  "Big Feelings",
+  "Boundaries",
+  "Praise",
+  "Encouragement",
+  "Sex Education",
+  "Gender Inclusivity",
+  "Self Care",
+];
 
 export default function PracticeScreen({
   navigation,
@@ -31,6 +42,7 @@ export default function PracticeScreen({
   const [correct, setCorrect] = useState(false);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -61,6 +73,18 @@ export default function PracticeScreen({
     }
   };
 
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
+  const handleExtraTopicPress = useCallback(() => {
+    handleDialogOpen();
+  }, []);
+
   const renderPracticeListItem: ListRenderItem<Practice> = ({ item }) => (
     <PracticeCard
       style={{ marginTop: 15 }}
@@ -68,6 +92,28 @@ export default function PracticeScreen({
       progress={progress[item.id]}
       onPress={() => handlePracticePress(item.id, item.topic)}
     />
+  );
+
+  const footer = useMemo(
+    () => (
+      <>
+        {extraTopics.map((topic, index) => (
+          <PracticeCard
+            key={topic}
+            style={{ marginTop: 15 }}
+            practice={
+              {
+                topic: extraTopics[index],
+              } as any
+            }
+            progress={0}
+            progressPercent={Math.floor(Math.random() * 100)}
+            onPress={handleExtraTopicPress}
+          />
+        ))}
+      </>
+    ),
+    [handleExtraTopicPress]
   );
 
   return (
@@ -118,6 +164,7 @@ export default function PracticeScreen({
             />
           </>
         }
+        ListFooterComponent={footer}
         renderItem={renderPracticeListItem}
       />
       <PracticeDialog
@@ -128,6 +175,18 @@ export default function PracticeScreen({
         finish
         onOk={handleQotdOk}
       />
+      <Dialog isVisible={dialogOpen} title="Unimplemented" type="success">
+        <Text style={styles.dialogText}>
+          This feature has not been implemented.
+        </Text>
+        <BlueButton
+          style={styles.dialogButton}
+          selected
+          onPress={handleDialogClose}
+        >
+          Ok
+        </BlueButton>
+      </Dialog>
     </>
   );
 }
@@ -174,5 +233,11 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     marginBottom: 0,
+  },
+  dialogText: {
+    marginTop: 10,
+  },
+  dialogButton: {
+    marginTop: 20,
   },
 });
