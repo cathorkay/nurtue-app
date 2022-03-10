@@ -8,16 +8,45 @@
 
 Grow together.
 
-<https://web.stanford.edu/class/cs147/projects/CaringFromWithin/Nurtue>
+<https://hci.stanford.edu/class/cs147/projects/CaringFromWithin/Nurtue>
 
-## Get Started
+## How To Use
 
-1. Follow [installation instructions](https://docs.expo.dev/get-started/installation/). Install `Yarn` as well.
+You need basic knowledge of command line tools to run the code yourself. The commands shown below need to be typed into a shell inside a terminal to work.
 
-2. Run `yarn install` in the project.
+1. Install [`Git`](https://git-scm.com/downloads).
 
-3. Run `yarn start` to start the dev server and follow its instructions to have the app run on the simulator or your phone.
+   Pull down the source code from GitHub.
 
-4. Modify files and save them to see the changes in real time.
+   ```shell
+   git clone https://github.com/robertying/nurtue-app.git
+   cd nurtue-app
+   ```
 
-5. If some changes cause errors or don't show up in the app, press `r` in the dev server session to reload the app.
+2. Install required software to setup the development environment.
+
+   You need to at least install [`Node.js LTS`](https://nodejs.org/en/) and [`Yarn`](https://classic.yarnpkg.com/en/docs/install).
+
+3. Install Expo CLI and Expo Go app.
+
+   [Follow Expo's instructions.](https://docs.expo.dev/get-started/installation/)
+
+4. Install project dependencies.
+
+   ```shell
+   yarn install
+   ```
+
+5. Start the dev server.
+
+   ```shell
+   yarn start
+   ```
+
+6. Follow the on-screen instructions from Expo CLI.
+
+   For example, press `i` in the terminal to open the app inside an iOS simulator; or scan the QR code to open the app on your phone with Expo Go.
+
+7. Wait for the app to finish loading.
+
+   Then you are good to go! Enjoy Nurtue!
