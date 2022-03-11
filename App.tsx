@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import replaceAll from "string.prototype.replaceall";
 
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
@@ -14,6 +15,7 @@ import Navigation from "./navigation";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+replaceAll.shim();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
