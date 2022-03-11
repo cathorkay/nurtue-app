@@ -20,6 +20,7 @@ const Agreements = () => {
         options={{
           title: "New Agreement",
           headerTransparent: true,
+          headerTitleAlign: "center",
           headerLeft: () => (
             <IconButton
               style={{

@@ -4,6 +4,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   ListRenderItem,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -135,7 +136,7 @@ const SearchScreen: React.FC<SearchStackScreenProps<"Search">> = ({
       </View>
       {!query && route.params.type === "posts" && (
         <KeyboardAvoidingView
-          behavior="padding"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
           keyboardVerticalOffset={30}
         >
@@ -215,6 +216,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingTop: Platform.OS === "android" ? 20 : 0,
   },
   bold: {
     fontFamily: "semibold",

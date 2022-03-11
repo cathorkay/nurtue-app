@@ -13,6 +13,7 @@ const Profiles = () => {
         component={ProfileScreen}
         options={{
           headerShown: false,
+          headerTitleAlign: "center",
         }}
       />
     </ProfileStack.Navigator>

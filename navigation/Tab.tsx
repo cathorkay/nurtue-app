@@ -32,6 +32,7 @@ function Tabs() {
           },
           shadowOpacity: 0.15,
           shadowRadius: 100,
+          elevation: 12,
         },
         tabBarLabelStyle: {
           fontFamily: "medium",
@@ -40,12 +41,14 @@ function Tabs() {
         headerStyle: {
           shadowColor: "rgba(190, 190, 190, 0.5)",
           shadowRadius: 20,
+          elevation: 6,
         },
         headerTitleStyle: {
           fontFamily: "medium",
           fontSize: FontSize.emphasis,
           color: Colors.darkgreen,
         },
+        headerTitleAlign: "center",
       }}
     >
       <Tab.Screen

@@ -10,6 +10,7 @@ import {
   TouchableHighlightProps,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { v4 as uuid } from "uuid";
@@ -735,7 +736,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 70,
+    paddingTop: Platform.OS === "android" ? 80 : 70,
   },
   upperContainer: {
     paddingVertical: 30,
@@ -859,6 +860,7 @@ const styles = StyleSheet.create({
       height: 4,
     },
     shadowRadius: 5,
+    elevation: 2,
     alignItems: "center",
     justifyContent: "center",
     margin: 4,

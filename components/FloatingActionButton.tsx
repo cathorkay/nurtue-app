@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
       height: 4,
     },
     shadowRadius: 30,
+    elevation: 8,
     justifyContent: "center",
     alignItems: "center",
   },

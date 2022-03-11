@@ -242,6 +242,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 30,
     marginTop: 10,
+    elevation: 8,
   },
   affirmationText: {
     fontFamily: "semibold-italic",

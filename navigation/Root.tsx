@@ -38,7 +38,9 @@ function Root() {
         headerStyle: {
           shadowColor: "rgba(190, 190, 190, 0.5)",
           shadowRadius: 20,
+          elevation: 6,
         },
+        headerTitleAlign: "center",
       }}
     >
       <RootStack.Screen

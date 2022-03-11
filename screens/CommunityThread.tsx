@@ -7,6 +7,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   ListRenderItem,
+  Platform,
   StyleSheet,
   TextInput as RNTextInput,
   View,
@@ -217,7 +218,8 @@ const CommunityThreadScreen: React.FC<
         onScrollBeginDrag={() => inputRef.current?.blur()}
       />
       <KeyboardAvoidingView
-        behavior="position"
+        style={styles.inputAreaContainer}
+        behavior={Platform.OS === "android" ? "height" : "padding"}
         keyboardVerticalOffset={fromSearch ? 82 : 60}
       >
         <View
@@ -255,7 +257,6 @@ const CommunityThreadScreen: React.FC<
             placeholder="Add a reply..."
             placeholderTextColor={Colors.greengrey}
             multiline
-            numberOfLines={5}
             value={replyText}
             onChangeText={setReplyText}
           />
@@ -312,15 +313,17 @@ const styles = StyleSheet.create({
   postCard: {
     marginTop: 15,
   },
-  inputArea: {
-    flex: 1,
+  inputAreaContainer: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: "white",
+  },
+  inputArea: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
