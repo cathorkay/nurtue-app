@@ -36,7 +36,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   };
 
   const handleTerms = () => {
-    console.log('hello world')
+    console.log('hello world.. hello dev branch')
   };
 
   const handleReset = async () => {
