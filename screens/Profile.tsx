@@ -35,6 +35,10 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
     handleDialogOpen();
   };
 
+  const handleTerms = () => {
+    console.log('hello world')
+  };
+
   const handleReset = async () => {
     await persistor.purge();
     persistor.persist();
@@ -69,9 +73,19 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
       <BlueButton shadow style={styles.editButton} onPress={handleEditPress}>
         Edit
       </BlueButton>
+
+      <TextButton style={styles.resetButton} onPress={handleTerms}>
+        Terms & Conditions
+      </TextButton>
+{/* 
+      <TextButton style={styles.resetButton} onPress={handlePrivPolicy}>
+        Privacy Policy
+      </TextButton> */}
+
       <TextButton style={styles.resetButton} onPress={handleReset}>
         Reset App (DEV ONLY)
       </TextButton>
+
       <Dialog isVisible={dialogOpen} title="Unimplemented" type="success">
         <Text style={styles.dialogText}>
           This feature has not been implemented.
