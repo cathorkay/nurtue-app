@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import Modal, { ModalProps } from "react-native-modal";
 
 import Colors from "../constants/Colors";
@@ -25,19 +25,21 @@ const Dialog: React.FC<DialogProps> = ({
       animationIn="zoomIn"
       animationOut="zoomOut"
     >
-      <Card>
-        <Text style={styles.title}>{title}</Text>
-        <Divider
-          style={[
-            styles.divider,
-            {
-              backgroundColor:
-                type === "success" ? Colors.lightgreen : Colors.orange,
-            },
-          ]}
-        />
-        {children}
-      </Card>
+      <ScrollView>
+        <Card>
+          <Text style={styles.title}>{title}</Text>
+          <Divider
+            style={[
+              styles.divider,
+              {
+                backgroundColor:
+                  type === "success" ? Colors.lightgreen : Colors.orange,
+              },
+            ]}
+          />
+          {children}
+        </Card>
+      </ScrollView>
     </Modal>
   );
 };
