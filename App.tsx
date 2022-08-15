@@ -12,6 +12,7 @@ import replaceAll from "string.prototype.replaceall";
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
 import Navigation from "./navigation";
+import Login from "./screens/Login"
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -24,14 +25,15 @@ export default function App() {
     return null;
   } else {
     return (
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
-          <SafeAreaProvider>
-            <Navigation />
-            <StatusBar style="dark" />
-          </SafeAreaProvider>
-        </PersistGate>
-      </Provider>
+      <Login/>
+      // <Provider store={store}>
+      //   <PersistGate persistor={persistor}>
+      //     <SafeAreaProvider>
+      //       <Navigation />
+      //       <StatusBar style="dark" />
+      //     </SafeAreaProvider>
+      //   </PersistGate>
+      // </Provider>
     );
   }
 }

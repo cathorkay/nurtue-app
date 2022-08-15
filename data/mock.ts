@@ -517,7 +517,7 @@ const agreements: Agreement[] = [
 
 const recommendedTopics = [
   "tantrum",
-  "pickeating",
+  "pickyeating",
   "school",
   "health",
   "boundary",
