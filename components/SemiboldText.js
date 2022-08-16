@@ -1,9 +1,9 @@
-import { Text as RNText, TextProps, StyleSheet } from "react-native";
+import { Text as RNText, TextProps, StyleSheet, ButtonProps } from "react-native";
 
 import FontSize from "../constants/FontSize";
 import colors from '../constants/Colors';
 
-const Text: React.FC<TextProps> = ({ style, ...restProps }) => {
+const Text: React.FC<ButtonProps> = ({ style, ...restProps }) => {
   return <RNText style={[styles.text, style]} {...restProps} />;
 };
 

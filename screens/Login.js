@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
+import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
 
 import colors from '../constants/Colors';
@@ -21,6 +21,7 @@ function Login(props) {
         <View style={styles.logoNameContainer}>
             <Image source={require('../assets/images/logoName.png')} style={{ width: 240, height: 240,  marginVertical: 20}} />
         </View>
+        <SemiboldText>Sign In</SemiboldText>
         <AppForm
             initialValues={{email: '', password: ''}}
             onSubmit={values => console.log(values)}
@@ -49,7 +50,7 @@ function Login(props) {
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>
             <TouchableHighlight underlayColor={null} onPress={() => console.log("sign up pressed")}>
-                <SemiboldText style={{ color:colors.green }}>  Sign Up </SemiboldText>
+                <SemiboldText style={{ color:colors.green }} onPress={() => console.log("cue register")}>  Sign Up </SemiboldText>
             </TouchableHighlight>
         </View>
     </KeyboardAvoidingView>

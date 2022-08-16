@@ -7,7 +7,7 @@ import colors from '../constants/Colors'
 function AppTextInput({ icon, ...otherProps }) {
     return (
         <View style={styles.container}>
-            {icon && <MaterialCommunityIcons name={icon} size={20} color={colors.greengrey} style={styles.icon} />}
+            {icon && <MaterialCommunityIcons name={icon} size={17} color={colors.greengrey} style={styles.icon} />}
             <TextInput style={styles.textInput} clearButtonMode="while-editing" {...otherProps} />
         </View>
     );

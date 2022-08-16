@@ -42,6 +42,7 @@
     "expo-status-bar": "~1.2.0",
     "expo-updates": "~0.11.7",
     "expo-web-browser": "~10.1.0",
+    "firebase": "^9.9.2",
     "formik": "^2.2.9",
     "fuse.js": "6.5.3",
     "lodash.groupby": "4.6.0",
