@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import Affirmation from "../components/Affirmation";
 import BlueRingView from "../components/BlueRingView";
 import FloatingActionButton from "../components/FloatingActionButton";
 import MockPhoto from "../components/MockPhoto";
@@ -175,9 +176,10 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
             }!`}</Text>
             <View style={styles.affirmationShadow}>
               <OrangeRingView borderRadius={20}>
-                <Text style={styles.affirmationText}>
+                {/* <Text style={styles.affirmationText}>
                   Be the parent you needed when you were younger.
-                </Text>
+                </Text> */}
+                <Affirmation/>
               </OrangeRingView>
             </View>
             <View style={styles.filterRow}>

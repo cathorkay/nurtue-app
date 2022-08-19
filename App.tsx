@@ -12,6 +12,8 @@ import replaceAll from "string.prototype.replaceall";
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
 import Navigation from "./navigation";
+import Register from './screens/Register';
+import Login from './screens/Login';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -24,6 +26,7 @@ export default function App() {
     return null;
   } else {
     return (
+      // <Register/>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
