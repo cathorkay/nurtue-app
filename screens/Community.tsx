@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import Affirmation from "../components/Affirmation";
+import Affirmation from "../components/RandomAff";
 import BlueRingView from "../components/BlueRingView";
 import FloatingActionButton from "../components/FloatingActionButton";
 import MockPhoto from "../components/MockPhoto";
