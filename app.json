@@ -17,13 +17,15 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false
+      "bundleIdentifier": "com.company.nurtue",
+      "supportsTablet": false,
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#cdf1ff"
-      }
+      },
+      "package": "com.company.nurtue",
     },
     "plugins": [
       [

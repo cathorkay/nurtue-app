@@ -8,6 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import replaceAll from "string.prototype.replaceall";
+import * as Font from 'expo-font';
 
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
@@ -19,15 +20,17 @@ dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 replaceAll.shim();
 
+
 export default function App() {
+  
   const isLoadingComplete = useCachedResources();
 
   if (!isLoadingComplete) {
     return null;
   } else {
     return (
-      // <Register/>
-      <Provider store={store}>
+      //<Register/>
+      <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
             <Navigation />
