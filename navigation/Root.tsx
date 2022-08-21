@@ -13,6 +13,12 @@ import NewPostScreen from "../screens/NewPost";
 import PracticePreviewScreen from "../screens/PracticePreview";
 import PracticeQuestionScreen from "../screens/PracticeQuestion";
 import PracticeReviewScreen from "../screens/PracticeReview";
+
+ 
+import Login from "../screens/Login"; //CAT !! 
+import Register from "../screens/Register";
+
+
 import { RootStackParamList } from "../types/navigation";
 import { Agreements } from "./Agreement";
 import { Profiles } from "./Profile";
@@ -246,6 +252,7 @@ function Root() {
           ),
         }}
       />
+
     </RootStack.Navigator>
   );
 }

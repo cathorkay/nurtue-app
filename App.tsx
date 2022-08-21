@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { Button } from "react-native";
 import replaceAll from "string.prototype.replaceall";
 import * as Font from 'expo-font';
 
@@ -15,6 +16,10 @@ import useCachedResources from "./lib/useCachedResources";
 import Navigation from "./navigation";
 import Register from './screens/Register';
 import Login from './screens/Login';
+import { NavigationContainer, StackActions } from "@react-navigation/native";
+import OnboardingParent from "./screens/OnboardingParent";
+import OnboardingChild from "./screens/OnboardingChild";
+
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -29,11 +34,10 @@ export default function App() {
     return null;
   } else {
     return (
-      //<Register/>
       <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
-            <Navigation />
+            <OnboardingParent/>
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>

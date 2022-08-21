@@ -4,9 +4,9 @@ import {MaterialCommunityIcons} from '@expo/vector-icons'
 
 import colors from '../constants/Colors'
 
-function AppTextInput({ icon, ...otherProps }) {
+function AppTextInput({ icon, color = "white", ...otherProps }) {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {backgroundColor: colors[color]}]}>
             {icon && <MaterialCommunityIcons name={icon} size={17} color={colors.greengrey} style={styles.icon} />}
             <TextInput style={styles.textInput} clearButtonMode="while-editing" {...otherProps} />
         </View>
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
         fontFamily: "light",
         textAlign: "left",
         width: "85%", // these needs to be done in a better way! not hardcoded
+        // width: '100%',
     }
 })
 

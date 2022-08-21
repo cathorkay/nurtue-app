@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/core'
 import React from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
@@ -6,11 +7,19 @@ import colors from '../constants/Colors';
 import {AppForm, AppFormField, SubmitButton} from '../components/formsDWI';
 import OrangeButton from '../components/OrangeButton';
 import SemiboldText from '../components/SemiboldText';
+import Register from './Register'
+
+//const navi = useNavigation()
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(7).label("Password")
 })
+
+function cueRegister(props) {
+    console.log("HEEEY")
+    //useNavigation().replace("Register")
+}
 
 function Login(props) {
     return (
@@ -49,8 +58,8 @@ function Login(props) {
         </AppForm>
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>
-            <TouchableHighlight underlayColor={null} onPress={() => console.log("sign up pressed")}>
-                <SemiboldText style={{ color:colors.green }} onPress={() => console.log("cue register")}>  Sign Up </SemiboldText>
+            <TouchableHighlight underlayColor={null} onPress={() => cueRegister()}>
+                <SemiboldText style={{ color:colors.green }}>  Sign Up </SemiboldText>
             </TouchableHighlight>
         </View>
     </KeyboardAvoidingView>
