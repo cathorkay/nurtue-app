@@ -1,13 +1,17 @@
 import React from 'react';
+import { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
 import Constants from 'expo-constants'
 
 import colors from '../constants/Colors';
-import {AppForm, AppFormField, SubmitButton} from '../components/formsDWI';
-import OrangeButton from '../components/OrangeButton';
+import {AppForm, AppFormField} from '../components/formsDWI';
 import SemiboldText from '../components/SemiboldText';
-import Login from './Login';
+import SubmitButton from '../components/formsDWI/SubmitButton';
+
+import firebase from '../firebase'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
@@ -15,8 +19,29 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
 })
 
-function Register(props) {
+function addUser(values) {
+    const email = values["email"]
+    const password = values["password"]
+
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        // ...
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+    });
+    alert("Successfully registered")
+}
+
+function Register(props) {    
+    
     return (
+
     <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.view}
@@ -28,7 +53,7 @@ function Register(props) {
             <SemiboldText>Sign Up</SemiboldText>
             <AppForm
                 initialValues={{email: '', password: '', confirmPassword: ''}}
-                onSubmit={values => console.log(values)}
+                onSubmit={values => addUser(values)}
                 validationSchema={validationSchema}
             >
                 <AppFormField
@@ -58,7 +83,7 @@ function Register(props) {
                     secureTextEntry={true}
                     textContentType="password"
                 />
-                <OrangeButton style={{marginVertical: 20}} onPress={() => console.log("pressed login")} >Get Started →</OrangeButton>
+                <SubmitButton title="Get Started →"  />
             </AppForm>
             <View style={styles.insteadTextContainer}>
                 <SemiboldText> Already have an account?</SemiboldText>

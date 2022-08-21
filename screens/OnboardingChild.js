@@ -17,28 +17,11 @@ import OrangeButton from '../components/OrangeButton';
 //     name: Yup.string().required().label("Name"),
 // })
 
-const authorRoles = [
-    "Mother",
-    "Father",
-    "Non-binary Parent",
-]
-  
-export const familyDynamics = [
-    "Married / Partnered",
-    "Divorced",
-    "LGBTQ+",
-    "Single Parent",
-    "Adopted Child",
-] 
-
 const childGenders = [
     "Boy",
     "Girl",
-    "Non-Binary Child",
-    "Transgender Girl (MTF)",
-    "Transgender Boy (FTM)",
+    "Non-Binary Child"
 ]
-
 
 function Onboarding(props) {
     return (

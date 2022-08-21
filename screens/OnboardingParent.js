@@ -77,12 +77,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginHorizontal: 17
     },
-    selectContainer: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        marginVertical: 10,
-    },
     text: {
         fontSize: FontSize.normal,
         color: colors.grey,

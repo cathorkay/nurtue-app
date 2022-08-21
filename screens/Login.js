@@ -1,15 +1,15 @@
-import { useNavigation } from '@react-navigation/core'
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
 
 import colors from '../constants/Colors';
-import {AppForm, AppFormField, SubmitButton} from '../components/formsDWI';
+import {AppForm, AppFormField} from '../components/formsDWI';
 import OrangeButton from '../components/OrangeButton';
 import SemiboldText from '../components/SemiboldText';
-import Register from './Register'
+import SubmitButton from '../components/formsDWI/SubmitButton';
 
-//const navi = useNavigation()
+import firebase from '../firebase'
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
@@ -21,7 +21,26 @@ function cueRegister(props) {
     //useNavigation().replace("Register")
 }
 
+function login(values) {
+    const email = values["email"]
+    const password = values["password"]
+
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        // ...
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+    });
+    alert("Successfully LOGGED IN")
+}
+
 function Login(props) {
+
     return (
     <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -33,7 +52,7 @@ function Login(props) {
         <SemiboldText>Sign In</SemiboldText>
         <AppForm
             initialValues={{email: '', password: ''}}
-            onSubmit={values => console.log(values)}
+            onSubmit={values => login(values)}
             validationSchema={validationSchema}
         >
             <AppFormField
@@ -54,7 +73,7 @@ function Login(props) {
                 secureTextEntry={true}
                 textContentType="password"
             />
-            <OrangeButton style={{marginVertical: 20}} onPress={() => console.log("pressed login")} >Log in</OrangeButton>
+            <SubmitButton title="Login"  />
         </AppForm>
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>

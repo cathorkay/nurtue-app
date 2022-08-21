@@ -10,6 +10,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Button } from "react-native";
 import replaceAll from "string.prototype.replaceall";
 import * as Font from 'expo-font';
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
@@ -37,7 +39,7 @@ export default function App() {
       <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
-            <OnboardingParent/>
+            <Login/>
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>
