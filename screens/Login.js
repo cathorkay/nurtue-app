@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
 
@@ -10,6 +10,7 @@ import SubmitButton from '../components/formsDWI/SubmitButton';
 
 import firebase from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import Navigation from '../navigation';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
@@ -18,10 +19,9 @@ const validationSchema = Yup.object().shape({
 
 function cueRegister(props) {
     console.log("HEEEY")
-    //useNavigation().replace("Register")
 }
 
-function login(values) {
+function handleLogin(values) {
     const email = values["email"]
     const password = values["password"]
 
@@ -52,7 +52,7 @@ function Login(props) {
         <SemiboldText>Sign In</SemiboldText>
         <AppForm
             initialValues={{email: '', password: ''}}
-            onSubmit={values => login(values)}
+            onSubmit={values => handleLogin(values)}
             validationSchema={validationSchema}
         >
             <AppFormField

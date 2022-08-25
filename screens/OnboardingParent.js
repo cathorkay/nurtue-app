@@ -18,9 +18,9 @@ import OrangeButton from '../components/OrangeButton';
 // })
 
 const authorRoles = [
-    "Mother",
-    "Father",
-    "Non-binary Parent",
+    "Mom",
+    "Dad",
+    "Parent",
 ]
   
 export const familyDynamics = [

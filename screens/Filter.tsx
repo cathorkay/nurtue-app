@@ -65,7 +65,6 @@ export const authorRoles = [
   "Father",
   "Non-binary Parent",
   "Certified Expert",
-  "Other",
 ] as const;
 
 export const familyDynamics = [
@@ -74,7 +73,6 @@ export const familyDynamics = [
   "LGBTQ+",
   "Single Parent",
   "Adopted Child",
-  "Other",
 ] as const;
 
 const FilterScreen: React.FC<RootStackScreenProps<"Filter">> = ({

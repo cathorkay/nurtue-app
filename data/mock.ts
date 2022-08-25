@@ -1,11 +1,11 @@
 import {
   Agreement,
+  Child,
   Post,
   Practice,
-  Question,
   Profile,
+  Question,
   User,
-  Child,
 } from "../types/state";
 
 const userSteven: User = {

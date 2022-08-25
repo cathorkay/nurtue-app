@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import * as Yup from 'yup';
+import DatePicker from '@react-native-community/datetimepicker';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
 import AppFormPicker from '../components/formsDWI/AppFormPicker'; // why??
@@ -13,14 +14,14 @@ import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
 
-// const validationSchema = Yup.object().shape({
-//     name: Yup.string().required().label("Name"),
-// })
 
 const childGenders = [
-    "Boy",
-    "Girl",
-    "Non-Binary Child"
+    "Female",
+    "Male",
+    "Non-binary",
+    "Trans Female (MTF)",
+    "Trans Male (FTM)",
+    "Other",
 ]
 
 function Onboarding(props) {
@@ -38,10 +39,7 @@ function Onboarding(props) {
                 <AppFormPicker array={childGenders}/>
 
                 <Text style={styles.fieldText}>Birthday</Text>
-                <Text style={[styles.text, {fontSize: FontSize.caption}]}>Please enter in this format: {'\n'} YEAR-MONTH-DAY {'\n'} Ex: 2015-06-01</Text>
-                <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Birthday"/>
-                <Text style={[styles.text, {fontSize: FontSize.caption}]}>This information is used to show you parents with children similar to yours.</Text>
-
+                <DatePicker value={new Date()} display="spinner"/>
                 <OrangeButton style={{marginVertical: 20}}>Continue</OrangeButton>
 
             </SafeAreaView>
