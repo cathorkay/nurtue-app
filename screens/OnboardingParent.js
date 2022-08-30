@@ -12,6 +12,8 @@ import colors from '../constants/Colors';
 import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
+import { LoginStackScreenProps } from '../types/navigation';
+
 
 // const validationSchema = Yup.object().shape({
 //     name: Yup.string().required().label("Name"),
@@ -40,7 +42,10 @@ const childGenders = [
 ]
 
 
-function Onboarding(props) {
+const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
+    navigation,
+    route,
+}) => { 
     return (
         <KeyboardAvoidingView>
         <ScrollView>
@@ -58,7 +63,7 @@ function Onboarding(props) {
                 <AppFormPicker array={familyDynamics}/>
 
             
-                <OrangeButton style={{marginVertical: 20}}>Continue</OrangeButton>
+                <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("OnboardingChild")}>Continue</OrangeButton>
 
             </SafeAreaView>
         </ScrollView>
@@ -85,4 +90,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Onboarding;
+export default OnboardingParent;

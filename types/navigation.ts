@@ -93,6 +93,9 @@ export type SearchStackParamList = {
 export type SearchStackScreenProps<Screen extends keyof SearchStackParamList> =
   StackScreenProps<SearchStackParamList, Screen>;
 
+export type LoginStackScreenProps<Screen extends keyof SearchStackParamList> =
+  StackScreenProps<SearchStackParamList, Screen>;
+
 export type TabParamList = {
   Community: undefined;
   ConflictResolution: undefined;

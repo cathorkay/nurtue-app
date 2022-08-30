@@ -13,6 +13,7 @@ import colors from '../constants/Colors';
 import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
+import { LoginStackScreenProps } from '../types/navigation';
 
 
 const childGenders = [
@@ -24,7 +25,10 @@ const childGenders = [
     "Other",
 ]
 
-function Onboarding(props) {
+const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
+    navigation,
+    route,
+}) => { 
     return (
         <KeyboardAvoidingView>
         <ScrollView>
@@ -40,7 +44,7 @@ function Onboarding(props) {
 
                 <Text style={styles.fieldText}>Birthday</Text>
                 <DatePicker value={new Date()} display="spinner"/>
-                <OrangeButton style={{marginVertical: 20}}>Continue</OrangeButton>
+                <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("Tabs")}>Continue</OrangeButton>
 
             </SafeAreaView>
         </ScrollView>
@@ -71,4 +75,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Onboarding;
+export default OnboardingChild;

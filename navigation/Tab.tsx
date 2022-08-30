@@ -82,15 +82,15 @@ function Tabs() {
           headerTitle: "Agreement History",
           tabBarIcon: ({ focused }) => (
             <Image
-              style={{ width: FontSize.title, height: FontSize.title }}
-              source={
-                focused
-                  ? require("../assets/images/conflict-resolution-icon-colored.png")
-                  : require("../assets/images/conflict-resolution-icon.png")
-              }
+            style={{ width: FontSize.title, height: FontSize.title }}
+            source={
+              focused
+              ? require("../assets/images/conflict-resolution-icon-colored.png")
+              : require("../assets/images/conflict-resolution-icon.png")
+            }
             />
-          ),
-        }}
+            ),
+          }}
       />
       <Tab.Screen
         name="Practice"

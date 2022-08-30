@@ -6,12 +6,14 @@ import BlueButton from "../components/BlueButton";
 import BlueRingView from "../components/BlueRingView";
 import Dialog from "../components/Dialog";
 import MockPhoto from "../components/MockPhoto";
+import OrangeButton from "../components/OrangeButton";
 import Text from "../components/Text";
 import TextButton from "../components/TextButton";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
 import { persistor, useAppSelector } from "../data/store";
 import { getChildrenDescription } from "../lib/format";
+import Root from "../navigation/Root";
 import { ProfileStackScreenProps } from "../types/navigation";
 import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
@@ -80,6 +82,9 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         <View style={styles.infoContainer}>
           <Text style={styles.nameText}>{user.user.name}</Text>
           <Text>{getChildrenDescription(user.user as Parent)}</Text>
+          <BlueButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
+            Edit Profile
+          </BlueButton>
         </View>
       </BlueRingView>
       <Text style={styles.sectionText}>My Family</Text>
@@ -88,10 +93,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
       )}
       {user.children?.map((c) => (
         <UserSelection style={styles.userBox} key={c.user.id} user={c} />
-      ))}
-      <BlueButton shadow style={styles.editButton} onPress={handleEditPress}>
-        Edit
-      </BlueButton>
+      ))} 
 
       <View style={styles.termsPrivContainer}>
         <TextButton style={styles.resetButton} onPress={handleTerms}>
@@ -101,6 +103,10 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
           Privacy Policy
         </TextButton>
       </View>
+
+      <OrangeButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
+        Log Out
+      </OrangeButton>
 
       <TextButton style={styles.resetButton} onPress={handleReset}>
         Reset App (DEV ONLY)

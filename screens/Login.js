@@ -4,42 +4,44 @@ import * as Yup from 'yup';
 
 import colors from '../constants/Colors';
 import {AppForm, AppFormField} from '../components/formsDWI';
-import OrangeButton from '../components/OrangeButton';
 import SemiboldText from '../components/SemiboldText';
 import SubmitButton from '../components/formsDWI/SubmitButton';
 
 import firebase from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import Navigation from '../navigation';
+import { LoginStackScreenProps } from '../types/navigation';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(7).label("Password")
 })
 
-function cueRegister(props) {
-    console.log("HEEEY")
-}
 
-function handleLogin(values) {
+function handleLogin(values, navigation) {
     const email = values["email"]
     const password = values["password"]
+    console.log("hello")
 
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        // ...
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-    });
+    // const auth = getAuth();
+    // signInWithEmailAndPassword(auth, email, password)
+    // .then((userCredential) => {
+    //     // Signed in 
+    //     const user = userCredential.user;
+    //     // ...
+    // })
+    // .catch((error) => {
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    // });
     alert("Successfully LOGGED IN")
+    navigation.push("Tabs")
 }
 
-function Login(props) {
+const Login: React.FC<LoginStackScreenProps<"Login">> = ({
+    navigation,
+    route,
+}) => {
+
 
     return (
     <KeyboardAvoidingView 
@@ -73,11 +75,11 @@ function Login(props) {
                 secureTextEntry={true}
                 textContentType="password"
             />
-            <SubmitButton title="Login"  />
+            <SubmitButton title="Login" onPress={(values) => handleLogin(values, navigation)}/>
         </AppForm>
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>
-            <TouchableHighlight underlayColor={null} onPress={() => cueRegister()}>
+            <TouchableHighlight underlayColor={null} onPress={() => navigation.push("Register")}>
                 <SemiboldText style={{ color:colors.green }}>  Sign Up </SemiboldText>
             </TouchableHighlight>
         </View>

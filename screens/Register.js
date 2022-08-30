@@ -8,6 +8,8 @@ import colors from '../constants/Colors';
 import {AppForm, AppFormField} from '../components/formsDWI';
 import SemiboldText from '../components/SemiboldText';
 import SubmitButton from '../components/formsDWI/SubmitButton';
+import { LoginStackScreenProps } from '../types/navigation';
+
 
 import firebase from '../firebase'
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -19,7 +21,7 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
 })
 
-function addUser(values) {
+function addUser(values, navigation) {
     const email = values["email"]
     const password = values["password"]
 
@@ -36,9 +38,13 @@ function addUser(values) {
         // ..
     });
     alert("Successfully registered")
+    navigation.push("OnboardingParent")
 }
 
-function Register(props) {    
+const Register: React.FC<LoginStackScreenProps<"Register">> = ({
+    navigation,
+    route,
+}) => {  
     
     return (
 
@@ -53,7 +59,7 @@ function Register(props) {
             <SemiboldText>Sign Up</SemiboldText>
             <AppForm
                 initialValues={{email: '', password: '', confirmPassword: ''}}
-                onSubmit={values => addUser(values)}
+                onSubmit={values => addUser(values, navigation)}
                 validationSchema={validationSchema}
             >
                 <AppFormField
@@ -88,7 +94,7 @@ function Register(props) {
             <View style={styles.insteadTextContainer}>
                 <SemiboldText> Already have an account?</SemiboldText>
                 <TouchableHighlight underlayColor={null} onPress={() => console.log("sign up pressed")}>
-                    <SemiboldText style={{ color:colors.green }} onPress={() => console.log("cue login")}>  Log In </SemiboldText>
+                    <SemiboldText style={{ color:colors.green }} onPress={() => navigation.push("Login")}>  Log In </SemiboldText>
                 </TouchableHighlight>
             </View>
         </ScrollView>

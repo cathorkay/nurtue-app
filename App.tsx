@@ -13,12 +13,11 @@ import replaceAll from "string.prototype.replaceall";
 import { persistor, store } from "./data/store";
 import useCachedResources from "./lib/useCachedResources";
 import Navigation from "./navigation";
-import Register from './screens/Register';
+import Register from "./screens/Register";
 import Login from './screens/Login';
 import { NavigationContainer, StackActions } from "@react-navigation/native";
 import OnboardingParent from "./screens/OnboardingParent";
 import OnboardingChild from "./screens/OnboardingChild";
-
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -36,8 +35,7 @@ export default function App() {
       <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
-            <OnboardingChild/>
-            {/* <Navigation/> */}
+            <Navigation/> 
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>

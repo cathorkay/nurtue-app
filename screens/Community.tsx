@@ -176,9 +176,6 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
             }!`}</Text>
             <View style={styles.affirmationShadow}>
               <OrangeRingView borderRadius={20}>
-                {/* <Text style={styles.affirmationText}>
-                  Be the parent you needed when you were younger.
-                </Text> */}
                 <Affirmation/>
               </OrangeRingView>
             </View>

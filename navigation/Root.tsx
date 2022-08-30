@@ -21,6 +21,7 @@ import Register from "../screens/Register";
 
 import { RootStackParamList } from "../types/navigation";
 import { Agreements } from "./Agreement";
+import { LoginRegister } from "./LoginRegister"; 
 import { Profiles } from "./Profile";
 import { Searches } from "./Search";
 import { Tabs } from "./Tab";
@@ -49,6 +50,16 @@ function Root() {
         headerTitleAlign: "center",
       }}
     >
+
+      
+      <RootStack.Screen
+        name="LoginStack"
+        component={LoginRegister}
+        options={{ headerShown: false }}
+      />
+
+
+
       <RootStack.Screen
         name="Tabs"
         component={Tabs}

@@ -1,7 +1,7 @@
 export default [
     "Be what you needed when you were younger.",
     "Be a good role model.",
-    "Be are confident in your parenting role.",
+    "Be confident in your parenting role.",
     "Be willing to learn and grow.",
     "Have patience.",
     "Grow together every day.",
