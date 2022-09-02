@@ -1,17 +1,13 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableHighlight } from 'react-native';
 
 import Chip from '../Chip';
 import Text from "../Text";
 
-const familyDynamics = [
-    "Item 1",
-    "Item 2",
-    "Item 3",
-    "Item 4",
-] 
 
 function AppFormPicker({array, ...otherProps}) {
+    const [property, setProperty] = useState()
+    
     let chipArr = [] 
 
     for (let i = 0; i < array.length; i++) {
@@ -19,6 +15,7 @@ function AppFormPicker({array, ...otherProps}) {
             <Chip 
                 key={i}
                 style={styles.chip}
+                onPress={() => setProperty(array[i])}
             >{array[i]}</Chip> 
         )
     }

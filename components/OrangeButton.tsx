@@ -39,6 +39,7 @@ const OrangeButton: React.FC<OrangeButtonProps> = ({
       style={[
         {
           borderRadius: radius,
+          flex: 1,
         },
         shadow && styles.shadow,
         style,

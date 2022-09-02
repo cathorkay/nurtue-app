@@ -14,6 +14,7 @@ import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
 import { LoginStackScreenProps } from '../types/navigation';
+import Colors from '../constants/Colors';
 
 
 const childGenders = [
@@ -30,7 +31,8 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
     route,
 }) => { 
     return (
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView style={{
+            backgroundColor: Colors.white, flex: 1}}>
         <ScrollView>
             <SafeAreaView style={styles.container}>
 

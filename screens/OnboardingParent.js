@@ -13,6 +13,7 @@ import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
 import { LoginStackScreenProps } from '../types/navigation';
+import Colors from '../constants/Colors';
 
 
 // const validationSchema = Yup.object().shape({
@@ -46,8 +47,11 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
     navigation,
     route,
 }) => { 
+
+
     return (
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView style={{
+            backgroundColor: Colors.white, flex: 1}}>
         <ScrollView>
             <SafeAreaView style={styles.container}>
 
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: 17
+        marginHorizontal: 17,
     },
     text: {
         fontSize: FontSize.normal,

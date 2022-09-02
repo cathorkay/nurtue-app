@@ -54,7 +54,7 @@ const Login: React.FC<LoginStackScreenProps<"Login">> = ({
         <SemiboldText>Sign In</SemiboldText>
         <AppForm
             initialValues={{email: '', password: ''}}
-            onSubmit={values => handleLogin(values)}
+            onSubmit={values => handleLogin(values, navigation)}
             validationSchema={validationSchema}
         >
             <AppFormField
