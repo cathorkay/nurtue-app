@@ -8,7 +8,7 @@ function SubmitButton({ title }) {
     const { handleSubmit } = useFormikContext();
     
     return (
-        <OrangeButton onPress={handleSubmit}>
+        <OrangeButton style={{marginVertical: 15}} onPress={handleSubmit}>
         {title}</OrangeButton>
     );
 }

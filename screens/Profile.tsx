@@ -104,13 +104,13 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         </TextButton>
       </View>
 
-      <OrangeButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
+      <OrangeButton shadow style={{marginTop: 12}} onPress={handleReset}>
         Log Out
       </OrangeButton>
 
-      <TextButton style={styles.resetButton} onPress={handleReset}>
+      {/* <TextButton style={styles.resetButton} onPress={handleReset}>
         Reset App (DEV ONLY)
-      </TextButton>
+      </TextButton> */}
 
       <Text style={{
         marginVertical: 30,

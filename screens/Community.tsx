@@ -26,6 +26,8 @@ import { useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Post } from "../types/state";
 
+import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+
 const generateGreeting = () => {
   const hour = new Date().getHours();
   return hour < 11
@@ -48,6 +50,21 @@ const emptyFilters = (filters: Filters) => {
 const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
+
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (userREAL) => {
+    if (userREAL) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      const uid = userREAL.uid;
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  });
+
   const tabBarHeight = useBottomTabBarHeight();
 
   const user = useAppSelector((state) => state.profileState.profile.user);
@@ -172,7 +189,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         ListHeaderComponent={
           <View style={styles.listHeaderContainer}>
             <Text style={styles.greeting}>{`${generateGreeting()}, ${
-              user.name
+              auth.currentUser.displayName
             }!`}</Text>
             <View style={styles.affirmationShadow}>
               <OrangeRingView borderRadius={20}>

@@ -35,6 +35,7 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
             backgroundColor: Colors.white, flex: 1}}>
         <ScrollView>
             <SafeAreaView style={styles.container}>
+            <AppForm>
 
                 <Text style={{textAlign: "center", fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about your child.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Let's start with one for now. {'\n'} You can always add more later.</Text>
@@ -47,7 +48,8 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
                 <Text style={styles.fieldText}>Birthday</Text>
                 <DatePicker value={new Date()} display="spinner"/>
                 <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("Tabs")}>Continue</OrangeButton>
-
+            
+            </AppForm>
             </SafeAreaView>
         </ScrollView>
         </KeyboardAvoidingView>

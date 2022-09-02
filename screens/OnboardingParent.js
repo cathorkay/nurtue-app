@@ -11,19 +11,22 @@ import FontSize from '../constants/FontSize';
 import colors from '../constants/Colors';
 import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
-import OrangeButton from '../components/OrangeButton';
+import SubmitButton from '../components/formsDWI/SubmitButton';
 import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
 
+import { getAuth, updateProfile } from "firebase/auth";
 
-// const validationSchema = Yup.object().shape({
-//     name: Yup.string().required().label("Name"),
-// })
+const auth = getAuth();
 
-const authorRoles = [
-    "Mom",
-    "Dad",
-    "Parent",
+const validationSchema = Yup.object().shape({
+    name: Yup.string().required().label("Name"),
+})
+
+const authorGender = [
+    "Male",
+    "Female",
+    "Non-binary",
 ]
   
 export const familyDynamics = [
@@ -42,33 +45,74 @@ const childGenders = [
     "Transgender Boy (FTM)",
 ]
 
+function updateUserInfo(values, navigation) {
+    const name = values["name"]
+    console.log("name")
+    updateProfile(auth.currentUser, {
+        displayName: name
+        //, photoURL: "https://example.com/jane-q-user/profile.jpg"
+      }).then(() => {
+        // Profile updated!
+        console.log("Here is the updated name:", name)
+        alert("Profile successfully updated")
+        navigation.push("OnboardingChild")
+        // ...
+      }).catch((error) => {
+        // An error occurred
+        alert(error)
+        // ...
+      });
+}
+
 
 const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
     navigation,
     route,
 }) => { 
 
+    console.log(auth.currentUser.email)
 
     return (
         <KeyboardAvoidingView style={{
             backgroundColor: Colors.white, flex: 1}}>
         <ScrollView>
             <SafeAreaView style={styles.container}>
+                
+            <AppForm
+                initialValues={{name: ''}}
+                onSubmit={values => updateUserInfo(values, navigation)} 
+                validationSchema={validationSchema}
+            >
 
                 <Text style={{fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about yourself.</Text>
                 <Text style={styles.text}>What's your name?</Text>
-                <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Preferred Name"/>
+                {/* <AppTextInput 
+                    style={{fontFamily: "light", textAlign: "left", width: "100%"}} 
+                    color="lightblue" 
+                    placeholder="Preferred Name"
+                /> */}
+                <AppFormField
+                    autoCapitalize="true"
+                    autoCorrect={false}
+                    name="name"
+                    placeholder="Preferred Name"
+                    color="lightblue" 
+                />
 
-                <Text style={styles.text}>You are a...</Text>               
-                <AppFormPicker array={authorRoles}/>
+                <Text style={styles.text}>You are...</Text>               
+                <AppFormPicker 
+                    array={authorGender}
+                />
 
                 <Text style={styles.text}>Select all that apply to you.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Adding these helps all our users find relatable community posts.</Text>
-                <AppFormPicker array={familyDynamics}/>
+                <AppFormPicker 
+                    array={familyDynamics}
+                />
 
             
-                <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("OnboardingChild")}>Continue</OrangeButton>
-
+                <SubmitButton title="Continue"/>
+            </AppForm>
             </SafeAreaView>
         </ScrollView>
         </KeyboardAvoidingView>

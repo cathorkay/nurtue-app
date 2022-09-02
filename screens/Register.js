@@ -1,8 +1,8 @@
 import React from 'react';
-import { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, TouchableHighlight, View} from 'react-native';
 import * as Yup from 'yup';
-import Constants from 'expo-constants'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 
 import colors from '../constants/Colors';
 import {AppForm, AppFormField} from '../components/formsDWI';
@@ -10,9 +10,8 @@ import SemiboldText from '../components/SemiboldText';
 import SubmitButton from '../components/formsDWI/SubmitButton';
 import { LoginStackScreenProps } from '../types/navigation';
 
-
-import firebase from '../firebase'
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from '@react-navigation/native';
+import OnboardingParent from './OnboardingParent';
 
 
 const validationSchema = Yup.object().shape({
@@ -24,28 +23,28 @@ const validationSchema = Yup.object().shape({
 function addUser(values, navigation) {
     const email = values["email"]
     const password = values["password"]
-
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
         // ...
+        navigation.push("OnboardingParent") 
     })
     .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         // ..
+        alert(errorMessage)
+        alert("Get ready for an error")
     });
-    alert("Successfully registered")
-    navigation.push("OnboardingParent")
 }
 
 const Register: React.FC<LoginStackScreenProps<"Register">> = ({
     navigation,
     route,
 }) => {  
-    
+
     return (
 
     <KeyboardAvoidingView 
@@ -59,7 +58,8 @@ const Register: React.FC<LoginStackScreenProps<"Register">> = ({
             <SemiboldText>Sign Up</SemiboldText>
             <AppForm
                 initialValues={{email: '', password: '', confirmPassword: ''}}
-                onSubmit={values => addUser(values, navigation)}
+                onSubmit={values => addUser(values, navigation)} // 🐞 and <submitbutton/>
+                // onSubmit={() => navigation.push("OnboardingParent")}
                 validationSchema={validationSchema}
             >
                 <AppFormField
@@ -89,11 +89,11 @@ const Register: React.FC<LoginStackScreenProps<"Register">> = ({
                     secureTextEntry={true}
                     textContentType="password"
                 />
-                <SubmitButton title="Get Started →"  />
+                <SubmitButton title="Get Started →"/>
             </AppForm>
             <View style={styles.insteadTextContainer}>
                 <SemiboldText> Already have an account?</SemiboldText>
-                <TouchableHighlight underlayColor={null} onPress={() => console.log("sign up pressed")}>
+                <TouchableHighlight underlayColor={null}> 
                     <SemiboldText style={{ color:colors.green }} onPress={() => navigation.push("Login")}>  Log In </SemiboldText>
                 </TouchableHighlight>
             </View>
@@ -104,7 +104,7 @@ const Register: React.FC<LoginStackScreenProps<"Register">> = ({
 
 const styles = StyleSheet.create({
     logoNameContainer: {
-        marginTop: Constants.statusBarHeight,
+        marginTop: 40,
         justifyContent: "center",
         alignItems: "center",
     },

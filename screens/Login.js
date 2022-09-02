@@ -20,21 +20,23 @@ const validationSchema = Yup.object().shape({
 function handleLogin(values, navigation) {
     const email = values["email"]
     const password = values["password"]
-    console.log("hello")
+    console.log("successful login")
 
-    // const auth = getAuth();
-    // signInWithEmailAndPassword(auth, email, password)
-    // .then((userCredential) => {
-    //     // Signed in 
-    //     const user = userCredential.user;
-    //     // ...
-    // })
-    // .catch((error) => {
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    // });
-    alert("Successfully LOGGED IN")
-    navigation.push("Tabs")
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        // ...
+        console.log(user)
+        alert("Successfully LOGGED IN")
+        navigation.push("Tabs")
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(errorMessage)
+    });
 }
 
 const Login: React.FC<LoginStackScreenProps<"Login">> = ({
@@ -75,7 +77,7 @@ const Login: React.FC<LoginStackScreenProps<"Login">> = ({
                 secureTextEntry={true}
                 textContentType="password"
             />
-            <SubmitButton title="Login" onPress={(values) => handleLogin(values, navigation)}/>
+            <SubmitButton title="Login"/>
         </AppForm>
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>
