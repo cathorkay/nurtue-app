@@ -16,6 +16,7 @@ import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
 
 import { getAuth, updateProfile } from "firebase/auth";
+import FormImagePicker from '../components/formsDWI/FormImagePicker';
 
 const auth = getAuth();
 
@@ -47,7 +48,7 @@ const childGenders = [
 
 function updateUserInfo(values, navigation) {
     const name = values["name"]
-    console.log("name")
+    console.log(values["pfp"])
     updateProfile(auth.currentUser, {
         displayName: name
         //, photoURL: "https://example.com/jane-q-user/profile.jpg"
@@ -70,8 +71,6 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
     route,
 }) => { 
 
-    console.log(auth.currentUser.email)
-
     return (
         <KeyboardAvoidingView style={{
             backgroundColor: Colors.white, flex: 1}}>
@@ -79,18 +78,13 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
             <SafeAreaView style={styles.container}>
                 
             <AppForm
-                initialValues={{name: ''}}
+                initialValues={{name: '', pfp: null}}
                 onSubmit={values => updateUserInfo(values, navigation)} 
                 validationSchema={validationSchema}
             >
 
                 <Text style={{fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about yourself.</Text>
                 <Text style={styles.text}>What's your name?</Text>
-                {/* <AppTextInput 
-                    style={{fontFamily: "light", textAlign: "left", width: "100%"}} 
-                    color="lightblue" 
-                    placeholder="Preferred Name"
-                /> */}
                 <AppFormField
                     autoCapitalize="true"
                     autoCorrect={false}
@@ -98,6 +92,13 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                     placeholder="Preferred Name"
                     color="lightblue" 
                 />
+
+                <View style={styles.pfpContainer}>
+                    <Text style={styles.text}>Add a profile picture, if you'd like</Text>
+                    <FormImagePicker
+                        name="pfp"
+                    />
+                </View>
 
                 <Text style={styles.text}>You are...</Text>               
                 <AppFormPicker 
@@ -129,6 +130,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginHorizontal: 17,
+    },
+    pfpContainer: {
+        marginVertical: 20,
+        justifyContent: "center",
+        alignItems: "center"
     },
     text: {
         fontSize: FontSize.normal,

@@ -18,6 +18,9 @@ import { ProfileStackScreenProps } from "../types/navigation";
 import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
 
+import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+
+
 const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   const insets = useSafeAreaInsets();
 
@@ -66,6 +69,8 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
     NativeModules.DevSettings.reload();
   };
 
+  const auth = getAuth();
+
   return (
     <ScrollView
       style={styles.container}
@@ -80,7 +85,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
       </BlueRingView>
       <BlueRingView borderRadius={20}>
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{user.user.name}</Text>
+          <Text style={styles.nameText}>{auth.currentUser.displayName}</Text>
           <Text>{getChildrenDescription(user.user as Parent)}</Text>
           <BlueButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
             Edit Profile
