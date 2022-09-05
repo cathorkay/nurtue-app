@@ -47,14 +47,13 @@ const childGenders = [
 ]
 
 function updateUserInfo(values, navigation) {
-    const name = values["name"]
-    console.log(values["pfp"])
     updateProfile(auth.currentUser, {
-        displayName: name
+        displayName: values["name"],
+        photoURL: values["pfp"],
         //, photoURL: "https://example.com/jane-q-user/profile.jpg"
       }).then(() => {
         // Profile updated!
-        console.log("Here is the updated name:", name)
+        console.log("Here is the updated user photo:", auth.currentUser.photoURL)
         alert("Profile successfully updated")
         navigation.push("OnboardingChild")
         // ...
@@ -70,6 +69,8 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
     navigation,
     route,
 }) => { 
+
+
 
     return (
         <KeyboardAvoidingView style={{
@@ -96,7 +97,7 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                 <View style={styles.pfpContainer}>
                     <Text style={styles.text}>Add a profile picture, if you'd like</Text>
                     <FormImagePicker
-                        name="pfp"
+                        name={"pfp"}
                     />
                 </View>
 
