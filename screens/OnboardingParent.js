@@ -73,18 +73,18 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
 
 
     return (
-        <KeyboardAvoidingView style={{
-            backgroundColor: Colors.white, flex: 1}}>
+        <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView>
         <ScrollView>
-            <SafeAreaView style={styles.container}>
                 
             <AppForm
                 initialValues={{name: '', pfp: null}}
                 onSubmit={values => updateUserInfo(values, navigation)} 
                 validationSchema={validationSchema}
             >
+                <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
 
-                <Text style={{fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about yourself.</Text>
+                <Text style={{textAlign: "center",fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about yourself.</Text>
                 <Text style={styles.text}>What's your name?</Text>
                 <AppFormField
                     autoCapitalize="true"
@@ -114,10 +114,13 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
 
             
                 <SubmitButton title="Continue"/>
+
+                </View>
             </AppForm>
-            </SafeAreaView>
+
         </ScrollView>
         </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
@@ -130,7 +133,8 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: 17,
+        backgroundColor: "white",
+        flex: 1,
     },
     pfpContainer: {
         marginVertical: 20,

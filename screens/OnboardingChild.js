@@ -31,11 +31,14 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
     route,
 }) => { 
     return (
-        <KeyboardAvoidingView style={{
-            backgroundColor: Colors.white, flex: 1}}>
+        <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView>
         <ScrollView>
-            <SafeAreaView style={styles.container}>
+
             <AppForm>
+
+                <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
+
 
                 <Text style={{textAlign: "center", fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about your child.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Let's start with one for now. {'\n'} You can always add more later.</Text>
@@ -48,11 +51,14 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
                 <Text style={styles.fieldText}>Birthday</Text>
                 <DatePicker value={new Date()} display="spinner"/>
                 <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("Tabs")}>Continue</OrangeButton>
+
+                </View>
             
             </AppForm>
-            </SafeAreaView>
+
         </ScrollView>
         </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
@@ -63,7 +69,10 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     container: {
-        marginHorizontal: 17
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "white",
+        flex: 1,
     },
     text: {
         fontSize: FontSize.normal,
