@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, Platform } from 'react-native';
 import * as Yup from 'yup';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
@@ -16,9 +16,12 @@ import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
 
 import { getAuth, updateProfile } from "firebase/auth";
+import { getStorage, ref, uploadBytes } from "firebase/storage"
 import FormImagePicker from '../components/formsDWI/FormImagePicker';
 
 const auth = getAuth();
+const storage = getStorage();
+
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
@@ -46,20 +49,51 @@ const childGenders = [
     "Transgender Boy (FTM)",
 ]
 
+const uploadImage = async(result) => {
+    console.log("This is what is getting passed in -->", result)
+    console.log("result.uri --> ", result.uri)
+
+    let URI = result.uri
+    const response = await fetch(URI)
+    const blob = await response.blob()
+
+    var addy = ref(storage, "images/pfps/" + auth.currentUser.uid)
+    // var ref = storage.ref().child("images/" + auth.currentUser.uid )
+    uploadBytes(addy, blob)
+    .then((snapshot) => {
+        alert("Successful pfp upload");
+        return addy
+    })
+    .catch((error) => {
+        alert(error)
+    });
+
+
+}
+
 function updateUserInfo(values, navigation) {
-    updateProfile(auth.currentUser, {
+
+    let leaver = null
+
+    if (values["pfp"]) {
+        let leaver = uploadImage(values["pfp"])
+    }
+    
+
+    updateUserInfo(auth.currentUser, {
         displayName: values["name"],
-        photoURL: values["pfp"],
+        photoURL: leaver
+       // photoURL: ref(storage, 'images/pfps/' + auth.currentUser.uid)
         //, photoURL: "https://example.com/jane-q-user/profile.jpg"
       }).then(() => {
         // Profile updated!
-        console.log("Here is the updated user photo:", auth.currentUser.photoURL)
-        alert("Profile successfully updated")
+        //console.log("Here is the updated user photo:", auth.currentUser.photoURL)
         navigation.push("OnboardingChild")
         // ...
       }).catch((error) => {
         // An error occurred
         alert(error)
+        console.log(error)
         // ...
       });
 }
