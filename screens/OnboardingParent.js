@@ -12,11 +12,13 @@ import colors from '../constants/Colors';
 import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import SubmitButton from '../components/formsDWI/SubmitButton';
+import handleCloudImageUpload from '../components/UploadImage'
 import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
 
+import firebase from '../firebase'
 import { getAuth, updateProfile } from "firebase/auth";
-import { getStorage, ref, uploadBytes } from "firebase/storage"
+import { getStorage, uploadBytes, uploadBytesResumable, ref, getDownloadURL } from "firebase/storage"
 import FormImagePicker from '../components/formsDWI/FormImagePicker';
 
 const auth = getAuth();
@@ -49,40 +51,66 @@ const childGenders = [
     "Transgender Boy (FTM)",
 ]
 
-const uploadImage = async(result) => {
-    console.log("This is what is getting passed in -->", result)
-    console.log("result.uri --> ", result.uri)
 
-    let URI = result.uri
-    const response = await fetch(URI)
-    const blob = await response.blob()
+async function sendToFirebase(values, navigation) {
 
-    var addy = ref(storage, "images/pfps/" + auth.currentUser.uid)
-    // var ref = storage.ref().child("images/" + auth.currentUser.uid )
-    uploadBytes(addy, blob)
-    .then((snapshot) => {
-        alert("Successful pfp upload");
-        return addy
-    })
-    .catch((error) => {
-        alert(error)
+    const resultImg = values["pfp"]
+
+    const imgName = auth.currentUser.uid
+    const storageRef = ref(storage, `images/pfps/${imgName}`)
+    
+    const img = await fetch(resultImg.uri)
+    const blob = await img.blob()
+
+    console.log("uploading image");
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on('state_changed',(snapshot) => {
+    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+        case 'paused':
+            console.log('Upload is paused');
+            break;
+        case 'running':
+            console.log('Upload is running');
+            break;
+    }
+    },
+    (error) => {
+        this.setState({ isLoading: false })
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+            case 'storage/unauthorized':
+                console.log("User doesn't have permission to access the object");
+                break;
+            case 'storage/canceled':
+                console.log("User canceled the upload");
+                break;
+            case 'storage/unknown':
+                console.log("Unknown error occurred, inspect error.serverResponse");
+                break;
+        }
+    },
+    () => {
+        // Upload completed successfully, now we can get the download URL
+        console.log("About to get downloadURL")
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log('File available at', downloadURL);
+            //perform your task
+        }
+        );
     });
 
 
-}
+    // Uncomment this if you want to use the file script
+    //handleCloudImageUpload()
 
-function updateUserInfo(values, navigation) {
-
-    let leaver = null
-
-    if (values["pfp"]) {
-        let leaver = uploadImage(values["pfp"])
-    }
-    
-
-    updateUserInfo(auth.currentUser, {
+    updateProfile(auth.currentUser, {
         displayName: values["name"],
-        photoURL: leaver
        // photoURL: ref(storage, 'images/pfps/' + auth.currentUser.uid)
         //, photoURL: "https://example.com/jane-q-user/profile.jpg"
       }).then(() => {
@@ -113,7 +141,7 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                 
             <AppForm
                 initialValues={{name: '', pfp: null}}
-                onSubmit={values => updateUserInfo(values, navigation)} 
+                onSubmit={values => sendToFirebase(values, navigation)} 
                 validationSchema={validationSchema}
             >
                 <View style={{paddingHorizontal: 20, paddingBottom: 30}}>

@@ -19,10 +19,6 @@ import { NavigationContainer, StackActions } from "@react-navigation/native";
 import OnboardingParent from "./screens/OnboardingParent";
 import OnboardingChild from "./screens/OnboardingChild";
 
-// import { enableLayoutAnimations } from 'react-native-reanimated';
-// maybe will fix screen glitches
-// enableLayoutAnimations(false);
-
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 replaceAll.shim();
