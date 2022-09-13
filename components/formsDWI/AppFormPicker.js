@@ -6,7 +6,6 @@ import Text from "../Text";
 
 
 function AppFormPicker({array, ...otherProps}) {
-    const [property, setProperty] = useState()
     
     let chipArr = [] 
 
@@ -15,7 +14,7 @@ function AppFormPicker({array, ...otherProps}) {
             <Chip 
                 key={i}
                 style={styles.chip}
-                onPress={() => setProperty(array[i])}
+                onPress={() => console.log("I pressed an item")}
             >{array[i]}</Chip> 
         )
     }

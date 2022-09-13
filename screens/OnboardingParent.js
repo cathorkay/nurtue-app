@@ -1,28 +1,24 @@
 import React from 'react';
-import { useState } from 'react';
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, Platform } from 'react-native';
 import * as Yup from 'yup';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
 import AppFormPicker from '../components/formsDWI/AppFormPicker'; // why??
-import SemiboldText from '../components/SemiboldText';
-import Chip from '../components/Chip';
 import FontSize from '../constants/FontSize';
 import colors from '../constants/Colors';
-import AppTextInput from '../components/AppTextInputDWI';
 import Text from '../components/Text'
 import SubmitButton from '../components/formsDWI/SubmitButton';
-import handleCloudImageUpload from '../components/UploadImage'
 import { LoginStackScreenProps } from '../types/navigation';
-import Colors from '../constants/Colors';
 
 import firebase from '../firebase'
 import { getAuth, updateProfile } from "firebase/auth";
-import { getStorage, uploadBytes, uploadBytesResumable, ref, getDownloadURL } from "firebase/storage"
+import { getStorage, uploadBytesResumable, ref, getDownloadURL } from "firebase/storage"
 import FormImagePicker from '../components/formsDWI/FormImagePicker';
 
 const auth = getAuth();
 const storage = getStorage();
+
+let PFPURL;
 
 
 const validationSchema = Yup.object().shape({
@@ -52,7 +48,7 @@ const childGenders = [
 ]
 
 
-async function sendToFirebase(values, navigation) {
+async function imgToFirebase(values, navigation) {
 
     const resultImg = values["pfp"]
 
@@ -61,61 +57,105 @@ async function sendToFirebase(values, navigation) {
     
     const img = await fetch(resultImg.uri)
     const blob = await img.blob()
+    const newFile = new File([blob], `${imgName}.jpeg`, { // Going from blob -> File due to Firebase SDK v9.3.0+ bug.
+        type: "image/jpeg",
+      });
 
     console.log("uploading image");
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+    const uploadTask = uploadBytesResumable(storageRef, newFile);
 
     // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on('state_changed',(snapshot) => {
-    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log('Upload is ' + progress + '% done');
-    switch (snapshot.state) {
-        case 'paused':
-            console.log('Upload is paused');
-            break;
-        case 'running':
-            console.log('Upload is running');
-            break;
-    }
-    },
-    (error) => {
-        this.setState({ isLoading: false })
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-            case 'storage/unauthorized':
-                console.log("User doesn't have permission to access the object");
+    await new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case 'paused':
+                console.log('Upload is paused');
                 break;
-            case 'storage/canceled':
-                console.log("User canceled the upload");
+              case 'running':
+                console.log('Upload is running');
                 break;
-            case 'storage/unknown':
-                console.log("Unknown error occurred, inspect error.serverResponse");
-                break;
-        }
-    },
-    () => {
-        // Upload completed successfully, now we can get the download URL
-        console.log("About to get downloadURL")
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            console.log('File available at', downloadURL);
-            //perform your task
-        }
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+            console.log('Storage error', error);
+            blob.close();
+            reject(error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref)
+              .then(async (downloadURL) => {
+                console.log('File available at', downloadURL);
+                try {
+                  //await addImageReferenceToFirestore({ url: downloadURL, description }); // not yet built
+                  console.log("Need to add image ref to Firestore")
+                } catch (err) {
+                  reject(err);
+                }
+                PFPURL = downloadURL
+                resolve();
+              })
+              .catch((err) => reject(err));
+      
+            blob.close();
+          },
         );
-    });
+      });
+    // uploadTask.on('state_changed',(snapshot) => {
+    //     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    //     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //     console.log('Upload is ' + progress + '% done');
+    //     switch (snapshot.state) {
+    //         case 'paused':
+    //             console.log('Upload is paused');
+    //             break;
+    //         case 'running':
+    //             console.log('Upload is running');
+    //             break;
+    //     }
+    // },
+    // (error) => {
+    //     this.setState({ isLoading: false })
+    //     switch (error.code) {
+    //         case 'storage/unauthorized':
+    //             console.log("User doesn't have permission to access the object");
+    //             break;
+    //         case 'storage/canceled':
+    //             console.log("User canceled the upload");
+    //             break;
+    //         case 'storage/unknown':
+    //             console.log("Unknown error occurred, inspect error.serverResponse");
+    //             break;
+    //     }
+    // },
+    // () => {
+    //     // Upload completed successfully, now we can get the download URL
+    //     console.log("About to get downloadURL")
+    //     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    //         console.log('File available at', downloadURL);
+    //         return downloadURL;
+    //     }
+    //     );
+    // });
+}
 
-
-    // Uncomment this if you want to use the file script
-    //handleCloudImageUpload()
+async function handleSubmit(values, navigation) {
+   
+    console.log("about to hit await")
+    await imgToFirebase(values, navigation)
+    console.log("just left the await")
 
     updateProfile(auth.currentUser, {
         displayName: values["name"],
-       // photoURL: ref(storage, 'images/pfps/' + auth.currentUser.uid)
+        photoURL: PFPURL // downloadURL from imgToFirebase function
         //, photoURL: "https://example.com/jane-q-user/profile.jpg"
       }).then(() => {
         // Profile updated!
-        //console.log("Here is the updated user photo:", auth.currentUser.photoURL)
+        console.log("Here is the updated user photo:", auth.currentUser.photoURL)
         navigation.push("OnboardingChild")
         // ...
       }).catch((error) => {
@@ -133,7 +173,6 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
 }) => { 
 
 
-
     return (
         <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView>
@@ -141,7 +180,7 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                 
             <AppForm
                 initialValues={{name: '', pfp: null}}
-                onSubmit={values => sendToFirebase(values, navigation)} 
+                onSubmit={values => handleSubmit(values, navigation)} 
                 validationSchema={validationSchema}
             >
                 <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
@@ -174,7 +213,8 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                     array={familyDynamics}
                 />
 
-            
+                <Text style={{color: "red", fontSize: 10, textAlign: "center", marginBottom: 5}}>NOTICE: If your app crashes when you press "Continue", try again with a smaller image.</Text>
+
                 <SubmitButton title="Continue"/>
 
                 </View>

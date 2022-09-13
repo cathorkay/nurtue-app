@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NativeModules, ScrollView, StyleSheet, View } from "react-native";
+import { NativeModules, Image, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import BlueButton from "../components/BlueButton";
@@ -28,6 +28,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
 
   const [unimpDialogOpen, setUnimpDialogOpen] = useState(false);
   const [termsDialogOpen, setTermsDialogOpen] = useState(false);
+  
 
   // this feature is unimplemented 
 
@@ -71,6 +72,8 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
 
   const auth = getAuth();
 
+  const pfpURL = `${auth.currentUser?.photoURL}`
+
   return (
     <ScrollView
       style={styles.container}
@@ -81,11 +84,12 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         borderRadius={100}
         ringWidth={16}
       >
-        <MockPhoto style={styles.photo} name={user.user.photo} />
+        {/* <MockPhoto style={styles.photo} name={user.user.photo} /> */}
+        <Image style={styles.photo} source={{ uri: pfpURL }}/>
       </BlueRingView>
       <BlueRingView borderRadius={20}>
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{auth.currentUser.displayName}</Text>
+          <Text style={styles.nameText}>{auth.currentUser?.displayName}</Text>
           <Text>{getChildrenDescription(user.user as Parent)}</Text>
           <BlueButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
             Edit Profile
