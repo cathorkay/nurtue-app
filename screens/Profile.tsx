@@ -72,8 +72,6 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
 
   const auth = getAuth();
 
-  const pfpURL = `${auth.currentUser?.photoURL}`
-
   return (
     <ScrollView
       style={styles.container}
@@ -85,7 +83,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         ringWidth={16}
       >
         {/* <MockPhoto style={styles.photo} name={user.user.photo} /> */}
-        <Image style={styles.photo} source={{ uri: pfpURL }}/>
+        <Image style={styles.photo} source={{ uri: `${auth.currentUser?.photoURL}` }}/>
       </BlueRingView>
       <BlueRingView borderRadius={20}>
         <View style={styles.infoContainer}>

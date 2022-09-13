@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useCallback, useLayoutEffect, useMemo } from "react";
 import {
   FlatList,
+  Image,
   ListRenderItem,
   StyleSheet,
   TouchableOpacity,
@@ -159,8 +160,14 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
             borderRadius={20}
             ringWidth={1.5}
           >
-            <MockPhoto
+            {/* <MockPhoto
               name="dad"
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+              width={32}
+              height={32}
+            /> */}
+            <Image
+              source= {{ uri: `${auth.currentUser?.photoURL}` }}
               style={{ width: 32, height: 32, borderRadius: 16 }}
               width={32}
               height={32}
