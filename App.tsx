@@ -19,6 +19,8 @@ import { NavigationContainer, StackActions } from "@react-navigation/native";
 import OnboardingParent from "./screens/OnboardingParent";
 import OnboardingChild from "./screens/OnboardingChild";
 import LetsGo from "./screens/LetsGo"
+import EditProfile from "./screens/EditProfile";
+import AddFamilyMember from './screens/AddFamilyMember'
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -36,8 +38,8 @@ export default function App() {
       <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
-            <Navigation/> 
-            {/* <LetsGo/> */}
+            {/* <Navigation/>  */}
+            <EditProfile/>
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>
