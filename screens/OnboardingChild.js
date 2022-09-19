@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import DatePicker from '@react-native-community/datetimepicker';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
-import AppFormPicker from '../components/formsDWI/AppFormPicker'; // why??
+import AppFormSelectOne from '../components/formsDWI/AppFormSelectOne'; // why??
 import SemiboldText from '../components/SemiboldText';
 import Chip from '../components/Chip';
 import FontSize from '../constants/FontSize';
@@ -46,7 +46,7 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
                 <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Child's Name"/>
 
                 <Text style={styles.fieldText}>Gender</Text>
-                <AppFormPicker array={childGenders}/>
+                <AppFormSelectOne array={childGenders}/>
 
                 <Text style={styles.fieldText}>Birthday</Text>
                 <DatePicker value={new Date()} display="spinner"/>

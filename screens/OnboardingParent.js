@@ -3,7 +3,8 @@ import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, View, Platf
 import * as Yup from 'yup';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
-import AppFormPicker from '../components/formsDWI/AppFormPicker'; // why??
+import AppFormSelectOne from '../components/formsDWI/AppFormSelectOne';
+//import AppFormSelectMultiple from '../components/formsDWI/AppFormSelectMultiple';
 import FontSize from '../constants/FontSize';
 import colors from '../constants/Colors';
 import Text from '../components/Text'
@@ -19,11 +20,12 @@ import FormImagePicker from '../components/formsDWI/FormImagePicker';
 const auth = getAuth();
 const storage = getStorage();
 
-let PFPURL;
-
+let PFPURL = null
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
+    pfp: Yup.object().required("Please upload a photo").typeError("Profile picture is a required field."),
+    gender: Yup.string().required().label("Gender")
 })
 
 const authorGender = [
@@ -110,7 +112,9 @@ async function imgToFirebase(values, navigation) {
 
 async function handleSubmit(values, navigation) {
    
-    await imgToFirebase(values, navigation)
+    if (values['pfp'] == null) return alert("Please upload a profile picture.")
+    
+    await imgToFirebase(values, navigation) 
 
     updateProfile(auth.currentUser, {
         displayName: values["name"],
@@ -142,7 +146,7 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
         <ScrollView>
                 
             <AppForm
-                initialValues={{name: '', pfp: null}}
+                initialValues={{name: '', pfp: null, gender: ''}}
                 onSubmit={values => handleSubmit(values, navigation)} 
                 validationSchema={validationSchema}
             >
@@ -159,23 +163,19 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
                 />
 
                 <View style={styles.pfpContainer}>
-                  <Text style={styles.text}>Add a profile picture, if you'd like</Text>
-                    <BlueRingView
-                      style={{marginTop: 10}}
-                      borderRadius={100}
-                      ringWidth={3}>
-                      <FormImagePicker name={"pfp"}/>
-                    </BlueRingView>
+                  <Text style={styles.text}>Add a profile picture!</Text>
+                    <FormImagePicker name={"pfp"}/>
                 </View>
 
                 <Text style={styles.text}>You are...</Text>               
-                <AppFormPicker 
+                <AppFormSelectOne 
                     array={authorGender}
+                    name="gender"
                 />
 
                 <Text style={styles.text}>Select all that apply to you.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Adding these helps all our users find relatable community posts.</Text>
-                <AppFormPicker 
+                <AppFormSelectOne 
                     array={familyDynamics}
                 />
 

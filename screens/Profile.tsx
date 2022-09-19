@@ -43,7 +43,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   };
 
   const handleEditPress = () => {
-    handleUnimpDialogOpen();
+    console.log("Push the edit profile screen")
   };
 
   // terms and conditions

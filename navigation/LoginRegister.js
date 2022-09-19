@@ -1,6 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 
-import IconButton from "../components/IconButton";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
 import Login from "../screens/Login";
