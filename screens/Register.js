@@ -3,6 +3,8 @@ import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, Touchabl
 import * as Yup from 'yup';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
+import { db, storage } from '../firebase';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 
 import colors from '../constants/Colors';
 import {AppForm, AppFormField} from '../components/formsDWI';
@@ -28,8 +30,21 @@ function addUser(values, navigation) {
     .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        // ...
-        navigation.push("OnboardingParent") 
+        navigation.push("OnboardingParent")
+        
+        //create a new entry in firestore that is linked to this user (michael)
+        const uid = userCredential.user.uid;
+        try {
+            setDoc(doc(db, 'users', uid), {
+                children: [],
+                expert: null,
+                gender: null,
+                name: null,
+                photo: null,
+            })
+        } catch (err) {
+            alert(err);
+        }
     })
     .catch((error) => {
         const errorCode = error.code;
