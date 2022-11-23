@@ -17,6 +17,13 @@ import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
 import SubmitButton from '../components/formsDWI/SubmitButton';
 
+import DatePickerField from '../components/formsDWI/DatePickerField';
+
+import { db } from '../firebase';
+import { getAuth } from "firebase/auth";
+import { updateDoc, doc, getDoc, addDoc } from 'firebase/firestore';
+
+const auth = getAuth();
 
 const childGenders = [
     "Female",
@@ -28,14 +35,40 @@ const childGenders = [
 ]
 
 const validationSchema = Yup.object().shape({
-    childName: Yup.string().required().label("Name"),
-    childGender: Yup.string().required().label("Gender"),
+    childname: Yup.string().required().label("Name"),
+    childGender: Yup.string().required().label("Gender")
 })
 
 function handleSubmit(values, navigation) {
-    console.log("TODO: Set child's name in Firestore")
-    console.log("TODO: Set child's gender in Firestore")
-    console.log("TODO: Set child's birthday in Firestore")
+    console.log(values)
+    //console.log("TODO: Set child's name in Firestore")
+    //console.log("TODO: Set child's gender in Firestore")
+    //console.log("TODO: Set child's birthday in Firestore")
+
+    //update firestore entry for this user (michael)
+    try {
+        const parentEntry = doc(db, 'users', auth.currentUser.uid);
+        getDoc(parentEntry).then(docSnap => {
+            console.log(docSnap.data());
+            var newChildren = docSnap.data().chilren;
+            if(newChildren === undefined){
+                newChildren = [];
+            }
+
+            newChildren.push({
+                gender: values['childGender'],
+                name: values['childName'],
+                birthday: values['birthday']
+            })
+            
+            updateDoc(parentEntry, {
+                children: newChildren,
+            })
+        })
+    } catch (err) {
+        alert(err);
+    }
+
     navigation.push("Tabs")
 }
 
@@ -49,9 +82,10 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
         <ScrollView>
 
             <AppForm
-                initialValues={{childName: '', childGender: ''}}
+                initialValues={{childName: '', childGender: '', birthday: '',}}
                 onSubmit={values => handleSubmit(values, navigation)} 
-                validationSchema={validationSchema}
+                //validationSchema={validationSchema}
+                validator={() => ({})}
             >
 
                 <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
@@ -60,14 +94,22 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
                 <Text style={{textAlign: "center", fontFamily: "semibold", fontSize: FontSize.emphasis, color: colors.grey, marginTop: 30, marginBottom: 20}}>Tell us about your child.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Let's start with one for now. {'\n'} You can always add more later.</Text>
                 <Text style={styles.fieldText}>Name</Text>
-                <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Child's Name"/>
+                <AppFormField 
+                    name="childName" 
+                    style={{
+                        fontFamily: "light", textAlign: "left", width: "100%"
+                    }} 
+                    color="lightblue" 
+                    placeholder="Child's Name"
+                />
 
                 <Text style={styles.fieldText}>Gender</Text>
                 <AppFormSelectOne array={childGenders} name="childGender"/>
 
                 <Text style={styles.fieldText}>Birthday</Text>
-                <DatePicker value={new Date()} display="spinner"/>
-                <SubmitButton  style={{marginVertical: 20}} title="Continue"/> 
+                <DatePickerField name="birthday"/>
+
+                <SubmitButton style={{marginVertical: 20}} title="Continue"/> 
 
                 </View>
             

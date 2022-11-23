@@ -27,7 +27,7 @@ const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
     pfp: Yup.object().required("Please upload a photo").typeError("Profile picture is a required field."),
     gender: Yup.string().required().label("Gender"),
-    //dynamics: Yup.array()
+    dynamics: Yup.string().required().label("dynamics")
 })
 
 const authorGender = [
@@ -112,12 +112,12 @@ async function imgToFirebase(values, navigation) {
 }
 
 async function handleSubmit(values, navigation) {
-  console.log("submitting...");
+  console.log("submitting...", values);
   if (values['pfp'] == null) return alert("Please upload a profile picture.")
 
-  console.log("TODO: Set user's gender in Firestore")
-  console.log("TODO: Set user's dynamics in Firestore")
-  console.log("TODO: Put the user's name and pfpURL in Firestore")
+  //console.log("TODO: Set user's gender in Firestore")
+  //console.log("TODO: Set user's dynamics in Firestore")
+  //console.log("TODO: Put the user's name and pfpURL in Firestore")
   
   await imgToFirebase(values, navigation) 
 
@@ -141,8 +141,10 @@ async function handleSubmit(values, navigation) {
   try {
     setDoc(doc(db, 'users', auth.currentUser.uid), {
       gender: values['gender'],
+      dynamics: values['dynamics'],
       name: values['name'],
       photo: PFPURL,
+      children: [],
     })
   } catch (err) {
       alert(err);
