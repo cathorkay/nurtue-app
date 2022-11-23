@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 
 import { AppForm, AppFormField } from '../components/formsDWI';
 import AppFormSelectOne from '../components/formsDWI/AppFormSelectOne';
-//import AppFormSelectMultiple from '../components/formsDWI/AppFormSelectMultiple';
 import FontSize from '../constants/FontSize';
 import colors from '../constants/Colors';
 import Text from '../components/Text'
@@ -25,7 +24,8 @@ let PFPURL = null
 const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
     pfp: Yup.object().required("Please upload a photo").typeError("Profile picture is a required field."),
-    gender: Yup.string().required().label("Gender")
+    gender: Yup.string().required().label("Gender"),
+    dynamics: Yup.array()
 })
 
 const authorGender = [
@@ -111,8 +111,11 @@ async function imgToFirebase(values, navigation) {
 }
 
 async function handleSubmit(values, navigation) {
-   
     if (values['pfp'] == null) return alert("Please upload a profile picture.")
+
+    console.log("TODO: Set user's gender in Firestore")
+    console.log("TODO: Set user's dynamics in Firestore")
+    console.log("TODO: Put the user's name and pfpURL in Firestore")
     
     await imgToFirebase(values, navigation) 
 
@@ -146,7 +149,7 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
         <ScrollView>
                 
             <AppForm
-                initialValues={{name: '', pfp: null, gender: ''}}
+                initialValues={{name: '', pfp: null, gender: '', dynamics: []}}
                 onSubmit={values => handleSubmit(values, navigation)} 
                 validationSchema={validationSchema}
             >
@@ -175,13 +178,14 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
 
                 <Text style={styles.text}>Select all that apply to you.</Text>
                 <Text style={[styles.text, {fontSize: FontSize.caption}]}>Adding these helps all our users find relatable community posts.</Text>
-                <AppFormSelectOne 
+                <AppFormSelectOne
                     array={familyDynamics}
+                    name="dynamics"
                 />
 
                 <Text style={{color: "red", fontSize: 10, textAlign: "center", marginBottom: 5}}>NOTICE: If your app crashes when you press "Continue", try again with a smaller image.</Text>
 
-                <SubmitButton title="Continue"/>
+                <SubmitButton title="Continue"/> 
 
                 </View>
             </AppForm>

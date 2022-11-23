@@ -15,6 +15,7 @@ import Text from '../components/Text'
 import OrangeButton from '../components/OrangeButton';
 import { LoginStackScreenProps } from '../types/navigation';
 import Colors from '../constants/Colors';
+import SubmitButton from '../components/formsDWI/SubmitButton';
 
 
 const childGenders = [
@@ -26,6 +27,18 @@ const childGenders = [
     "Other",
 ]
 
+const validationSchema = Yup.object().shape({
+    childName: Yup.string().required().label("Name"),
+    childGender: Yup.string().required().label("Gender"),
+})
+
+function handleSubmit(values, navigation) {
+    console.log("TODO: Set child's name in Firestore")
+    console.log("TODO: Set child's gender in Firestore")
+    console.log("TODO: Set child's birthday in Firestore")
+    navigation.push("Tabs")
+}
+
 const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
     navigation,
     route,
@@ -35,7 +48,11 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
         <KeyboardAvoidingView>
         <ScrollView>
 
-            <AppForm>
+            <AppForm
+                initialValues={{childName: '', childGender: ''}}
+                onSubmit={values => handleSubmit(values, navigation)} 
+                validationSchema={validationSchema}
+            >
 
                 <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
 
@@ -46,11 +63,11 @@ const OnboardingChild: React.FC<LoginStackScreenProps<"OnboardingChild">> = ({
                 <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Child's Name"/>
 
                 <Text style={styles.fieldText}>Gender</Text>
-                <AppFormSelectOne array={childGenders}/>
+                <AppFormSelectOne array={childGenders} name="childGender"/>
 
                 <Text style={styles.fieldText}>Birthday</Text>
                 <DatePicker value={new Date()} display="spinner"/>
-                <OrangeButton style={{marginVertical: 20}} onPress={() => navigation.push("Tabs")}>Continue</OrangeButton>
+                <SubmitButton  style={{marginVertical: 20}} title="Continue"/> 
 
                 </View>
             
