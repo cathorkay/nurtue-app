@@ -7,7 +7,6 @@ import AppFormSelectOne from '../components/formsDWI/AppFormSelectOne';
 import FontSize from '../constants/FontSize';
 import colors from '../constants/Colors';
 import Text from '../components/Text'
-import BlueRingView from '../components/BlueRingView';
 import SubmitButton from '../components/formsDWI/SubmitButton';
 import { LoginStackScreenProps } from '../types/navigation';
 
@@ -163,8 +162,9 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
               
           <AppForm
               initialValues={{name: '', pfp: null, gender: '', dynamics: []}}
-              onSubmit={values => handleSubmit(values, navigation)} 
-              validationSchema={validationSchema}
+              onSubmit={values => handleSubmit(values, navigation)}
+              // validationSchema={validationSchema}
+              validator={() => ({})}
           >
               <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
 
