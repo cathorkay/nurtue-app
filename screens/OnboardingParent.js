@@ -27,7 +27,7 @@ const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
     pfp: Yup.object().required("Please upload a photo").typeError("Profile picture is a required field."),
     gender: Yup.string().required().label("Gender"),
-    dynamics: Yup.array()
+    //dynamics: Yup.array()
 })
 
 const authorGender = [
@@ -163,8 +163,8 @@ const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
           <AppForm
               initialValues={{name: '', pfp: null, gender: '', dynamics: []}}
               onSubmit={values => handleSubmit(values, navigation)}
-              // validationSchema={validationSchema}
-              validator={() => ({})}
+              validationSchema={validationSchema}
+              //validator={() => ({})}
           >
               <View style={{paddingHorizontal: 20, paddingBottom: 30}}>
 
