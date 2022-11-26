@@ -17,11 +17,29 @@ import FormImagePicker from '../components/formsDWI/FormImagePicker';
 import { setDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 
+import { v4 } from "uuid";
+import { BUCKET_NAME, REGION, ACCESSKEYID, SECRETACCESSKEY } from '../aws';
+import { RNS3 } from 'react-native-aws3';
+import { Amplify, Storage } from 'aws-amplify';
+import awsmobile from '../src/aws-exports';
+Amplify.configure(awsmobile);
 
 const auth = getAuth();
-const storage = getStorage();
+const firebaseStorage = getStorage();
 
-let PFPURL = null
+let PFPURL = null;
+const uuidTemp = v4();
+const AWSBASE = "https://nurtue-bucket172437-nurtueenv.s3.us-west-1.amazonaws.com/public/"
+
+//aws config (not used by amplify)
+const configAWS = {
+  bucket: BUCKET_NAME,
+  keyPrefix: 'pfps/',
+  region: REGION,
+  accessKey: ACCESSKEYID,
+  secretKey: SECRETACCESSKEY,
+  sucessActionStatus: 201
+}
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required().label("Name"),
@@ -53,11 +71,12 @@ const childGenders = [
 ]
 
 
+//firebase storage (not used anymore)
 async function imgToFirebase(values, navigation) {
   const resultImg = values["pfp"]
 
   const imgName = auth.currentUser.uid
-  const storageRef = ref(storage, `images/pfps/${imgName}`)
+  const storageRef = ref(firebaseStorage, `images/pfps/${imgName}`)
   
   const img = await fetch(resultImg.uri)
   const blob = await img.blob()
@@ -111,30 +130,44 @@ async function imgToFirebase(values, navigation) {
     });
 }
 
+async function imgToAWS(resultImg){
+  const img = await fetch(resultImg.uri)
+  const blob = await img.blob()
+  const fileName = resultImg.fileName + uuidTemp;
+
+  console.log("uploading to aws...");
+
+  //aws amplify
+  await Storage.put(fileName, blob, {
+    level: "public",
+    contentType: 'image/jpeg',
+    progressCallback(progress){
+      console.log(parseInt((progress.loaded / progress.total) * 100));
+    },
+  })
+  .then((response) => {
+    console.log(response.key);
+  })
+  .catch((error ) => {
+    console.log(error);
+  });
+}
+
 async function handleSubmit(values, navigation) {
   console.log("submitting...", values);
   if (values['pfp'] == null) return alert("Please upload a profile picture.")
 
-  //console.log("TODO: Set user's gender in Firestore")
-  //console.log("TODO: Set user's dynamics in Firestore")
-  //console.log("TODO: Put the user's name and pfpURL in Firestore")
-  
-  await imgToFirebase(values, navigation) 
+  await imgToAWS(values['pfp']);
 
   updateProfile(auth.currentUser, {
     displayName: values["name"],
-    photoURL: PFPURL // downloadURL from imgToFirebase function
-    //, photoURL: "https://example.com/jane-q-user/profile.jpg"
+    photoURL: AWSBASE + values["pfp"].fileName + uuidTemp
   }).then(() => {
-    // Profile updated!
     console.log("Here is the updated user photo:", auth.currentUser.photoURL)
     navigation.push("OnboardingChild")
-    // ...
   }).catch((error) => {
-    // An error occurred
     alert(error)
     console.log(error)
-    // ...
   });
 
   //update firestore entry for this user (michael)
@@ -143,14 +176,13 @@ async function handleSubmit(values, navigation) {
       gender: values['gender'],
       dynamics: values['dynamics'],
       name: values['name'],
-      photo: PFPURL,
+      photo: AWSBASE + values["pfp"].fileName + uuidTemp,
       children: [],
     })
   } catch (err) {
       alert(err);
   }
 }
-
 
 const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
   navigation,

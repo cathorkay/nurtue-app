@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import dayjs from "dayjs";
-import { useCallback, useLayoutEffect, useMemo } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Image,
@@ -28,6 +28,8 @@ import { TabScreenProps } from "../types/navigation";
 import { Post } from "../types/state";
 
 import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, doc, getDoc, addDoc, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
 
 const generateGreeting = () => {
   const hour = new Date().getHours();
@@ -71,9 +73,25 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   const user = useAppSelector((state) => state.profileState.profile.user);
   const originalPosts = useAppSelector((state) => state.postState.posts);
   const filters = useAppSelector((state) => state.postState.filters);
+  const firebasePosts: DocumentData[] = [];
 
-  const filteredPosts = useMemo(() => {
-    let posts = originalPosts;
+  const [finalPosts, setFinalPosts] = useState<DocumentData[]>([]);
+
+  //get posts from firebase (michael)
+  useEffect(() => {
+    getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
+      const newPosts: DocumentData[] = [];
+      postsSnap.forEach((doc) => {
+        newPosts.push(doc.data());
+      });
+      setFinalPosts([...newPosts]);
+    });
+  }, []);
+
+  //get posts from firebase (michael)
+  useEffect(() => {
+    let posts = finalPosts;
+    //console.log("firebase posts", posts);
     posts = posts.filter((p) => {
       if (p.author.expert) {
         return false;
@@ -83,6 +101,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         return months >= filters.minAge && months <= filters.maxAge;
       });
     });
+
     if (filters.childGender) {
       posts = posts.filter((p) => {
         if (p.author.expert) {
@@ -98,6 +117,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         });
       });
     }
+
     if (filters.authorRole) {
       posts = posts.filter((p) => {
         if (p.author.expert && filters.authorRole === "Certified Expert") {
@@ -114,8 +134,9 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         return false;
       });
     }
-    return posts;
+
   }, [
+    finalPosts,
     filters.authorRole,
     filters.childGender,
     filters.maxAge,
@@ -187,7 +208,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
           marginTop: 35,
           paddingBottom: tabBarHeight + 60 + 55,
         }}
-        data={filteredPosts}
+        data={finalPosts}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
             {emptyFilters(filters) ? "No post yet" : "No post found"}

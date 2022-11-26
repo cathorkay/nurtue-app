@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
 
+import Text from "../components/Text";
 import BlueButton from "../components/BlueButton";
 import Dialog from "../components/Dialog";
 import IconButton from "../components/IconButton";
@@ -33,6 +34,19 @@ import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
 import { Parent, Post, Reply } from "../types/state";
 
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, setDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, FieldPath } from 'firebase/firestore';
+import { getStorage, uploadBytes, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
+
+import { Amplify, Storage } from 'aws-amplify';
+import awsmobile from '../src/aws-exports';
+import { off } from "process";
+Amplify.configure(awsmobile);
+
+let replyImgURL = "";
+const AWSBASE = "https://nurtue-bucket172437-nurtueenv.s3.us-west-1.amazonaws.com/public/";
+
 const CommunityThreadScreen: React.FC<
   RootStackScreenProps<"CommunityThread">
 > = ({ route }) => {
@@ -45,10 +59,16 @@ const CommunityThreadScreen: React.FC<
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
+  
+  /* switching to firebase
   const post = useAppSelector((state) =>
     state.postState.posts.find((p) => p.id === postId)
   )!;
   const user = useAppSelector((state) => state.profileState.profile.user);
+  */
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const [post, setPost] = useState<DocumentData>();
 
   const [currentActionPost, setCurrentActionPost] = useState<
     Post | Reply | null
@@ -56,7 +76,9 @@ const CommunityThreadScreen: React.FC<
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
   const [postReported, setPostReported] = useState(false);
   const [replyText, setReplyText] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+  const [imageName, setImageName] = useState("");
+  const [replies, setReplies] = useState<DocumentData[]>([]);
 
   const handleMorePress = (post: Post | Reply) => {
     setCurrentActionPost(post);
@@ -78,13 +100,40 @@ const CommunityThreadScreen: React.FC<
     }
   };
 
+  //update fireabse when liked (michael)
   const handleLikePost = () => {
-    dispatch(
+    let likers = post.likers;
+    let loc = likers.indexOf(user.uid);
+
+    if(loc != -1){
+      console.log("unlike");
+      let temp = likers[loc];
+      likers[loc] = likers[0];
+      likers[0] = temp;
+      likers.shift();
+    }else{
+      console.log("like");
+      likers.push(user.uid);
+    }
+
+    const newPost = post;
+    newPost.likeCount = likers.length;
+    newPost.likers = likers;
+    setPost({...newPost});
+
+    updateDoc(doc(db, "posts", postId), {
+      likeCount: likers.length,
+      likers: likers,
+    });
+
+
+
+    /*dispatch(
       likePost({
         postId,
         userId: user.id,
       })
-    );
+    );*/
   };
 
   const handleDeletePost = (postId: string) => {
@@ -101,19 +150,50 @@ const CommunityThreadScreen: React.FC<
     }, 500);
   };
 
+  //update firebase (michael)
   const handleLikeReply = (replyId: string) => {
-    dispatch(
+    console.log(replyId);
+    getDoc(doc(db, "replies", replyId)).then((snapshot => {
+      let reply = snapshot.data();
+      let likers = reply.likers;
+      let loc = likers.indexOf(user.uid);
+
+      if(loc != -1){
+        console.log("unlike");
+        let temp = likers[loc];
+        likers[loc] = likers[0];
+        likers[0] = temp;
+        likers.shift();
+      }else{
+        console.log("like");
+        likers.push(user.uid);
+      }
+
+      const newReplies: DocumentData[] = replies;
+      let i = newReplies.findIndex((r => r.id === replyId));
+      newReplies[i].likeCount = likers.length;
+      newReplies[i].likers = likers;
+      setReplies([...newReplies]);
+
+      updateDoc(doc(db, "replies", replyId), {
+        likeCount: likers.length,
+        likers: likers,
+      });
+    }));
+
+
+    /*dispatch(
       likeReply({
         postId,
         replyId,
         userId: user.id,
       })
-    );
+    );*/
   };
 
   const handleImagePick = async () => {
     if (image) {
-      setImage(null);
+      setImage("");
       return;
     }
 
@@ -122,16 +202,124 @@ const CommunityThreadScreen: React.FC<
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      let path = result.uri;
+      let fileName = result.fileName + uuid();
+      setImage(path);
+      if(fileName) setImageName(fileName);
     }
   };
 
   const handleImageDelete = () => {
-    setImage(null);
+    setImage("");
   };
 
+  //upload img to firebase (michael) - no longer used
+  async function imgToFirebase(){
+    const storage = getStorage();
+    const storageRef = ref(storage, `replies/${imageName}`);
+
+    const img = await fetch(image);
+    const blob = await img.blob();
+    const newFile = new File([blob], `${imageName}.jpeg`, { // Going from blob -> File due to Firebase SDK v9.3.0+ bug.
+      type: "image/jpeg",
+    });      
+
+    console.log(imageName, newFile);
+
+    console.log("uploading image");
+    const uploadTask = uploadBytesResumable(storageRef, newFile);
+
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      }, 
+      (error) => {
+        console.log('Storage error', error);
+      }, 
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          replyImgURL = downloadURL;
+        });
+      }
+    );
+  }
+
+  async function imgToAWS(){
+    const img = await fetch(image)
+    const blob = await img.blob()
+  
+    console.log("uploading to aws...");
+  
+    //aws amplify
+    await Storage.put(imageName, blob, {
+      level: "public",
+      contentType: 'image/jpeg',
+      progressCallback(progress){
+        console.log(parseInt((progress.loaded / progress.total) * 100));
+      },
+    })
+    .then((response) => {
+      console.log("upload complete, ", response.key);
+    })
+    .catch((error ) => {
+      console.log(error);
+    });
+  }
+  
+  //upload reply to firebase (michael)
+  async function uploadReplytoFirebase(){
+    console.log("upload post to firebase");
+    var replyID = uuid();
+    let authorSnap = await getDoc(doc(db, "users", user.uid));
+    let userTemp = authorSnap.data();
+    userTemp['id'] = user.uid;
+
+    if(image){
+      imgToAWS();
+      //await imgToFirebase();
+    }
+
+    try {
+      setDoc(doc(db, 'replies', replyID), {
+        id: replyID,
+        author: userTemp,
+        content: replyText,
+        image: AWSBASE + imageName,
+        likeCount: 0,
+        likers: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+    } catch (err) {
+      alert(err);
+    }    
+
+    //add reply to the post
+    const postRef = doc(db, 'posts', post.id);
+    const newReplies = post.replies;
+    newReplies.push(replyID);
+
+    updateDoc(postRef, {
+        replies: newReplies,
+    })
+  }
+
   const handleAddReply = () => {
-    dispatch(
+    console.log("uploading reply");
+    uploadReplytoFirebase();
+
+
+    /*dispatch(
       addReply({
         postId,
         reply: {
@@ -148,7 +336,8 @@ const CommunityThreadScreen: React.FC<
         },
       })
     );
-    setImage(null);
+    */
+    setImage("");
     setReplyText("");
     Keyboard.dismiss();
     setTimeout(() => {
@@ -194,6 +383,23 @@ const CommunityThreadScreen: React.FC<
     />
   );
 
+  //get post & its replies from firebase (michael)
+  useEffect(() => {
+    console.log(postId);
+    getDoc(doc(db, "posts", postId)).then((docSnap) => {
+      setPost(docSnap.data());
+      const newReplies: DocumentData[] = [];
+      docSnap.data().replies.forEach(rId => {
+        getDoc(doc(db, "replies", rId)).then(rSnap => {
+          newReplies.push(rSnap.data());
+          setReplies([...newReplies]);
+        })
+      });
+    });
+  }, []);
+
+  console.log(post);
+  if(post !== undefined){
   return (
     <>
       <FlatList
@@ -203,7 +409,7 @@ const CommunityThreadScreen: React.FC<
           marginTop: -20,
           paddingBottom: insets.bottom + 90,
         }}
-        data={post.replies}
+        data={replies}
         ListHeaderComponent={
           <PostCard
             post={post}
@@ -301,6 +507,12 @@ const CommunityThreadScreen: React.FC<
       </Dialog>
     </>
   );
+  }else{
+    //loading post animation or some kind?
+    return(
+      <Text>Loading post...</Text>
+    )
+  }
 };
 
 const styles = StyleSheet.create({

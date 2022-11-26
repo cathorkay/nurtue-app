@@ -21,9 +21,23 @@ import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
-import { addPost } from "../data/post";
+import post, { addPost } from "../data/post";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
+
+import { getAuth } from "firebase/auth";
+
+import { getStorage, uploadBytes, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
+import { addDoc, setDoc, collection, getDoc, doc } from 'firebase/firestore';
+import { db } from '../firebase';
+
+import { Amplify, Storage } from 'aws-amplify';
+import awsmobile from '../src/aws-exports';
+Amplify.configure(awsmobile);
+
+const auth = getAuth();
+let imgURL = "";
+const AWSBASE = "https://nurtue-bucket172437-nurtueenv.s3.us-west-1.amazonaws.com/public/";
 
 const recommendedTopics = [
   "tantrum",
@@ -44,7 +58,8 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+  const [imageName, setImageName] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [addedTopics, setAddedTopics] = useState<string[]>([]);
   const [newTopic, setNewTopic] = useState("");
@@ -72,7 +87,7 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
 
   const handleImagePick = async () => {
     if (image) {
-      setImage(null);
+      setImage("");
       return;
     }
 
@@ -81,7 +96,11 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      let path = result.uri;
+      let fileName = result.fileName + uuid();
+      console.log(result);
+      setImage(path);
+      if(fileName) setImageName(fileName);
     }
   };
 
@@ -110,7 +129,129 @@ const NewPostScreen: React.FC<RootStackScreenProps<"NewPost">> = ({
     setNewTopic("");
   };
 
+  //fire base storage (not used anymore)
+  async function imgToFirebase(){
+    const storage = getStorage();
+    const storageRef = ref(storage, `posts/${imageName}`);
+
+    const img = await fetch(image);
+    const blob = await img.blob();
+    const newFile = new File([blob], `${imageName}.jpeg`, { // Going from blob -> File due to Firebase SDK v9.3.0+ bug.
+      type: "image/jpeg",
+    });      
+
+    console.log(newFile);
+    console.log(imageName);
+
+    console.log("uploading image");
+    /*const snapshot = await uploadBytes(storageRef, newFile);
+    getDownloadURL(snapshot.ref).then(downloadURL => {
+      console.log(downloadURL);
+      imgURL = downloadURL;
+    });*/
+
+    //need to delete line from node modules!
+    const uploadTask = uploadBytesResumable(storageRef, newFile);
+
+    // Listen for state changes, errors, and completion of the upload.
+    await new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          console.log('Storage error', error);
+          blob.close();
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then(async (downloadURL) => {
+              console.log('File available at', downloadURL);
+              imgURL = downloadURL;
+              resolve();
+            })
+            .catch((err) => reject(err));
+    
+          blob.close();
+        },
+      );
+    });
+  }
+
+  async function imgToAWS(){
+    const img = await fetch(image)
+    const blob = await img.blob()
+  
+    console.log("uploading to aws...");
+  
+    //aws amplify
+    await Storage.put(imageName, blob, {
+      level: "public",
+      contentType: 'image/jpeg',
+      progressCallback(progress){
+        console.log(parseInt((progress.loaded / progress.total) * 100));
+      },
+    })
+    .then((response) => {
+      console.log(response.key);
+    })
+    .catch((error ) => {
+      console.log(error);
+    });
+  }
+
+  //add doc to firebase for post (michael)
+  async function handlePostFirebase(){
+    var postId = uuid();
+    let authorSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+    let userTemp = authorSnap.data();
+    userTemp['id'] = auth.currentUser.uid;
+
+    if(anonymous) 
+      userTemp = "";
+
+    if(image){
+      //await imgToFirebase();
+      await imgToAWS();
+      imgURL = AWSBASE + imageName;
+    }
+
+    try {
+      setDoc(doc(db, 'posts', postId), {
+        id: postId,
+        title: title,
+        author: userTemp,
+        content: description,
+        image: imgURL,
+        likeCount: 0,
+        likers: [],
+        replies: [],
+        topics: selectedTopics,
+        anonymous: anonymous,
+        expertsOnly: expertsOnly,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+      console.log("done");
+    } catch (err) {
+      alert(JSON.stringify(err))
+    }    
+  }
+
   const handlePostAdd = useCallback(() => {
+    handlePostFirebase();
+
     dispatch(
       addPost({
         post: {
