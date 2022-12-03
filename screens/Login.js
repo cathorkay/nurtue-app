@@ -28,7 +28,7 @@ function handleLogin(values, navigation) {
         // Signed in 
         const user = userCredential.user;
         // ...
-        console.log(user)
+        //console.log(user)
         alert("Successfully LOGGED IN")
         navigation.push("Tabs")
     })

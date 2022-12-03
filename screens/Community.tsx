@@ -80,15 +80,37 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   //get posts from firebase (michael)
   useEffect(() => {
     getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
-      const newPosts: DocumentData[] = [];
+      let newPosts: DocumentData[] = [];
       postsSnap.forEach((doc) => {
-        newPosts.push(doc.data());
-      });
+        if(filterPosts(doc.data()))newPosts.push(doc.data());
+      });      
+      
       setFinalPosts([...newPosts]);
     });
-  }, []);
+  }, [filters]);
 
-  //get posts from firebase (michael)
+  const filterPosts = (p) => {
+    if (filters.authorRole) {
+      if (filters.authorRole === "Father" && p.author.gender !== "Male") return false;
+      if (filters.authorRole === "Mother" && p.author.gender !== "Female") return false;
+      if (filters.authorRole === "Non-binary Parent" && p.author.gender !== "Non-binary") return false;
+    }
+
+    if(filters.childGender){
+      if (p.author.children.some((c) => {
+        if (c.gender === "Male") {
+            return filters.childGender === "Male";
+          } else if (c.gender === "Female") {
+            return filters.childGender === "Female";
+          }
+          return false;    
+      }) === false) return false;
+    }
+    
+    return true;
+  }
+
+  /*
   useEffect(() => {
     let posts = finalPosts;
     //console.log("firebase posts", posts);
@@ -125,6 +147,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         } else if (p.author.expert) {
           return false;
         }
+
         if (filters.authorRole === "Father" && p.author.gender === "male") {
           return true;
         }
@@ -134,7 +157,6 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         return false;
       });
     }
-
   }, [
     finalPosts,
     filters.authorRole,
@@ -142,7 +164,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     filters.maxAge,
     filters.minAge,
     originalPosts,
-  ]);
+  ]);*/
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {

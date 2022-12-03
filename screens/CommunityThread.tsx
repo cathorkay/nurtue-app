@@ -80,6 +80,32 @@ const CommunityThreadScreen: React.FC<
   const [imageName, setImageName] = useState("");
   const [replies, setReplies] = useState<DocumentData[]>([]);
 
+  //get post & its replies from firebase (michael)
+  useEffect(() => {
+    getDoc(doc(db, "posts", postId)).then((docSnap) => {
+      setPost(docSnap.data());
+      const newReplies: DocumentData[] = [];
+      docSnap.data().replies.forEach(rId => {
+        getDoc(doc(db, "replies", rId)).then(rSnap => {
+          newReplies.push(rSnap.data());
+          setReplies([...newReplies]);
+        })
+      });
+    });
+  }, [postId]);
+
+  useEffect(() => {
+    if(post){
+      const newReplies: DocumentData[] = [];
+      post.replies.forEach(rId => {
+        getDoc(doc(db, "replies", rId)).then(rSnap => {
+          newReplies.push(rSnap.data());
+          setReplies([...newReplies]);
+        })
+      });
+    }
+  }, [post]);
+
   const handleMorePress = (post: Post | Reply) => {
     setCurrentActionPost(post);
     setActionMenuVisible(true);
@@ -125,8 +151,6 @@ const CommunityThreadScreen: React.FC<
       likeCount: likers.length,
       likers: likers,
     });
-
-
 
     /*dispatch(
       likePost({
@@ -284,9 +308,12 @@ const CommunityThreadScreen: React.FC<
     let userTemp = authorSnap.data();
     userTemp['id'] = user.uid;
 
+    let imgLocation = "";
+
     if(image){
       imgToAWS();
       //await imgToFirebase();
+      imgLocation = AWSBASE + imageName;
     }
 
     try {
@@ -294,7 +321,7 @@ const CommunityThreadScreen: React.FC<
         id: replyID,
         author: userTemp,
         content: replyText,
-        image: AWSBASE + imageName,
+        image: imgLocation,
         likeCount: 0,
         likers: [],
         createdAt: new Date().toISOString(),
@@ -383,22 +410,7 @@ const CommunityThreadScreen: React.FC<
     />
   );
 
-  //get post & its replies from firebase (michael)
-  useEffect(() => {
-    console.log(postId);
-    getDoc(doc(db, "posts", postId)).then((docSnap) => {
-      setPost(docSnap.data());
-      const newReplies: DocumentData[] = [];
-      docSnap.data().replies.forEach(rId => {
-        getDoc(doc(db, "replies", rId)).then(rSnap => {
-          newReplies.push(rSnap.data());
-          setReplies([...newReplies]);
-        })
-      });
-    });
-  }, []);
-
-  console.log(post);
+  //console.log(post);
   if(post !== undefined){
   return (
     <>

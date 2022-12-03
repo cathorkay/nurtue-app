@@ -41,8 +41,6 @@ const PostCard: React.FC<PostCardProps> = ({
   onMore,
   ...restProps
 }) => {
-  console.log(post);
-
   const view = (
     <View>
       {!preview && (post as Post).title && (
