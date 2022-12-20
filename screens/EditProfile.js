@@ -11,6 +11,7 @@ import OrangeButton from '../components/OrangeButton';
 import Colors from '../constants/Colors';
 import { ProfileStackScreenProps } from '../types/navigation';
 import { ProfileStack } from '../navigation/Profile';
+import { ScrollView } from 'react-native';
 
 
 const authorGender = [
@@ -29,8 +30,6 @@ export const familyDynamics = [
 
 function handleBack(navigation) {
     console.log("Go back to the profile page")
-    //console.log(navigation)
-    //navigation.push("Profile")
 }
 
 const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
@@ -38,7 +37,7 @@ const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
     route,
 }) => { 
     return (
-        <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
             <KeyboardAvoidingView>
 
                 <AppForm>
@@ -66,7 +65,7 @@ const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
                 </AppForm>
 
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </ScrollView>
     );
 }
 

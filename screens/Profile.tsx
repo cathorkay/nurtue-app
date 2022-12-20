@@ -13,7 +13,6 @@ import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
 import { persistor, useAppSelector } from "../data/store";
 import { getChildrenDescription } from "../lib/format";
-import Root from "../navigation/Root";
 import { ProfileStackScreenProps } from "../types/navigation";
 import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
@@ -23,7 +22,11 @@ import TermsCond from "../components/TermsCond";
 import { TouchableHighlight, TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 
-const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
+const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
+  navigation,
+  route,
+}) => {  
+  
   const insets = useSafeAreaInsets();
 
   const user = useAppSelector((state) => state.profileState.profile);
@@ -44,6 +47,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
 
   const handleEditPress = () => {
     console.log("Push the edit profile screen")
+    navigation.push("EditProfile")
   };
 
   // terms and conditions
@@ -76,12 +80,15 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
     NativeModules.DevSettings.reload();
   };
 
-  const handleDeleteFamilyMember = () => {
-    Alert.alert('Delete', 'Delete this family member?', [
-      { text: 'Yes', onPress: () => console.log("Actually delete the person in Firestore")},
-      { text: 'No'},
-    ])
-  };
+  // const handleDeleteFamilyMember = () => {
+  //   Alert.alert('Delete', 'Delete this family member?', [
+  //     { text: 'Yes', onPress: () => {
+  //       console.log("TODO: delete the person from view on profile")
+  //       console.log("TODO: delete person from firestore")
+  //     }},
+  //     { text: 'No'},
+  //   ])
+  // };
 
   const auth = getAuth();
 
@@ -111,7 +118,9 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         </View>
       </BlueRingView>
 
-      <View style={{marginBottom: 20}}>
+      {/* LIST OF FAMILY MEMBERS... TRYING TO MOVE TO EDITPROFILE -CAT */}
+    
+      {/* <View style={{marginBottom: 20}}>
 
         <View style={{
           flexDirection: "row",
@@ -126,18 +135,18 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
          </View>
 
         {user.spouse && (
-          <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
+          <TouchableWithoutFeedback onPress={console.log("press")}>
             <UserSelection style={styles.userBox} user={user.spouse} />
           </TouchableWithoutFeedback>
           )}
         {user.children?.map((c) => (
-          <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
+          <TouchableWithoutFeedback>
             <UserSelection style={styles.userBox} key={c.user.id} user={c} />
           </TouchableWithoutFeedback>
           ))} 
 
 
-      </View>
+      </View> */}
 
       <View style={styles.longButtonContainer}>
         <TextButton onPress={handleMyPosts}>

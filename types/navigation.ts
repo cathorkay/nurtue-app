@@ -100,6 +100,9 @@ export type LoginStackScreenProps<Screen extends keyof SearchStackParamList> = /
 export type ProfileStackScreenProps<Screen extends keyof SearchStackParamList> = // Cat added this. Doesn't understand it
   StackScreenProps<SearchStackParamList, Screen>;
 
+export type EditProfileStackScreenProps<Screen extends keyof SearchStackParamList> = // Cat added this. Doesn't understand it
+  StackScreenProps<SearchStackParamList, Screen>;
+
 export type TabParamList = {
   Community: undefined;
   ConflictResolution: undefined;
