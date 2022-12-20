@@ -38,8 +38,8 @@ export default function App() {
       <Provider store={store}> 
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
-            <Navigation/> 
-            {/* <OnboardingParent/>  */}
+            {/* <Navigation/>  */}
+            <EditProfile/> 
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>

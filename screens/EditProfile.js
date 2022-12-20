@@ -43,12 +43,7 @@ const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
 
                 <AppForm>
                     <View style={{justifyContent: "center", alignItems: "center"}}>
-                        <BlueRingView
-                        style={{marginVertical: 10}}
-                        borderRadius={100}
-                        ringWidth={3}>
-                            <FormImagePicker name={"pfp"}/>
-                        </BlueRingView>
+                        <FormImagePicker name={"pfp"}/>
                         <Text style={styles.fieldText}>Change Profile Photo</Text>
                     </View>
 
