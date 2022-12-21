@@ -80,15 +80,20 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
     NativeModules.DevSettings.reload();
   };
 
-  // const handleDeleteFamilyMember = () => {
-  //   Alert.alert('Delete', 'Delete this family member?', [
-  //     { text: 'Yes', onPress: () => {
-  //       console.log("TODO: delete the person from view on profile")
-  //       console.log("TODO: delete person from firestore")
-  //     }},
-  //     { text: 'No'},
-  //   ])
-  // };
+  const handleAddFamilyMember = () => {
+    navigation.push("AddFamilyMember")
+  }
+
+  const handleDeleteFamilyMember = () => { 
+    Alert.alert('Delete', 'Delete this family member?', [
+      { text: 'Yes', onPress: () => {
+        console.log("TODO: delete person from firestore") // should be async, awaiting deletion
+        // once that's done...
+        console.log("TODO: Reload 'My Family' or whole page to display current list")
+      }},
+      { text: 'No'},
+    ])
+  };
 
   const auth = getAuth();
 
@@ -120,7 +125,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
 
       {/* LIST OF FAMILY MEMBERS... TRYING TO MOVE TO EDITPROFILE -CAT */}
     
-      {/* <View style={{marginBottom: 20}}>
+      <View style={{marginBottom: 20}}>
 
         <View style={{
           flexDirection: "row",
@@ -129,13 +134,13 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
           paddingHorizontal: 10,
         }}>
           <Text style={styles.sectionText}>My Family</Text>
-            <TouchableHighlight>
+            <TouchableWithoutFeedback onPress={handleAddFamilyMember}>
               <Text style={{color: Colors.bluegreen}}>Add</Text>
-            </TouchableHighlight>
+            </TouchableWithoutFeedback>
          </View>
 
         {user.spouse && (
-          <TouchableWithoutFeedback onPress={console.log("press")}>
+          <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
             <UserSelection style={styles.userBox} user={user.spouse} />
           </TouchableWithoutFeedback>
           )}
@@ -146,7 +151,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
           ))} 
 
 
-      </View> */}
+      </View>
 
       <View style={styles.longButtonContainer}>
         <TextButton onPress={handleMyPosts}>

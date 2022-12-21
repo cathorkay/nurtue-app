@@ -3,13 +3,14 @@ import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView, Text, ScrollView 
 import BlueRingView from '../components/BlueRingView';
 import FormImagePicker from '../components/formsDWI/FormImagePicker';
 import AppTextInput from '../components/AppTextInputDWI';
-import AppFormPicker from '../components/formsDWI/AppFormPicker';
 import FontSize from '../constants/FontSize';
 import AppText from '../components/Text';
 import { AppForm } from '../components/formsDWI';
 import DatePicker from '@react-native-community/datetimepicker';
 import OrangeButton from '../components/OrangeButton';
 import Colors from '../constants/Colors';
+import AppFormSelectOne from '../components/formsDWI/AppFormSelectOne';
+//import AppFormSelectMultiple from '../components/formsDWI/AppFormSelectMultiple';
 
 
 
@@ -24,6 +25,11 @@ export const familyDynamics = [
     "Parent / Guardian"
 ] 
 
+const handleAdd = () => {
+    console.log("TODO: Add new family member in Firestore") // async
+    // when that's done... go back
+}
+
 function AddFamilyMember(props) {
     return (
         <SafeAreaView style={styles.container}>
@@ -34,13 +40,8 @@ function AddFamilyMember(props) {
 
                     <View style={{justifyContent: "center", alignItems: "center"}}>
 
-                        <BlueRingView
-                        style={{marginVertical: 10}}
-                        borderRadius={100}
-                        ringWidth={3}>
-                            <FormImagePicker name={"pfp"}/>
-                        </BlueRingView>
-                        <Text style={styles.fieldText}>Select Profile Photo</Text>
+                        <FormImagePicker name={"pfp"}/>
+                        <Text style={styles.fieldText}>Add a Photo</Text>
                     
                     </View>
 
@@ -48,19 +49,19 @@ function AddFamilyMember(props) {
                     <AppTextInput style={{fontFamily: "light", textAlign: "left", width: "100%"}} color="lightblue" placeholder="Family Member's Name"/>
 
                     <AppText style={styles.fieldText}>Role</AppText>
-                    <AppFormPicker 
+                    <AppFormSelectOne 
                         array={familyDynamics}
                     />
 
                     <AppText style={styles.fieldText}>Gender Identity</AppText>               
-                    <AppFormPicker 
+                    <AppFormSelectOne 
                         array={authorGender}
                     />
 
                     <AppText style={styles.fieldText}>Birthday</AppText>
                     <DatePicker value={new Date()} display="spinner"/>
 
-                    <OrangeButton style={{marginVertical: 20}} onPress={() => console.log("Add family member in Firestore")}>Add Family Member</OrangeButton>
+                    <OrangeButton style={{marginVertical: 20}} onPress={handleAdd}>Add Family Member</OrangeButton>
 
 
                 </AppForm>

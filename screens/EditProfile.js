@@ -28,16 +28,13 @@ export const familyDynamics = [
     "Adopted Child",
 ] 
 
-function handleBack(navigation) {
-    console.log("Go back to the profile page")
-}
 
 const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
     navigation,
     route,
 }) => { 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <KeyboardAvoidingView>
 
                 <AppForm>
@@ -60,7 +57,7 @@ const EditProfile: React.FC<ProfileStackScreenProps<"EditProfile">> = ({
                         array={familyDynamics}
                     />
 
-                    <OrangeButton style={{marginTop: 20}} onPress={() => handleBack(navigation)}>Looks Good</OrangeButton>
+                    <OrangeButton style={{marginTop: 20}} onPress={() => navigation.goBack()}>Looks Good</OrangeButton>
 
                 </AppForm>
 
