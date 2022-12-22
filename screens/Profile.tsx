@@ -163,18 +163,11 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
             <UserSelection style={styles.userBox} user={userDoc.spouse} role={"Spouse"}/>
           </TouchableWithoutFeedback>
-<<<<<<< HEAD
         )}
 
         {userDoc?.children?.map((c) => (
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
             <UserSelection style={styles.userBox} key={c.name} user={c} role={"Child"}/>
-=======
-          )}
-        {user.children?.map((c) => (
-          <TouchableWithoutFeedback>
-            <UserSelection style={styles.userBox} key={c.user.id} user={c} />
->>>>>>> cd8b1b422a7c9e1644934de20b6fd578b06924c6
           </TouchableWithoutFeedback>
         ))}
       </View>
