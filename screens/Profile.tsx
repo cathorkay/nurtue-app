@@ -13,7 +13,6 @@ import Colors from "../constants/Colors";
 import FontSize from "../constants/FontSize";
 import { persistor, useAppSelector } from "../data/store";
 import { getChildrenDescription } from "../lib/format";
-import Root from "../navigation/Root";
 import { ProfileStackScreenProps } from "../types/navigation";
 import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
@@ -27,7 +26,11 @@ import TermsCond from "../components/TermsCond";
 import { TouchableHighlight, TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 
-const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
+const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
+  navigation,
+  route,
+}) => {  
+  
   const insets = useSafeAreaInsets();
 
   const user = useAppSelector((state) => state.profileState.profile);
@@ -48,6 +51,7 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
 
   const handleEditPress = () => {
     console.log("Push the edit profile screen")
+    navigation.push("EditProfile")
   };
 
   // terms and conditions
@@ -80,9 +84,17 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
     NativeModules.DevSettings.reload();
   };
 
-  const handleDeleteFamilyMember = () => {
+  const handleAddFamilyMember = () => {
+    navigation.push("AddFamilyMember")
+  }
+
+  const handleDeleteFamilyMember = () => { 
     Alert.alert('Delete', 'Delete this family member?', [
-      { text: 'Yes', onPress: () => console.log("Actually delete the person in Firestore")},
+      { text: 'Yes', onPress: () => {
+        console.log("TODO: delete person from firestore") // should be async, awaiting deletion
+        // once that's done...
+        console.log("TODO: Reload 'My Family' or whole page to display current list")
+      }},
       { text: 'No'},
     ])
   };
@@ -131,6 +143,8 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         </View>
       </BlueRingView>
 
+      {/* LIST OF FAMILY MEMBERS... TRYING TO MOVE TO EDITPROFILE -CAT */}
+    
       <View style={{marginBottom: 20}}>
 
         <View style={{
@@ -140,20 +154,27 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
           paddingHorizontal: 10,
         }}>
           <Text style={styles.sectionText}>My Family</Text>
-            <TouchableHighlight>
+            <TouchableWithoutFeedback onPress={handleAddFamilyMember}>
               <Text style={{color: Colors.bluegreen}}>Add</Text>
-            </TouchableHighlight>
+            </TouchableWithoutFeedback>
          </View>
 
         {userDoc?.spouse && (
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
             <UserSelection style={styles.userBox} user={userDoc.spouse} role={"Spouse"}/>
           </TouchableWithoutFeedback>
+<<<<<<< HEAD
         )}
 
         {userDoc?.children?.map((c) => (
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
             <UserSelection style={styles.userBox} key={c.name} user={c} role={"Child"}/>
+=======
+          )}
+        {user.children?.map((c) => (
+          <TouchableWithoutFeedback>
+            <UserSelection style={styles.userBox} key={c.user.id} user={c} />
+>>>>>>> cd8b1b422a7c9e1644934de20b6fd578b06924c6
           </TouchableWithoutFeedback>
         ))}
       </View>

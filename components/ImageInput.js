@@ -32,7 +32,7 @@ function ImageInput({ imageUri, onChangeImage }) {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 quality: 0
             })
-        if (!result.cancelled)
+        if (!result.canceled)
             onChangeImage(result)
         } catch (error) {
             console.log("Error reading an image")

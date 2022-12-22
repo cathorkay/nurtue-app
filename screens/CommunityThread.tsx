@@ -225,7 +225,7 @@ const CommunityThreadScreen: React.FC<
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       let path = result.uri;
       let fileName = result.fileName + uuid();
       setImage(path);

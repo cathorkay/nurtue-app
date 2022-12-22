@@ -39,7 +39,7 @@ export default function App() {
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
             <Navigation/> 
-            {/* <OnboardingParent/>  */}
+            {/* <EditProfile/>  */}
             <StatusBar style="dark" />
           </SafeAreaProvider>
         </PersistGate>
