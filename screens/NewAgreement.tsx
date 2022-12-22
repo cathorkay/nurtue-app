@@ -34,7 +34,13 @@ import { addAgreement } from "../data/agreement";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { getAgeFromBirthday } from "../lib/format";
 import { AgreementStackScreenProps } from "../types/navigation";
-import { Child, Profile } from "../types/state";
+import { Child, Profile, User } from "../types/state";
+
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, doc, getDoc, setDoc, addDoc, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
+import { TypeOf } from "yup";
+
 
 const steps = [
   {
@@ -119,9 +125,7 @@ const NewAgreementScreen: React.FC<
   const [exitDialogOpen, setExitDialogOpen] = useState(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [second, setSecond] = useState(timerLength);
-  const [selectedPeople, setSelectedPeople] = useState<
-    [string | null, string | null]
-  >(route.params.selectedPeople);
+  const [selectedPeople, setSelectedPeople] = useState<[string | null, string | null]>(route.params.selectedPeople);
   const person1 = [user, spouse, ...(children ? children : [])].find(
     (i) => i?.user.id === selectedPeople[0]
   );
@@ -166,6 +170,25 @@ const NewAgreementScreen: React.FC<
     handleDiscardDialogClose();
   };
 
+  const handleSaveFirebase = () => {
+    const resolutionId = uuid();
+
+    try {
+      setDoc(doc(db, 'resolutions', resolutionId), {
+        user: auth.currentUser?.uid,
+        id: resolutionId,
+        title: title,
+        emoji: selectedEmoji!,
+        summary: summary,
+        people: selectedPeople,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+    } catch (err) {
+      alert(JSON.stringify(err))
+    }    
+  }
+
   const handleSave = () => {
     const person1 =
       user.user.id === selectedPeople[0]
@@ -199,7 +222,8 @@ const NewAgreementScreen: React.FC<
     handleTimerStop();
     navigation.push("NewAgreement", { step: currentStep + 1, selectedPeople });
     if (currentStep === 6) {
-      handleSave();
+      //handleSave();
+      handleSaveFirebase();
     }
   };
 
@@ -237,12 +261,13 @@ const NewAgreementScreen: React.FC<
   };
 
   const handlePeopleSelect = (id: string) => {
-    const people = [...selectedPeople] as typeof selectedPeople;
+    let people = [...selectedPeople] as typeof selectedPeople;
     if (selectedPeople.indexOf(id) !== -1) {
       people[selectedPeople.indexOf(id)] = null;
     } else {
       people[selectedPeople.indexOf(null)] = id;
     }
+    console.log(people);
     setSelectedPeople(people);
   };
 
@@ -286,6 +311,28 @@ const NewAgreementScreen: React.FC<
     });
     return unsub;
   }, [timerLength, navigation]);
+
+  const auth = getAuth();
+  const [userDoc, setUserDoc] = useState<DocumentData>();
+
+  useEffect(() => {
+    getUser(auth.currentUser?.uid);
+  }, [auth])
+
+  const getUser = async (userID) => {
+    const docRef = doc(db, "users", userID);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      setUserDoc(docSnap.data());
+    } else {
+      console.log("User not found!");
+    }
+  }
+
+  useEffect(() => {
+    console.log(selectedPeople);
+  }, [selectedPeople]);
 
   const container = (
     <View style={styles.container}>
@@ -409,31 +456,39 @@ const NewAgreementScreen: React.FC<
         }}
       >
         {currentStep === 0 && (
+          userDoc?
           <>
             <UserSelection
               style={styles.personButton}
-              user={user}
-              selected={selectedPeople.includes(user.user.id)}
+              user={userDoc}
+              selected={selectedPeople.includes(userDoc.name)}
               onSelect={handlePeopleSelect}
+              role="Parent"
+              id={userDoc.name}
             />
-            {spouse && (
+            {userDoc.spouse && (
               <UserSelection
                 style={styles.personButton}
-                user={spouse}
-                selected={selectedPeople.includes(spouse.user.id)}
+                user={userDoc.spouse}
+                selected={selectedPeople.includes(userDoc.spouse.name)}
                 onSelect={handlePeopleSelect}
+                role="Spouse"
+                id={userDoc.spouse.name}
               />
             )}
-            {children?.map((c) => (
+            {userDoc.children?.map((c) => (
               <UserSelection
                 style={styles.personButton}
-                key={c.user.id}
+                key={c.name}
                 user={c}
-                selected={selectedPeople.includes(c.user.id)}
+                selected={selectedPeople.includes(c.name)}
                 onSelect={handlePeopleSelect}
+                role="Child"
+                id={c.name}
               />
             ))}
           </>
+          :null
         )}
         {currentStep === 6 && (
           <>
@@ -524,15 +579,11 @@ const NewAgreementScreen: React.FC<
               {steps[currentStep - 1].prompt
                 .replaceAll(
                   "{person1}",
-                  (person1?.role !== "Child"
-                    ? person1?.role
-                    : person1?.user.name)!
+                  (selectedPeople[0])!
                 )
                 .replaceAll(
                   "{person2}",
-                  (person2?.role !== "Child"
-                    ? person2?.role
-                    : person2?.user.name)!
+                  (selectedPeople[1])!
                 )}
             </Text>
             <View style={styles.tipLabelContainer}>
@@ -547,15 +598,11 @@ const NewAgreementScreen: React.FC<
                   {tip
                     .replaceAll(
                       "{person1}",
-                      (person1?.role !== "Child"
-                        ? person1?.role
-                        : person1?.user.name)!
+                      (selectedPeople[0])!
                     )
                     .replaceAll(
                       "{person2}",
-                      (person2?.role !== "Child"
-                        ? person2?.role
-                        : person2?.user.name)!
+                      (selectedPeople[1])!
                     )}
                 </Text>
               ))}
@@ -664,12 +711,17 @@ export const UserSelection = ({
   selected,
   onSelect,
   style,
+  role,
+  id,
 }: {
-  user: Profile;
+  //user: User;
   selected?: boolean;
   onSelect?: (id: string) => void;
   style?: TouchableHighlightProps["style"];
+  role: string;
+  id: string;
 }) => {
+  console.log(user);
   const view = (
     <View
       style={{
@@ -679,9 +731,9 @@ export const UserSelection = ({
         paddingVertical: 6,
       }}
     >
-      <MockPhoto
+      <Image
         style={{ width: 54, height: 54, borderRadius: 27 }}
-        name={user.user.photo}
+        source={{ uri: `${user?.photo}` }}
       />
       <View style={{ marginLeft: 15 }}>
         <Text
@@ -690,7 +742,7 @@ export const UserSelection = ({
             fontFamily: selected ? "semibold" : "regular",
           }}
         >
-          {user.user.name}
+          {user.name}
         </Text>
         <Text
           style={{
@@ -699,11 +751,11 @@ export const UserSelection = ({
             marginTop: 2,
           }}
         >
-          {user.role === "Child"
-            ? `${getAgeFromBirthday((user.user as Child).birthday)} ${
-                user.user.gender
-              }`
-            : user.role}
+          {role === "Child" ?
+            `${getAgeFromBirthday(new Date(user.birthday.seconds * 1000))} ${
+              user.gender
+            }`
+            : role}
         </Text>
       </View>
     </View>
@@ -712,7 +764,7 @@ export const UserSelection = ({
   return (
     <Touchable
       style={[{ borderRadius: 40 }, style]}
-      onPress={onSelect ? () => onSelect(user.user.id) : undefined}
+      onPress={onSelect ? () => onSelect(id) : undefined}
     >
       {selected ? (
         <BlueView borderRadius={40}>{view}</BlueView>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, NativeModules, Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,6 +19,10 @@ import { Parent } from "../types/state";
 import { UserSelection } from "./NewAgreement";
 
 import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import { db } from '../firebase';
+import { getStorage, uploadBytes, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
+import { updateDoc, doc, getDoc, addDoc, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
+
 import TermsCond from "../components/TermsCond";
 import { TouchableHighlight, TouchableWithoutFeedback } from "react-native-gesture-handler";
 
@@ -84,6 +88,22 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
   };
 
   const auth = getAuth();
+  const [userDoc, setUserDoc] = useState<DocumentData>();
+
+  useEffect(() => {
+    getUser(auth.currentUser?.uid);
+  }, [auth])
+
+  const getUser = async (userID) => {
+    const docRef = doc(db, "users", userID);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      setUserDoc(docSnap.data());
+    } else {
+      console.log("User not found!");
+    }
+  }
 
   const [isEnabled, setIsEnabled] = useState(false);
   const togglePushNotifs = () => setIsEnabled(previousState => !previousState);
@@ -99,12 +119,12 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
         ringWidth={16}
       >
         {/* <MockPhoto style={styles.photo} name={user.user.photo} /> */}
-        <Image style={styles.photo} source={{ uri: `${auth.currentUser?.photoURL}` }}/>
+        <Image style={styles.photo} source={{ uri: `${userDoc?.photo}` }}/>
       </BlueRingView>
       <BlueRingView borderRadius={20}>
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{auth.currentUser?.displayName}</Text>
-          <Text>{getChildrenDescription(user.user as Parent)}</Text>
+          <Text style={styles.nameText}>{userDoc?.name}</Text>
+          <Text>{userDoc ? getChildrenDescription(userDoc as Parent) : null}</Text>
           <BlueButton shadow style={{marginTop: 12}} onPress={handleEditPress}>
             Edit My Info
           </BlueButton>
@@ -125,18 +145,17 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = () => {
             </TouchableHighlight>
          </View>
 
-        {user.spouse && (
+        {userDoc?.spouse && (
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
-            <UserSelection style={styles.userBox} user={user.spouse} />
+            <UserSelection style={styles.userBox} user={userDoc.spouse} role={"Spouse"}/>
           </TouchableWithoutFeedback>
-          )}
-        {user.children?.map((c) => (
+        )}
+
+        {userDoc?.children?.map((c) => (
           <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
-            <UserSelection style={styles.userBox} key={c.user.id} user={c} />
+            <UserSelection style={styles.userBox} key={c.name} user={c} role={"Child"}/>
           </TouchableWithoutFeedback>
-          ))} 
-
-
+        ))}
       </View>
 
       <View style={styles.longButtonContainer}>

@@ -32,13 +32,9 @@ const AgreementCard: React.FC<AgreementCardProps> = ({
           <Text style={styles.title}>{agreement.title}</Text>
           <View style={styles.caption}>
             <Text>{`${
-              agreement.people[0].role !== "Child"
-                ? agreement.people[0].role
-                : agreement.people[0].user.name
+              agreement.people[0]
             } & ${
-              agreement.people[1].role !== "Child"
-                ? agreement.people[1].role
-                : agreement.people[1].user.name
+              agreement.people[1]
             }`}</Text>
             <Text style={styles.date} ellipsizeMode="tail" numberOfLines={1}>
               {" "}

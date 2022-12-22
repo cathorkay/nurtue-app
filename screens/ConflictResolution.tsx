@@ -1,7 +1,7 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import dayjs from "dayjs";
 import groupBy from "lodash.groupby";
-import { useCallback, useLayoutEffect, useMemo } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { ListRenderItem, SectionList, StyleSheet } from "react-native";
 
 import AgreementCard from "../components/AgreementCard";
@@ -15,14 +15,36 @@ import { useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Agreement } from "../types/state";
 
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
+
 const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
-  const originalAgreements = useAppSelector(
+  /*const originalAgreements = useAppSelector(
     (state) => state.agreementState.agreements
-  );
+  );*/
+
+  const auth = getAuth();
+  const [originalAgreements, setOriginalAgreements] = useState<DocumentData[]>([]);
+
+  useEffect(() => {
+    getDocs(query(
+      collection(db, "resolutions"), 
+      where("user", "==", auth.currentUser?.uid)
+    )).then(resolutionSnap => {
+      let resolutions: DocumentData[] = [];
+      resolutionSnap.forEach((doc) => {
+        resolutions.push(doc.data());
+      });      
+      
+      setOriginalAgreements([...resolutions]);
+    })
+  }, [auth]);
+
   const agreements = useMemo(() => {
     const agreementsByMonth = Object.values(
       groupBy(originalAgreements, (a) => dayjs(a.createdAt).format("YYYY-MM"))
