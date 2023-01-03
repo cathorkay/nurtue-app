@@ -1,5 +1,5 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
 
 import BlueButton from "../components/BlueButton";
@@ -15,6 +15,10 @@ import { setQotdFinished } from "../data/practice";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Practice } from "../types/state";
+
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, setDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, FieldPath } from 'firebase/firestore';
 
 const extraTopics = [
   "Big Feelings",
@@ -37,7 +41,17 @@ export default function PracticeScreen({
     (state) => state.practiceState.qotdFinished
   );
   const practices = useAppSelector((state) => state.practiceState.practices);
-  const progress = useAppSelector((state) => state.practiceState.progress);
+  
+  //const progress = useAppSelector((state) => state.practiceState.progress);
+  const [progress, setProgress] = useState<DocumentData>();
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    getDoc(doc(db, "progress", auth.currentUser.uid)).then((progressSnap) => {
+      setProgress(progressSnap.data());
+    })
+  }, [auth]);
 
   const [correct, setCorrect] = useState(false);
   const [primaryText, setPrimaryText] = useState("");
@@ -89,7 +103,7 @@ export default function PracticeScreen({
     <PracticeCard
       style={{ marginTop: 15 }}
       practice={item}
-      progress={progress[item.id]}
+      progress={progress ? progress[item.id] : 0}
       onPress={() => handlePracticePress(item.id, item.topic)}
     />
   );

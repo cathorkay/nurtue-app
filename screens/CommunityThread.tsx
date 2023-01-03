@@ -36,7 +36,7 @@ import { Parent, Post, Reply } from "../types/state";
 
 import { getAuth } from "firebase/auth";
 import { db } from '../firebase';
-import { updateDoc, setDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, FieldPath } from 'firebase/firestore';
+import { updateDoc, setDoc, doc, deleteDoc, getDoc, arrayRemove, collection, DocumentData } from 'firebase/firestore';
 import { getStorage, uploadBytes, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
 
 import { Amplify, Storage } from 'aws-amplify';
@@ -162,7 +162,10 @@ const CommunityThreadScreen: React.FC<
 
   const handleDeletePost = (postId: string) => {
     handleMoreClose();
-    setTimeout(() => {
+
+    deleteDoc(doc(db, "posts", postId));
+
+    /*setTimeout(() => {
       navigation.goBack();
       setTimeout(() => {
         dispatch(
@@ -171,7 +174,7 @@ const CommunityThreadScreen: React.FC<
           })
         );
       }, 1000);
-    }, 500);
+    }, 500);*/
   };
 
   //update firebase (michael)
@@ -374,12 +377,18 @@ const CommunityThreadScreen: React.FC<
   };
 
   const handleDeleteReply = (replyId: string) => {
-    dispatch(
+    updateDoc(doc(db, 'posts', post.id), {
+      replies: arrayRemove(replyId)
+    });
+
+    deleteDoc(doc(db, "replies", replyId));
+
+    /*dispatch(
       deleteReply({
         postId,
         replyId,
       })
-    );
+    );*/
     handleMoreClose();
   };
 
@@ -404,7 +413,7 @@ const CommunityThreadScreen: React.FC<
       style={styles.postCard}
       preview={false}
       post={item}
-      liked={item.likers.includes(user.id)}
+      liked={item.likers.includes(user.uid)}
       onLike={() => handleLikeReply(item.id)}
       onMore={() => handleMorePress(item)}
     />
@@ -425,7 +434,7 @@ const CommunityThreadScreen: React.FC<
         ListHeaderComponent={
           <PostCard
             post={post}
-            liked={post.likers.includes(user.id)}
+            liked={post.likers.includes(user.uid)}
             onLike={handleLikePost}
             onReply={() => inputRef.current?.focus()}
             onMore={() => handleMorePress(post)}
@@ -494,7 +503,7 @@ const CommunityThreadScreen: React.FC<
         onBackdropPress={handleMoreClose}
         onModalHide={handleModalHide}
       >
-        {currentActionPost?.author.name === user.name ? (
+        {currentActionPost?.author.id === user.uid ? (
           <BlueButton
             textStyle={styles.actionButtonText}
             style={styles.actionButton}

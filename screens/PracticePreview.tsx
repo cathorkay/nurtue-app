@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,6 +14,10 @@ import FontSize from "../constants/FontSize";
 import { useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
 
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, setDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, FieldPath } from 'firebase/firestore';
+
 export default function PracticePreviewScreen({
   navigation,
   route,
@@ -24,9 +28,19 @@ export default function PracticePreviewScreen({
   const practice = useAppSelector(
     (state) => state.practiceState.practices
   ).find((i) => i.id === practiceId)!;
-  const progress = useAppSelector((state) => state.practiceState.progress)[
+  /*const progress = useAppSelector((state) => state.practiceState.progress)[
     practiceId
-  ];
+  ];*/
+
+  const [progress, setProgress] = useState(0);
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    getDoc(doc(db, "progress", auth.currentUser.uid)).then((progressSnap) => {
+      setProgress(progressSnap.data()[practiceId]);
+    })
+  }, [auth]);
 
   const handleStartPress = () => {
     navigation.navigate("PracticeQuestion", {

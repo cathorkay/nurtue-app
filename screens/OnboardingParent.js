@@ -182,6 +182,19 @@ async function handleSubmit(values, navigation) {
   } catch (err) {
       alert(err);
   }
+
+  /*
+  set up practice progress doc for use (one entry for each topic), how many topics?
+  setDoc(doc(db, 'progress', replyID), {
+    id: replyID,
+    author: userTemp,
+    content: replyText,
+    image: imgLocation,
+    likeCount: 0,
+    likers: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  })*/
 }
 
 const OnboardingParent: React.FC<LoginStackScreenProps<"OnboardingParent">> = ({
