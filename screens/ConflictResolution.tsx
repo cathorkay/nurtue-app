@@ -2,7 +2,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import dayjs from "dayjs";
 import groupBy from "lodash.groupby";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { ListRenderItem, SectionList, StyleSheet } from "react-native";
+import { ListRenderItem, SectionList, StyleSheet, RefreshControl} from "react-native";
 
 import AgreementCard from "../components/AgreementCard";
 import FloatingActionButton from "../components/FloatingActionButton";
@@ -30,6 +30,8 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
 
   const auth = getAuth();
   const [originalAgreements, setOriginalAgreements] = useState<DocumentData[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getDocs(query(
@@ -101,9 +103,31 @@ const ConflictResolutionScreen: React.FC<TabScreenProps<"Community">> = ({
     />
   );
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDocs(query(
+      collection(db, "resolutions"), 
+      where("user", "==", auth.currentUser?.uid)
+    )).then(resolutionSnap => {
+      let resolutions: DocumentData[] = [];
+      resolutionSnap.forEach((doc) => {
+        resolutions.push(doc.data());
+      });      
+      
+      setOriginalAgreements([...resolutions]);
+      setRefreshing(false);
+    })
+  }, []);
+
   return (
     <>
       <SectionList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         style={styles.container}
         contentContainerStyle={{
           paddingBottom: tabBarHeight + 60 + 75,

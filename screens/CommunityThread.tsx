@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TextInput as RNTextInput,
   View,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuid } from "uuid";
@@ -80,6 +81,8 @@ const CommunityThreadScreen: React.FC<
   const [imageName, setImageName] = useState("");
   const [replies, setReplies] = useState<DocumentData[]>([]);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   //get post & its replies from firebase (michael)
   useEffect(() => {
     getDoc(doc(db, "posts", postId)).then((docSnap) => {
@@ -94,7 +97,7 @@ const CommunityThreadScreen: React.FC<
     });
   }, [postId]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if(post){
       const newReplies: DocumentData[] = [];
       post.replies.forEach(rId => {
@@ -104,7 +107,7 @@ const CommunityThreadScreen: React.FC<
         })
       });
     }
-  }, [post]);
+  }, [post]);*/
 
   const handleMorePress = (post: Post | Reply) => {
     setCurrentActionPost(post);
@@ -408,6 +411,21 @@ const CommunityThreadScreen: React.FC<
     });
   }, [navigation]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDoc(doc(db, "posts", postId)).then((docSnap) => {
+      setPost(docSnap.data());
+      const newReplies: DocumentData[] = [];
+      docSnap.data().replies.forEach(rId => {
+        getDoc(doc(db, "replies", rId)).then(rSnap => {
+          newReplies.push(rSnap.data());
+          setReplies([...newReplies]);
+        })
+      });
+      setRefreshing(false);
+    });
+  }, []);
+
   const renderPostCard: ListRenderItem<Reply> = ({ item }) => (
     <PostCard
       style={styles.postCard}
@@ -424,6 +442,12 @@ const CommunityThreadScreen: React.FC<
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         ref={listViewRef}
         style={styles.list}
         contentContainerStyle={{

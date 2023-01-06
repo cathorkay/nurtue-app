@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from "react-native";
 
 import Affirmation from "../components/RandomAff";
@@ -76,6 +77,8 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   const firebasePosts: DocumentData[] = [];
 
   const [finalPosts, setFinalPosts] = useState<DocumentData[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   //get posts from firebase (michael)
   useEffect(() => {
@@ -221,9 +224,29 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     });
   }, [handleProfilePress, navigation]);
 
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
+      let newPosts: DocumentData[] = [];
+      postsSnap.forEach((doc) => {
+        if(filterPosts(doc.data()))newPosts.push(doc.data());
+      });      
+      
+      setFinalPosts([...newPosts]);
+      setRefreshing(false);
+    });
+  }, []);
+
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         style={styles.list}
         contentContainerStyle={{
           paddingHorizontal: 20,

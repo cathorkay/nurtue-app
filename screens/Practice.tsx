@@ -1,6 +1,6 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
+import { FlatList, ListRenderItem, StyleSheet, View, RefreshControl} from "react-native";
 
 import BlueButton from "../components/BlueButton";
 import BlueRingView from "../components/BlueRingView";
@@ -57,6 +57,8 @@ export default function PracticeScreen({
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -130,9 +132,23 @@ export default function PracticeScreen({
     [handleExtraTopicPress]
   );
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDoc(doc(db, "progress", auth.currentUser.uid)).then((progressSnap) => {
+      setProgress(progressSnap.data());
+      setRefreshing(false);
+    })
+  }, []);
+
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         style={styles.container}
         contentContainerStyle={{
           marginTop: 25,
