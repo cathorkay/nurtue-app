@@ -20,7 +20,7 @@ import { UserSelection } from "./NewAgreement";
 import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
 import { db } from '../firebase';
 import { getStorage, uploadBytes, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
-import { updateDoc, doc, getDoc, addDoc, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
+import { updateDoc, doc, getDoc, setDoc, deleteField, addDoc, getDocs, collection, DocumentData, query, orderBy, arrayRemove } from 'firebase/firestore';
 
 import TermsCond from "../components/TermsCond";
 import { TouchableHighlight, TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -38,6 +38,8 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
   const [unimpDialogOpen, setUnimpDialogOpen] = useState(false);
   const [termsDialogOpen, setTermsDialogOpen] = useState(false);
   
+  const auth = getAuth();
+  const [userDoc, setUserDoc] = useState<DocumentData>();
 
   // this feature is unimplemented 
 
@@ -88,19 +90,47 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
     navigation.push("AddFamilyMember")
   }
 
-  const handleDeleteFamilyMember = () => { 
+  const handleDeleteFamilyMember = (name) => { 
     Alert.alert('Delete', 'Delete this family member?', [
       { text: 'Yes', onPress: () => {
+        if(name === 'spouse'){
+          deleteSpouse();
+        }else{
+          deleteChild(name);
+        }
+
         console.log("TODO: delete person from firestore") // should be async, awaiting deletion
         // once that's done...
         console.log("TODO: Reload 'My Family' or whole page to display current list")
       }},
       { text: 'No'},
     ])
-  };
 
-  const auth = getAuth();
-  const [userDoc, setUserDoc] = useState<DocumentData>();
+    const deleteChild = async (name) => {
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      const userSnapshot = await getDoc(userRef);
+      const childrenArray = userSnapshot.data().children;
+
+      const indexToDelete = childrenArray.findIndex(child => child.name === name);
+
+      if (indexToDelete !== -1) {
+        childrenArray.splice(indexToDelete, 1);
+        await updateDoc(userRef, { children: childrenArray });
+      }
+
+      getUser(auth.currentUser?.uid);
+    }
+
+    const deleteSpouse = async () => {
+      const docRef = doc(db, 'users', auth.currentUser?.uid);
+
+      await updateDoc(docRef, {
+        spouse: deleteField()
+      });
+
+      getUser(auth.currentUser?.uid);
+    }
+  };
 
   useEffect(() => {
     getUser(auth.currentUser?.uid);
@@ -160,13 +190,13 @@ const ProfileScreen: React.FC<ProfileStackScreenProps<"Profile">> = ({
          </View>
 
         {userDoc?.spouse && (
-          <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
+          <TouchableWithoutFeedback onPress={() => handleDeleteFamilyMember('spouse')}>
             <UserSelection style={styles.userBox} user={userDoc.spouse} role={"Spouse"}/>
           </TouchableWithoutFeedback>
         )}
 
         {userDoc?.children?.map((c) => (
-          <TouchableWithoutFeedback onPress={handleDeleteFamilyMember}>
+          <TouchableWithoutFeedback onPress={() => handleDeleteFamilyMember(c.name)}>
             <UserSelection style={styles.userBox} key={c.name} user={c} role={"Child"}/>
           </TouchableWithoutFeedback>
         ))}

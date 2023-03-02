@@ -85,7 +85,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
       let newPosts: DocumentData[] = [];
       postsSnap.forEach((doc) => {
-        if(filterPosts(doc.data()))newPosts.push(doc.data());
+        if(filterPosts(doc.data())) newPosts.push(doc.data());
       });      
       
       setFinalPosts([...newPosts]);
@@ -223,7 +223,6 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
       ),
     });
   }, [handleProfilePress, navigation]);
-
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

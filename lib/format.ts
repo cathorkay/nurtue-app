@@ -14,13 +14,11 @@ export const getAgeFromBirthday = (birthday: Date | string) => {
 };
 
 export const getChildrenDescription = (parent: Parent) => {
-  const children = parent.children.map(
-    (c) => {
-      var date = new Date(c.birthday.seconds * 1000);
-      return (`${getAgeFromBirthday(date)} ${c.gender}`)
-    }
-  );
-  return `${parent.gender === "Male" ? "Dad" : "Mom"} of ${children.join(
-    ", "
-  )}`;
+  let children = '';
+  if(parent.children){
+    var date = new Date(parent.children[0].birthday.seconds * 1000);
+    children = `${getAgeFromBirthday(date)} ${parent.children[0].gender}`;
+  }
+
+  return `${parent.gender === "Male" ? "Dad" : "Mom"} of ${children}`;
 };
