@@ -3,16 +3,48 @@ import { Image, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, Touchabl
 import * as Yup from 'yup';
 
 import colors from '../constants/Colors';
-import {AppForm, AppFormField, SubmitButton} from '../components/formsDWI';
-import OrangeButton from '../components/OrangeButton';
+import {AppForm, AppFormField} from '../components/formsDWI';
 import SemiboldText from '../components/SemiboldText';
+import SubmitButton from '../components/formsDWI/SubmitButton';
+
+import firebase from '../firebase'
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { LoginStackScreenProps } from '../types/navigation';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(7).label("Password")
 })
 
-function Login(props) {
+
+function handleLogin(values, navigation) {
+    const email = values["email"]
+    const password = values["password"]
+    console.log("successful login")
+
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        // ...
+        //console.log(user)
+        alert("Successfully LOGGED IN")
+        navigation.push("Tabs")
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(errorMessage)
+    });
+}
+
+const Login: React.FC<LoginStackScreenProps<"Login">> = ({
+    navigation,
+    route,
+}) => {
+
+
     return (
     <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -24,7 +56,7 @@ function Login(props) {
         <SemiboldText>Sign In</SemiboldText>
         <AppForm
             initialValues={{email: '', password: ''}}
-            onSubmit={values => console.log(values)}
+            onSubmit={values => handleLogin(values, navigation)}
             validationSchema={validationSchema}
         >
             <AppFormField
@@ -45,12 +77,12 @@ function Login(props) {
                 secureTextEntry={true}
                 textContentType="password"
             />
-            <OrangeButton style={{marginVertical: 20}} onPress={() => console.log("pressed login")} >Log in</OrangeButton>
+            <SubmitButton title="Login"/>
         </AppForm>
         <View style={styles.registerTextContainer}>
             <SemiboldText> New to Nurtue?</SemiboldText>
-            <TouchableHighlight underlayColor={null} onPress={() => console.log("sign up pressed")}>
-                <SemiboldText style={{ color:colors.green }} onPress={() => console.log("cue register")}>  Sign Up </SemiboldText>
+            <TouchableHighlight underlayColor={null} onPress={() => navigation.push("Register")}>
+                <SemiboldText style={{ color:colors.green }}>  Sign Up </SemiboldText>
             </TouchableHighlight>
         </View>
     </KeyboardAvoidingView>

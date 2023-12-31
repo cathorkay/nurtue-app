@@ -1,16 +1,18 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import dayjs from "dayjs";
-import { useCallback, useLayoutEffect, useMemo } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
+  Image,
   ListRenderItem,
   StyleSheet,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from "react-native";
 
-import Affirmation from "../components/Affirmation";
+import Affirmation from "../components/RandomAff";
 import BlueRingView from "../components/BlueRingView";
 import FloatingActionButton from "../components/FloatingActionButton";
 import MockPhoto from "../components/MockPhoto";
@@ -25,6 +27,10 @@ import { Filters } from "../data/post";
 import { useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Post } from "../types/state";
+
+import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, doc, getDoc, addDoc, getDocs, collection, DocumentData, query, orderBy } from 'firebase/firestore';
 
 const generateGreeting = () => {
   const hour = new Date().getHours();
@@ -48,14 +54,69 @@ const emptyFilters = (filters: Filters) => {
 const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
   navigation,
 }) => {
+
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (userREAL) => {
+    if (userREAL) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      const uid = userREAL.uid;
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  });
+
   const tabBarHeight = useBottomTabBarHeight();
 
   const user = useAppSelector((state) => state.profileState.profile.user);
   const originalPosts = useAppSelector((state) => state.postState.posts);
   const filters = useAppSelector((state) => state.postState.filters);
+  const firebasePosts: DocumentData[] = [];
 
-  const filteredPosts = useMemo(() => {
-    let posts = originalPosts;
+  const [finalPosts, setFinalPosts] = useState<DocumentData[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  //get posts from firebase (michael)
+  useEffect(() => {
+    getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
+      let newPosts: DocumentData[] = [];
+      postsSnap.forEach((doc) => {
+        if(filterPosts(doc.data())) newPosts.push(doc.data());
+      });      
+      
+      setFinalPosts([...newPosts]);
+    });
+  }, [filters]);
+
+  const filterPosts = (p) => {
+    if (filters.authorRole) {
+      if (filters.authorRole === "Father" && p.author.gender !== "Male") return false;
+      if (filters.authorRole === "Mother" && p.author.gender !== "Female") return false;
+      if (filters.authorRole === "Non-binary Parent" && p.author.gender !== "Non-binary") return false;
+    }
+
+    if(filters.childGender){
+      if (p.author.children.some((c) => {
+        if (c.gender === "Male") {
+            return filters.childGender === "Male";
+          } else if (c.gender === "Female") {
+            return filters.childGender === "Female";
+          }
+          return false;    
+      }) === false) return false;
+    }
+    
+    return true;
+  }
+
+  /*
+  useEffect(() => {
+    let posts = finalPosts;
+    //console.log("firebase posts", posts);
     posts = posts.filter((p) => {
       if (p.author.expert) {
         return false;
@@ -65,6 +126,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         return months >= filters.minAge && months <= filters.maxAge;
       });
     });
+
     if (filters.childGender) {
       posts = posts.filter((p) => {
         if (p.author.expert) {
@@ -80,6 +142,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         });
       });
     }
+
     if (filters.authorRole) {
       posts = posts.filter((p) => {
         if (p.author.expert && filters.authorRole === "Certified Expert") {
@@ -87,6 +150,7 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         } else if (p.author.expert) {
           return false;
         }
+
         if (filters.authorRole === "Father" && p.author.gender === "male") {
           return true;
         }
@@ -96,14 +160,14 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         return false;
       });
     }
-    return posts;
   }, [
+    finalPosts,
     filters.authorRole,
     filters.childGender,
     filters.maxAge,
     filters.minAge,
     originalPosts,
-  ]);
+  ]);*/
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -142,8 +206,14 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
             borderRadius={20}
             ringWidth={1.5}
           >
-            <MockPhoto
+            {/* <MockPhoto
               name="dad"
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+              width={32}
+              height={32}
+            /> */}
+            <Image
+              source= {{ uri: `${auth.currentUser?.photoURL}` }}
               style={{ width: 32, height: 32, borderRadius: 16 }}
               width={32}
               height={32}
@@ -154,16 +224,35 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
     });
   }, [handleProfilePress, navigation]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"))).then(postsSnap => {
+      let newPosts: DocumentData[] = [];
+      postsSnap.forEach((doc) => {
+        if(filterPosts(doc.data()))newPosts.push(doc.data());
+      });      
+      
+      setFinalPosts([...newPosts]);
+      setRefreshing(false);
+    });
+  }, []);
+
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         style={styles.list}
         contentContainerStyle={{
           paddingHorizontal: 20,
           marginTop: 35,
           paddingBottom: tabBarHeight + 60 + 55,
         }}
-        data={filteredPosts}
+        data={finalPosts}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
             {emptyFilters(filters) ? "No post yet" : "No post found"}
@@ -172,13 +261,10 @@ const CommunityScreen: React.FC<TabScreenProps<"Community">> = ({
         ListHeaderComponent={
           <View style={styles.listHeaderContainer}>
             <Text style={styles.greeting}>{`${generateGreeting()}, ${
-              user.name
+              auth.currentUser.displayName
             }!`}</Text>
             <View style={styles.affirmationShadow}>
               <OrangeRingView borderRadius={20}>
-                {/* <Text style={styles.affirmationText}>
-                  Be the parent you needed when you were younger.
-                </Text> */}
                 <Affirmation/>
               </OrangeRingView>
             </View>

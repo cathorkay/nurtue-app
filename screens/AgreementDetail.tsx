@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
+  Image, 
   StyleSheet,
   View,
   ScrollView,
@@ -22,22 +23,48 @@ import { deleteAgreement, editAgreement } from "../data/agreement";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
 
+import { db } from '../firebase';
+import { updateDoc, doc, getDoc, deleteDoc, DocumentData } from 'firebase/firestore';
+
 const AgreementDetailScreen: React.FC<
   RootStackScreenProps<"AgreementDetail">
 > = ({ navigation, route }) => {
   const agreementId = route.params.agreementId;
 
   const dispatch = useAppDispatch();
-  const agreement = useAppSelector(
+  /*const agreement = useAppSelector(
     (state) => state.agreementState.agreements
-  ).find((i) => i.id === agreementId)!;
+  ).find((i) => i.id === agreementId)!;*/
+
+  const [agreement, setAgreement] = useState<DocumentData>();
+  const [person1, setPerson1] = useState<DocumentData>();
+  const [person2, setPerson2] = useState<DocumentData>();
+
+  useEffect(() => {
+    getDoc(doc(db, "resolutions", agreementId)).then((agreementSnap) => {
+      getDoc(doc(db, "users", agreementSnap.data().user)).then((userSnap) => {
+        if(userSnap.data().name === agreementSnap.data().people[0]) setPerson1(userSnap.data());
+        if(userSnap.data().spouse.name === agreementSnap.data().people[0]) setPerson1(userSnap.data().spouse);
+        
+        if(userSnap.data().name === agreementSnap.data().people[1]) setPerson2(userSnap.data());
+        if(userSnap.data().spouse.name === agreementSnap.data().people[1]) setPerson2(userSnap.data().spouse);
+
+        userSnap.data().children.forEach((c) => {
+          if(c.name === agreementSnap.data().people[0]) setPerson1(c);
+          if(c.name === agreementSnap.data().people[1]) setPerson2(c);
+        })
+      });
+      setAgreement(agreementSnap.data());
+      setSummary(agreementSnap.data().summary);
+    });
+  }, [agreementId]);
 
   const textInputRef = useRef<RNTextInput>(null);
 
   const [editing, setEditing] = useState(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [summary, setSummary] = useState(agreement.summary);
+  const [summary, setSummary] = useState(agreement?.summary);
 
   const handleDiscardDialogOpen = () => {
     setDiscardDialogOpen(true);
@@ -82,10 +109,27 @@ const AgreementDetailScreen: React.FC<
     }, 500);
   };
 
+  const handleDeleteFirebase = () => {
+    handleDeleteDialogClose();
+    setTimeout(() => {
+      navigation.goBack();
+      setTimeout(() => {
+        deleteDoc(doc(db, "resolutions", agreementId));
+      }, 1000);
+    }, 500);
+  }
+
   const handleEditPress = () => {
     setEditing(true);
     setTimeout(() => textInputRef.current?.focus(), 500);
   };
+
+  const handleSaveFirebase = useCallback(() => {
+    updateDoc(doc(db, "resolutions", agreementId), {
+      summary: summary,
+    });
+    setEditing(false);
+  }, [agreement, agreementId, summary]);
 
   const handleSave = useCallback(() => {
     dispatch(
@@ -119,7 +163,7 @@ const AgreementDetailScreen: React.FC<
             style={{
               marginRight: 20,
             }}
-            onPress={handleSave}
+            onPress={handleSaveFirebase}
           >
             Save
           </TextButton>
@@ -141,7 +185,7 @@ const AgreementDetailScreen: React.FC<
         headerRight: () => null,
       });
     }
-  }, [editing, handleSave, navigation]);
+  }, [editing, handleSaveFirebase, navigation]);
 
   return (
     <ScrollView style={styles.container}>
@@ -151,30 +195,35 @@ const AgreementDetailScreen: React.FC<
           ringWidth={16}
           style={styles.avatarContainer}
         >
-          <MockPhoto
-            name={agreement.people[0].user.photo}
-            style={styles.image}
-          />
+          {person1 ?
+            <Image style={styles.image} source={{ uri: `${person1?.photo}` }}/>
+          :
+            <MockPhoto name={null} style={styles.image}/>
+          }
+
         </BlueView>
         <BlueView
           borderRadius={40}
           ringWidth={16}
           style={styles.avatarContainer}
         >
-          <MockPhoto
-            name={agreement.people[1].user.photo}
-            style={styles.image}
-          />
+          {person2 ?
+            <Image style={styles.image} source={{ uri: `${person2?.photo}` }}/>
+          :
+            <MockPhoto name={null} style={styles.image}
+            />
+          }
+
         </BlueView>
       </View>
       <BlueRingView borderRadius={20} ringWidth={4}>
         <View style={styles.innerContainer}>
           <View style={styles.titleSection}>
-            <Text style={styles.emoji}>{agreement.emoji}</Text>
+            <Text style={styles.emoji}>{agreement?.emoji}</Text>
             <View style={styles.text}>
-              <Text style={styles.title}>{agreement.title}</Text>
+              <Text style={styles.title}>{agreement?.title}</Text>
               <Text style={styles.date}>
-                {dayjs(agreement.createdAt).format("MM/DD/YYYY")}
+                {dayjs(agreement?.createdAt).format("MM/DD/YYYY")}
               </Text>
             </View>
           </View>
@@ -187,7 +236,7 @@ const AgreementDetailScreen: React.FC<
               multiline
             />
           ) : (
-            <Text style={styles.content}>{agreement.summary}</Text>
+            <Text style={styles.content}>{agreement?.summary}</Text>
           )}
         </View>
       </BlueRingView>
@@ -216,7 +265,7 @@ const AgreementDetailScreen: React.FC<
         isVisible={deleteDialogOpen}
         title="Delete"
         text="Are you sure you want to delete this agreement? This action cannot be undone."
-        onOk={handleDeleteOk}
+        onOk={handleDeleteFirebase}
         onCancel={handleDeleteCancel}
       />
     </ScrollView>

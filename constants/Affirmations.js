@@ -1,12 +1,7 @@
-import React from 'react';
-import { Text, StyleSheet } from 'react-native'
-
-import FontSize from "../constants/FontSize";
-
-const affirmations = [
+export default [
     "Be what you needed when you were younger.",
     "Be a good role model.",
-    "Be are confident in your parenting role.",
+    "Be confident in your parenting role.",
     "Be willing to learn and grow.",
     "Have patience.",
     "Grow together every day.",
@@ -37,28 +32,3 @@ const affirmations = [
     "Practice what you preach.",
     "Educate firmly and lovingly.",
 ]
-
-// // ✅ read file SYNCHRONOUSLY
-// function getRandomAff() {
-//   var aff = affirmations[Math.floor(Math.random()*affirmations.length)]
-//   console.log(aff)
-//   return aff
-// }
-
-function Affirmation(props) {
-    return (
-        <Text style={styles.affirmationText}>Step up to the plate.</Text>
-    );
-}
-
-const styles = StyleSheet.create({
-    affirmationText: {
-        fontFamily: "semibold-italic",
-        fontSize: FontSize.emphasis,
-        color: "white",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-})
-
-export default Affirmation;

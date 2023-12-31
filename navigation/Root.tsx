@@ -13,8 +13,15 @@ import NewPostScreen from "../screens/NewPost";
 import PracticePreviewScreen from "../screens/PracticePreview";
 import PracticeQuestionScreen from "../screens/PracticeQuestion";
 import PracticeReviewScreen from "../screens/PracticeReview";
+
+ 
+import Login from "../screens/Login"; //CAT !! 
+import Register from "../screens/Register";
+
+
 import { RootStackParamList } from "../types/navigation";
 import { Agreements } from "./Agreement";
+import { LoginRegister } from "./LoginRegister"; 
 import { Profiles } from "./Profile";
 import { Searches } from "./Search";
 import { Tabs } from "./Tab";
@@ -43,6 +50,16 @@ function Root() {
         headerTitleAlign: "center",
       }}
     >
+
+      
+      <RootStack.Screen
+        name="LoginStack"
+        component={LoginRegister}
+        options={{ headerShown: false }}
+      />
+
+
+
       <RootStack.Screen
         name="Tabs"
         component={Tabs}
@@ -246,6 +263,7 @@ function Root() {
           ),
         }}
       />
+
     </RootStack.Navigator>
   );
 }

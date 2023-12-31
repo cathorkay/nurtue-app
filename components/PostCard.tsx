@@ -18,6 +18,10 @@ import MockPhoto from "./MockPhoto";
 import Text from "./Text";
 import Touchable from "./Touchable";
 
+const localPhotos = {
+  default: require("../assets/images/default.png")
+};
+
 export interface PostCardProps extends TouchableHighlightProps {
   preview?: boolean;
   post: Post | Reply;
@@ -64,9 +68,9 @@ const PostCard: React.FC<PostCardProps> = ({
         </>
       )}
       <View style={styles.userRow}>
-        <MockPhoto
+        <Image
           style={styles.avatar}
-          name={(post as Post).anonymous ? "default" : post.author.photo}
+          source={(post as Post).anonymous ? localPhotos.default : {uri:post.author.photo}}
         />
         <View style={styles.userInfo}>
           <View style={styles.username}>
@@ -93,8 +97,7 @@ const PostCard: React.FC<PostCardProps> = ({
       <Text style={styles.content}>
         {preview ? (post as Post).title : post.content}
       </Text>
-      {(post as Post).image &&
-        ((post as Post).image!.startsWith("file://") ? (
+      {(post as Post).image /*&& ((post as Post).image!.startsWith("file://")*/ ? (
           <Image
             style={styles.image}
             resizeMode="cover"
@@ -106,7 +109,7 @@ const PostCard: React.FC<PostCardProps> = ({
             resizeMode="cover"
             name="sleeping-baby"
           />
-        ))}
+        )}
       <View style={styles.toolBar}>
         <View style={styles.action}>
           {onLike ? (

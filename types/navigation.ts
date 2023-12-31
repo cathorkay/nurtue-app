@@ -58,11 +58,12 @@ export type AgreementStackScreenProps<
 
 export type ProfileStackParamList = {
   Profile: undefined;
+  EditProfile: undefined;
 };
 
-export type ProfileStackScreenProps<
-  Screen extends keyof ProfileStackParamList
-> = StackScreenProps<ProfileStackParamList, Screen>;
+// export type ProfileStackScreenProps<
+//   Screen extends keyof ProfileStackParamList
+// > = StackScreenProps<ProfileStackParamList, Screen>;
 
 export type SearchStackParamList = {
   Search: {
@@ -91,6 +92,15 @@ export type SearchStackParamList = {
 };
 
 export type SearchStackScreenProps<Screen extends keyof SearchStackParamList> =
+  StackScreenProps<SearchStackParamList, Screen>;
+
+export type LoginStackScreenProps<Screen extends keyof SearchStackParamList> = // Cat added this. Doesn't understand it
+  StackScreenProps<SearchStackParamList, Screen>;
+
+export type ProfileStackScreenProps<Screen extends keyof SearchStackParamList> = // Cat added this. Doesn't understand it
+  StackScreenProps<SearchStackParamList, Screen>;
+
+export type EditProfileStackScreenProps<Screen extends keyof SearchStackParamList> = // Cat added this. Doesn't understand it
   StackScreenProps<SearchStackParamList, Screen>;
 
 export type TabParamList = {

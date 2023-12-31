@@ -7,6 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "nurtue",
     "userInterfaceStyle": "light",
+    "packagerOpts": {
+      "sourceExts": ["cjs"]
+    },
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -17,13 +20,15 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false
+      "bundleIdentifier": "com.company.nurtue",
+      "supportsTablet": false,
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#cdf1ff"
-      }
+      },
+      "package": "com.company.nurtue",
     },
     "plugins": [
       [

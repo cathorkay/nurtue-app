@@ -1,6 +1,6 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useCallback, useMemo, useState } from "react";
-import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FlatList, ListRenderItem, StyleSheet, View, RefreshControl} from "react-native";
 
 import BlueButton from "../components/BlueButton";
 import BlueRingView from "../components/BlueRingView";
@@ -15,6 +15,10 @@ import { setQotdFinished } from "../data/practice";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { TabScreenProps } from "../types/navigation";
 import { Practice } from "../types/state";
+
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, setDoc, doc, getDoc, addDoc, where, getDocs, collection, DocumentData, query, FieldPath } from 'firebase/firestore';
 
 const extraTopics = [
   "Big Feelings",
@@ -37,12 +41,24 @@ export default function PracticeScreen({
     (state) => state.practiceState.qotdFinished
   );
   const practices = useAppSelector((state) => state.practiceState.practices);
-  const progress = useAppSelector((state) => state.practiceState.progress);
+  
+  //const progress = useAppSelector((state) => state.practiceState.progress);
+  const [progress, setProgress] = useState<DocumentData>();
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    getDoc(doc(db, "progress", auth.currentUser.uid)).then((progressSnap) => {
+      setProgress(progressSnap.data());
+    })
+  }, [auth]);
 
   const [correct, setCorrect] = useState(false);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleSearchBarPress = () => {
     navigation.navigate("SearchStack", {
@@ -89,7 +105,7 @@ export default function PracticeScreen({
     <PracticeCard
       style={{ marginTop: 15 }}
       practice={item}
-      progress={progress[item.id]}
+      progress={progress ? progress[item.id] : 0}
       onPress={() => handlePracticePress(item.id, item.topic)}
     />
   );
@@ -116,9 +132,23 @@ export default function PracticeScreen({
     [handleExtraTopicPress]
   );
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDoc(doc(db, "progress", auth.currentUser.uid)).then((progressSnap) => {
+      setProgress(progressSnap.data());
+      setRefreshing(false);
+    })
+  }, []);
+
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         style={styles.container}
         contentContainerStyle={{
           marginTop: 25,

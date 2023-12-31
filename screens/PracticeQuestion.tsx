@@ -17,6 +17,10 @@ import { setPracticeProgress } from "../data/practice";
 import { useAppDispatch, useAppSelector } from "../data/store";
 import { RootStackScreenProps } from "../types/navigation";
 
+import { getAuth } from "firebase/auth";
+import { db } from '../firebase';
+import { updateDoc, setDoc, doc, query } from 'firebase/firestore';
+
 export default function PracticeQuestionScreen({
   navigation,
   route,
@@ -31,6 +35,8 @@ export default function PracticeQuestionScreen({
   ).find((i) => i.id === practiceId)!;
   const question = practice.questions[questionIndex];
   const finished = questionIndex === practice.questions.length;
+
+  const auth = getAuth();
 
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [correct, setCorrect] = useState(false);
@@ -58,6 +64,21 @@ export default function PracticeQuestionScreen({
     }
     setPrimaryText(question.choices[index].content);
     setSecondaryText(question.choices[index].explanation);
+  };
+
+  const handleOkFirebase = () => {
+    setPrimaryText("");
+    setSecondaryText("");
+    if (correct) {
+      updateDoc(doc(db, "progress", auth.currentUser.uid), {
+        [practiceId]: questionIndex + 1,
+      });
+      navigation.push("PracticeQuestion", {
+        practiceId,
+        topic: route.params.topic,
+        questionIndex: questionIndex + 1,
+      });
+    }
   };
 
   const handleOk = () => {
@@ -215,7 +236,7 @@ export default function PracticeQuestionScreen({
         type={correct ? "success" : "failure"}
         primaryText={primaryText}
         secondaryText={secondaryText}
-        onOk={handleOk}
+        onOk={handleOkFirebase}
       />
     </View>
   );
